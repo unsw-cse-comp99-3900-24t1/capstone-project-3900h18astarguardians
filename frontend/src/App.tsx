@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/* eslint-disable space-before-function-paren */
+import { createContext } from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+
+import { useSnackbar } from "notistack";
+import ResponsiveAppBar from "./components/ResponsiveAppBar";
+
+const UserContext = createContext();
+
+const App = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleBar = (
+    msg: string,
+    variant: "error" | "success" | "warning" | "info" | "default"
+  ) => enqueueSnackbar(msg, { variant });
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <BrowserRouter>
+        <UserContext.Provider value={{ handleBar }}>
+          <ResponsiveAppBar isLoggedIn={false} />
+          <Routes>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="register" element={<Register />} />
+            <Route path="/" element={<Navigate to="/login" replace={true} />} />
+            <Route path="login" element={<Login />} />
 
-export default App
+            <Route path="*" element={<h1> Page Not Found</h1>} />
+          </Routes>
+        </UserContext.Provider>
+      </BrowserRouter>
+    </>
+  );
+};
+
+export default App;
+export { UserContext };

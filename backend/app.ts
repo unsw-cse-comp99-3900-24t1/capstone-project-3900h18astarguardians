@@ -62,7 +62,7 @@ app.use(notFound);
 // error handler must be last middlware by express rules
 app.use(errorHandlerMiddleware);
 
-const port = PORT || 5000;
+const port = PORT || 3000;
 
 // start up server and MongoDB connection
 (async () => {
