@@ -1,13 +1,17 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+
 import "express-async-errors";
 import { connectDB } from "./db/connect";
 import { errorHandlerMiddleware } from "./middleware/error-handler";
 import { notFound } from "./middleware/not-found";
-// security packages:
 
-// import xss from "xss-clean";
+// Swagger
+import swaggerUI from "swagger-ui-express";
+import YAML from "yamljs";
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 // routers
 import { authRouter } from "./routes/authRoutes";
@@ -25,16 +29,10 @@ config();
 const app = express();
 
 //env variables
-const {
-  MONGO_URI,
-  PORT,
-  JWT_SECRET,
-  CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET,
-} = process.env;
+const { MONGO_URI, PORT, JWT_SECRET } = process.env;
 
 //security packages middlware
+app.use(cors());
 
 // morgan logs a formatted http request line
 app.use(morgan("tiny"));
@@ -44,6 +42,15 @@ app.use(express.static("public"));
 app.use(express.json());
 // parses cookies into req.signedCookies for incoming requests
 app.use(cookieParser(JWT_SECRET));
+
+// setting up swagger documentation
+app.get("/", (req: Request, res: Response) =>
+  res.send(
+    '<h1> Comp3900 project API </h1> <a href="/api-docs"> Documentation </a>'
+  )
+);
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
