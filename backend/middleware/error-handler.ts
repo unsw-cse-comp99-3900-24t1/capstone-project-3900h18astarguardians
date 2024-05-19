@@ -8,7 +8,6 @@ export const errorHandlerMiddleware: ErrorRequestHandler = (
   res,
   next
 ) => {
-  console.log(err);
   const customError = {
     // set default
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,

@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
-
+// @ts-expect-error no input needed
 const UserContext = createContext();
 
 const App = () => {
