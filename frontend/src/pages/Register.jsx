@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { UserContext } from "../App";
 import { useNavigate, Link } from "react-router-dom";
-import { request } from "../config";
+import { request } from "../utils.ts/axios";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
 const Register = () => {
-  const { handleBar } = useContext(UserContext);
+  const { displayError, displaySuccess } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -25,25 +25,23 @@ const Register = () => {
     const confirmPassword = data.get("confirmPassword");
 
     if (password !== confirmPassword) {
-      return handleBar("Passwords dont match", "error");
+      return displayError("Passwords dont match");
     }
     try {
       const {
         data: { user },
-      } = request.post("/auth/register", {
+      } = await request.post("/auth/register", {
         name: data.get("name"),
         email: data.get("email"),
         password: data.get("password"),
       });
-
       console.log(user);
-
-      handleBar("Successfully Registered", "success");
+      displaySuccess("Registered Successfully");
       navigate("/dashboard");
-    } catch (err) {
-      const msg = err.response.data.msg;
-      console.log(msg, err);
-      handleBar(msg, "error");
+    } catch (e) {
+      console.log(e);
+      const msg = e.response.data.msg;
+      displayError(msg);
     }
   };
 

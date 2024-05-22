@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { UserContext } from "../App";
-import { request } from "../config";
+import { request } from "../utils.ts/axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,13 +12,13 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 const Login = () => {
-  const { handleBar } = useContext(UserContext);
+  const { displayError, displaySuccess } = useContext(UserContext);
 
   const navigate = useNavigate();
   const checkLoggedIn = async () => {
     try {
       await request.get("/users/showMe");
-      handleBar("Successfully Registered", "success");
+      displaySuccess("Logged In");
       navigate("/dashboard");
     } catch (e) {
       console.log(e);
@@ -30,7 +30,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // check that passwords match HERE
     try {
       const data = new FormData(e.currentTarget);
       const {
@@ -41,11 +40,11 @@ const Login = () => {
       });
       console.log(user);
 
-      handleBar("Successfully Logged in", "success");
+      displaySuccess("Logged In");
       navigate("/dashboard");
     } catch (err) {
       const msg = err.response.data.msg;
-      handleBar(msg, "error");
+      displayError(msg);
     }
   };
   return (

@@ -1,5 +1,5 @@
 /* eslint-disable space-before-function-paren */
-import { createContext } from "react";
+import { createContext, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import Register from "./pages/Register";
@@ -11,18 +11,51 @@ import ResponsiveAppBar from "./components/ResponsiveAppBar";
 // @ts-expect-error no input needed
 const UserContext = createContext();
 
+type tokenI = {
+  user: string;
+  name: string;
+  userId: string;
+} | null;
+
 const App = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const [token, setToken] = useState<tokenI>(
+    localStorage.getItem("token") && JSON.parse(localStorage.getItem("token")!)
+  );
 
-  const handleBar = (
-    msg: string,
-    variant: "error" | "success" | "warning" | "info" | "default"
-  ) => enqueueSnackbar(msg, { variant });
+  const displayError = (msg: string) =>
+    enqueueSnackbar(msg, { variant: "error" });
 
+  const displaySuccess = (msg: string) =>
+    enqueueSnackbar(msg, { variant: "success" });
+
+  const displayWarning = (msg: string) =>
+    enqueueSnackbar(msg, { variant: "warning" });
+
+  const displayInfo = (msg: string) =>
+    enqueueSnackbar(msg, { variant: "info" });
+
+  const handleToken = (token: tokenI) => {
+    setToken(token);
+    localStorage.setItem("token", JSON.stringify(token));
+  };
+  const removeToken = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+  };
   return (
     <>
       <BrowserRouter>
-        <UserContext.Provider value={{ handleBar }}>
+        <UserContext.Provider
+          value={{
+            displayError,
+            displaySuccess,
+            displayWarning,
+            displayInfo,
+            handleToken,
+            removeToken,
+          }}
+        >
           <ResponsiveAppBar isLoggedIn={false} />
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
