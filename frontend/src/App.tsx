@@ -1,5 +1,6 @@
 /* eslint-disable space-before-function-paren */
-import { createContext, useState } from "react";
+import { useState } from "react";
+import { MyGlobalContext } from "./utils.ts/context";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import Register from "./pages/Register";
@@ -8,10 +9,8 @@ import Dashboard from "./pages/Dashboard";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
-// @ts-expect-error no input needed
-const UserContext = createContext();
 
-type tokenI = {
+export type tokenI = {
   user: string;
   name: string;
   userId: string;
@@ -46,7 +45,7 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
-        <UserContext.Provider
+        <MyGlobalContext.Provider
           value={{
             displayError,
             displaySuccess,
@@ -54,6 +53,7 @@ const App = () => {
             displayInfo,
             handleToken,
             removeToken,
+            token,
           }}
         >
           <ResponsiveAppBar isLoggedIn={false} />
@@ -65,11 +65,10 @@ const App = () => {
 
             <Route path="*" element={<h1> Page Not Found</h1>} />
           </Routes>
-        </UserContext.Provider>
+        </MyGlobalContext.Provider>
       </BrowserRouter>
     </>
   );
 };
 
 export default App;
-export { UserContext };

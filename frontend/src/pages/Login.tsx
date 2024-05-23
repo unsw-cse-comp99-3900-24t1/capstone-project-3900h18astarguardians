@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { UserContext } from "../App";
+import { FormEvent, useEffect } from "react";
+import { useGlobalContext } from "../utils.ts/context";
 import { request } from "../utils.ts/axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -11,8 +11,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
+import { AxiosError } from "axios";
 const Login = () => {
-  const { displayError, displaySuccess } = useContext(UserContext);
+  const { displayError, displaySuccess, handleToken } = useGlobalContext();
 
   const navigate = useNavigate();
   const checkLoggedIn = async () => {
@@ -26,9 +27,10 @@ const Login = () => {
   };
   useEffect(() => {
     checkLoggedIn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
@@ -38,13 +40,14 @@ const Login = () => {
         email: data.get("email"),
         password: data.get("password"),
       });
-      console.log(user);
-
+      handleToken(user);
       displaySuccess("Logged In");
       navigate("/dashboard");
     } catch (err) {
-      const msg = err.response.data.msg;
-      displayError(msg);
+      if (err instanceof AxiosError) {
+        const msg = err.response!.data.msg;
+        displayError(msg);
+      }
     }
   };
   return (
@@ -98,9 +101,7 @@ const Login = () => {
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link to="/register" variant="body2">
-                Dont have an account? Register
-              </Link>
+              <Link to="/register">Dont have an account? Register</Link>
             </Grid>
           </Grid>
         </Box>
