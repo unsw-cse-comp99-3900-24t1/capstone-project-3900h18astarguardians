@@ -42,27 +42,27 @@ const App = () => {
     setToken(null);
     localStorage.removeItem("token");
   };
+
+  const globalVars = {
+    displayError,
+    displaySuccess,
+    displayWarning,
+    displayInfo,
+    handleToken,
+    removeToken,
+    token,
+  };
+
   return (
     <>
       <BrowserRouter>
-        <MyGlobalContext.Provider
-          value={{
-            displayError,
-            displaySuccess,
-            displayWarning,
-            displayInfo,
-            handleToken,
-            removeToken,
-            token,
-          }}
-        >
-          <ResponsiveAppBar isLoggedIn={false} />
+        <MyGlobalContext.Provider value={globalVars}>
+          <ResponsiveAppBar />
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
-
             <Route path="*" element={<h1> Page Not Found</h1>} />
           </Routes>
         </MyGlobalContext.Provider>
