@@ -1,6 +1,6 @@
-import { useGlobalContext } from "../utils.ts/context";
+import { useGlobalContext } from "../utils/context";
 import { useNavigate, Link } from "react-router-dom";
-import { request } from "../utils.ts/axios";
+import { request } from "../utils/axios";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";

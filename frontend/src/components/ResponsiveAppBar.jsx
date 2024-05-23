@@ -13,8 +13,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useGlobalContext } from "../utils.ts/context";
-import { request } from "../utils.ts/axios";
+import { useGlobalContext } from "../utils/context";
+import { request } from "../utils/axios";
 
 const pages = ["login", "register"];
 const settings = ["dashboard", "profile"];

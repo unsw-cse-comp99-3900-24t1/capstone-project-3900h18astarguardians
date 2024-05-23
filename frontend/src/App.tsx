@@ -1,6 +1,6 @@
 /* eslint-disable space-before-function-paren */
 import { useState } from "react";
-import { MyGlobalContext } from "./utils.ts/context";
+import { MyGlobalContext } from "./utils/context";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import Register from "./pages/Register";

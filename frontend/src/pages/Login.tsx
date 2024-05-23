@@ -1,6 +1,6 @@
 import { FormEvent, useEffect } from "react";
-import { useGlobalContext } from "../utils.ts/context";
-import { request } from "../utils.ts/axios";
+import { useGlobalContext } from "../utils/context";
+import { request } from "../utils/axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
