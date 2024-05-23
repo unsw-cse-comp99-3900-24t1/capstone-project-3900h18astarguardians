@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
-import { UserContext } from "../App";
+import { useGlobalContext } from "../utils/context";
 import { useNavigate, Link } from "react-router-dom";
-import { request } from "../utils.ts/axios";
+import { request } from "../utils/axios";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -11,13 +10,16 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import Container from "@dmui/material/Container";
-
+import Container from "@mui/material/Container";
+import { AxiosError } from "axios";
+import { FormEvent } from "react";
+// blah
+// fixing stuff rn
 const Register = () => {
-  const { displayError, displaySuccess } = useContext(UserContext);
+  const { displayError, displaySuccess, handleToken } = useGlobalContext();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
 
@@ -35,13 +37,16 @@ const Register = () => {
         email: data.get("email"),
         password: data.get("password"),
       });
-      console.log(user);
+      handleToken(user);
       displaySuccess("Registered Successfully");
       navigate("/dashboard");
     } catch (e) {
-      console.log(e);
-      const msg = e.response.data.msg;
-      displayError(msg);
+      if (e) {
+        if (e instanceof AxiosError) {
+          const msg = e.response!.data.msg;
+          displayError(msg);
+        }
+      }
     }
   };
 
@@ -125,9 +130,7 @@ const Register = () => {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link to="/login" variant="body2">
-                  Already have an account? Login
-                </Link>
+                <Link to="/login">Already have an account? Login</Link>
               </Grid>
             </Grid>
           </Box>
