@@ -33,7 +33,7 @@ const { MONGO_URI, PORT, JWT_SECRET } = process.env;
 
 //security packages middlware
 const corsOptions = {
-  origin: "http://localhost:5000",
+  origin: "http://localhost:8080",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
