@@ -18,6 +18,7 @@ export type tokenI = {
 
 const App = () => {
   const { enqueueSnackbar } = useSnackbar();
+  // blah blah blah
   const [token, setToken] = useState<tokenI>(
     localStorage.getItem("token") && JSON.parse(localStorage.getItem("token")!)
   );
