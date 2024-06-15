@@ -1,29 +1,46 @@
 import { Types } from "mongoose";
 import { singleOrderItemSchema } from "./models/Order";
-interface registerBodyI {
+import { StringifyOptions } from "querystring";
+
+interface mongooseUserI {
+  type:
+    | "cse_staff"
+    | "non_cse_staff"
+    | "hdr_student"
+    | "academic_staff"
+    | "admin";
+  zid: string;
   name: string;
   email: string;
-  password: string;
-}
-interface mongooseUserI extends registerBodyI {
-  role: "admin" | "user";
+  faculty: string;
+  school: string;
+  title: string | null;
+  role: string | null;
 }
 interface userDB_I extends mongooseUserI {
   _id: Types.ObjectId;
 }
-interface loginBodyI extends Omit<registerBodyI, "name"> {}
+interface loginBodyI {
+  email: string;
+}
 
 interface errorObjectI {
   message: string;
 }
 
 interface tokenUserI {
-  userId: string;
-  role: string;
+  type: string;
+  zid: string;
+  email: string;
   name: string;
 }
 interface mongooseUserMethodsI {
   comparePassword: (candidatePassword: string) => Promise<boolean>;
+}
+interface mongooseRoomI {
+  type: "meeting room" | "hot desk" | "staff room" | "normal room";
+  size: number;
+  name: string;
 }
 interface mongooseProductI {
   name: string;
@@ -79,9 +96,10 @@ interface cartItemI {
 }
 
 interface mongooseOrderMethodsI {}
+interface mongooseRoomMethodsI {}
+
 export type {
   fileI,
-  registerBodyI,
   loginBodyI,
   errorObjectI,
   mongooseUserI,
@@ -95,4 +113,6 @@ export type {
   mongooseOrderI,
   mongooseOrderMethodsI,
   cartItemI,
+  mongooseRoomI,
+  mongooseRoomMethodsI,
 };

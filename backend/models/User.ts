@@ -1,4 +1,3 @@
-import { compare, genSalt, hash } from "bcryptjs";
 import { Schema, model } from "mongoose";
 import { Model } from "mongoose";
 import { isEmail } from "validator";
@@ -26,22 +25,50 @@ const userSchema = new Schema<mongooseUserI, UserModel, mongooseUserMethodsI>({
     },
     unique: true,
   },
-  password: {
+  zid: {
     type: String,
-    required: [true, "password must be provided"],
-    minlength: [5, "password must be longer than 5 characters"],
-    maxlength: [70, "password must be shorter than 70 characters"],
+    required: [true, "zid must be provided"],
+    unique: true,
   },
-  role: { type: String, enum: ["admin", "user"], default: "user" },
-});
-userSchema.methods.comparePassword = function (candidatePassword: string) {
-  return compare(candidatePassword, this.password);
-};
+  faculty: {
+    type: String,
+  },
+  school: {
+    type: String,
+  },
+  title: {
+    type: String,
+  },
+  role: {
+    type: String,
+  },
 
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-  const salt = await genSalt(10);
-  this.password = await hash(this.password, salt);
+  // password: {
+  //   type: String,
+  //   required: [true, "password must be provided"],
+  //   minlength: [5, "password must be longer than 5 characters"],
+  //   maxlength: [70, "password must be shorter than 70 characters"],
+  // },
+  type: {
+    type: String,
+    enum: [
+      "cse_staff",
+      "non_cse_staff",
+      "hdr_student",
+      "academic_staff",
+      "admin",
+    ],
+    required: true,
+  },
 });
+// userSchema.methods.comparePassword = function (candidatePassword: string) {
+//   return compare(candidatePassword, this.password);
+// };
+
+// userSchema.pre("save", async function () {
+//   if (!this.isModified("password")) return;
+//   const salt = await genSalt(10);
+//   this.password = await hash(this.password, salt);
+// });
 
 export const User = model<mongooseUserI, UserModel>("User", userSchema);

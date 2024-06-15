@@ -12,14 +12,15 @@ const authenticateUser = async (
     throw new UnauthenticatedError("Authentication invalid");
 
   try {
-    const { userId, role, name } = isTokenValid(
+    const { email, type, name, zid } = isTokenValid(
       req.signedCookies.token
     ) as tokenUserI;
     // Attach the user and his permissions to the req object
     req.user = {
-      userId,
-      role,
+      email,
+      type,
       name,
+      zid,
     };
 
     next();
@@ -30,8 +31,8 @@ const authenticateUser = async (
 
 const authorizePermissions =
   (...allowedRoles: string[]) =>
-  ({ user: { role } }: Request, res: Response, next: NextFunction) => {
-    if (!allowedRoles.includes(role))
+  ({ user: { type } }: Request, res: Response, next: NextFunction) => {
+    if (!allowedRoles.includes(type))
       throw new UnauthorizedError("Access Forbiden");
 
     next();

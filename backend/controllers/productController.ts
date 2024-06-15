@@ -8,10 +8,10 @@ import type { fileI } from "../types";
 import { Review } from "../models/Review";
 
 const createProduct = async (
-  { body, user: { userId } }: Request,
+  { body, user: { zid } }: Request,
   res: Response
 ) => {
-  const product = await Product.create({ ...body, user: userId });
+  const product = await Product.create({ ...body, user: zid });
   res.status(StatusCodes.CREATED).json({ product });
 };
 
