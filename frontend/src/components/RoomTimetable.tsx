@@ -9,9 +9,6 @@
 // import { CssBaseline, Fab } from '@mui/material';
 // import AddIcon from '@mui/icons-material/Add';
 import { Scheduler } from "@aldabil/react-scheduler";
-import RoomTimetable from "../components/RoomTimetable";
-import { Box, Button, MenuItem, Select } from "@mui/material";
-import { useState } from "react";
 export const RESOURCES = [
   {
     admin_id: 1,
@@ -180,41 +177,44 @@ export const EVENTS =  [
 ];
 
 
-const Dashboard = () => {
-  // let 
-  let [selectedDate, setSelectedDate] = useState(new Date());
-  let [currLevel, setCurrLevel] = useState(1);
+const RoomTimetable = () => {
 
-  const handleChange = () => {
-    console.log('clicked');
-  }
+  return <Scheduler
+  view="day"
+  day={{
+    startHour: 0,
+    endHour: 24,
+    step: 60
+  }}
+  navigation={false}
+  disableViewer={true}
+  selectedDate={new Date()}
+  disableViewNavigator={true}
+  resourceViewMode={"default"}
+  resources={RESOURCES}
+  events={EVENTS}
+  resourceFields={{
+    idField: "admin_id",
+    textField: "title",
+    avatarField: "title",
+    colorField: "color"
+  }}
+  fields={[
+    {
+      name: "admin_id",
+      type: "select",
+      default: RESOURCES[0].admin_id,
+      options: RESOURCES.map((res) => {
+        return {
+          id: res.admin_id,
+          text: '',
+          value: res.admin_id //Should match "name" property
+        };
+      }),
+      config: { label: "Assignee", required: true }
+    }
+  ]}
+/>
+};
 
-  return <>
-    <Box sx={{display: 'flex', alignItems: 'center', gap: '25px'}}>
-    <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      value={currLevel}
-      label="Level"
-      onChange={handleChange}
-        >
-      <MenuItem value={1}>Level One</MenuItem>
-      <MenuItem value={2}>Level Two</MenuItem>
-      <MenuItem value={33}>Level Three</MenuItem>
-    </Select>
-      <Box>
-        {`${selectedDate.getDate()}/${selectedDate.getMonth()}/${selectedDate.getFullYear()}`}
-      </Box>
-      <Button variant="outlined">
-        &lt;
-      </Button>
-      <Button variant="outlined">
-        &gt; 
-      </Button>
-
-    </Box>
-    <RoomTimetable />
-  </>
-}
-
-export default Dashboard;
+export default RoomTimetable;
