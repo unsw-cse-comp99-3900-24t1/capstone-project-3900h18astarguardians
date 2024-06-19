@@ -14,15 +14,10 @@ import {
 import { Router } from "express";
 const router = Router();
 
-router.route("/").get(getAllBookings).post([authenticateUser], createBooking);
-router
-  .route("/showAllMyBookings")
-  .get([authenticateUser], getCurrentUserBookings);
+router.route("/").get(getAllBookings).post(createBooking);
+router.route("/showAllMyBookings").get(getCurrentUserBookings);
 
-router
-  .route("/:id")
-  .get(getSingleBooking)
-  .delete([authenticateUser], deleteBooking);
+router.route("/:id").get(getSingleBooking).delete(deleteBooking);
 
 router.route("/:id/reviews").get(getSingleProductReviews);
 

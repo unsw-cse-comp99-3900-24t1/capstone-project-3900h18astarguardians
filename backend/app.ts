@@ -59,7 +59,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/rooms", roomRouter);
-app.use("/api/v1/bookings", bookingRouter);
+app.use("/api/v1/bookings", authenticateUser, bookingRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
 
 // app.use("/api/v1/orders", authenticateUser, orderRouter);
