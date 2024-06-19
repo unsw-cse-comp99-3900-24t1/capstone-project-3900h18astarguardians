@@ -11,6 +11,7 @@ import { Booking } from "../models/Booking";
 import moment from "moment";
 import mongoose from "mongoose";
 import internal from "stream";
+import { checkPermissions } from "../utils";
 
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
@@ -106,12 +107,13 @@ const getSingleBooking = async (
 };
 
 const deleteBooking = async (
-  { params: { id: bookingId } }: Request,
+  { params: { id: bookingId }, user }: Request,
   res: Response
 ) => {
   const bookingToDelete = await Booking.findById(bookingId);
   if (!bookingToDelete)
-    throw new BadRequestError(`No product with id ${bookingId}`);
+    throw new BadRequestError(`No booking with id ${bookingId}`);
+  checkPermissions(user, bookingToDelete.user.toString());
 
   await bookingToDelete.deleteOne();
   res.status(StatusCodes.OK).json({ success: "booking deleted" });

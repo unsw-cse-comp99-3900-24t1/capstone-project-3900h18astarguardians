@@ -22,7 +22,7 @@ router
 router
   .route("/:id")
   .get(getSingleBooking)
-  .delete([authenticateUser, authorizePermissions("admin")], deleteBooking);
+  .delete([authenticateUser], deleteBooking);
 
 router.route("/:id/reviews").get(getSingleProductReviews);
 
