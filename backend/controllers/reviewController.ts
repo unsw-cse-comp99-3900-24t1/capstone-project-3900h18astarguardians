@@ -6,7 +6,7 @@ import { Product } from "../models/Product";
 import { checkPermissions } from "../utils";
 
 const createReview = async (
-  { body, user: { userId } }: Request,
+  { body, user: { zid } }: Request,
   res: Response
 ) => {
   const { product: productId } = body;
@@ -19,7 +19,7 @@ const createReview = async (
   // check if user already left a review for specified product (in-controller version as opposed to mongoose schema index methods)
   const hasAlreadyReviewed = await Review.findOne({
     product: productId,
-    user: userId,
+    user: zid,
   });
   if (hasAlreadyReviewed)
     throw new BadRequestError(
@@ -28,7 +28,7 @@ const createReview = async (
   //
   const review = await Review.create({
     ...body,
-    user: userId,
+    user: zid,
   });
   res.status(StatusCodes.OK).json({ review });
 };

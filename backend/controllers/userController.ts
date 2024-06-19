@@ -9,20 +9,19 @@ import {
 } from "../utils";
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const users = await User.find({ role: "user" }).select("-password");
+  const users = await User.find({});
 
   res.status(StatusCodes.OK).json({ users });
 };
 
-const getSingleUser = async (req: Request, res: Response) => {
+const getSingleUser = async ({ params: { id } }: Request, res: Response) => {
   const user = await User.findOne({
-    _id: req.params.id,
-    role: "user",
-  }).select("-password");
+    _id: id,
+  });
 
-  if (!user) throw new BadRequestError(`No user with id ${req.user.userId}`);
+  if (!user) throw new BadRequestError(`No user with id ${id}`);
 
-  checkPermissions(req.user, user._id.toString());
+  // checkPermissions(req.user, user._id.toString());
 
   res.status(StatusCodes.OK).json({ user });
 };
@@ -32,35 +31,35 @@ const showCurrentUser = async ({ user }: Request, res: Response) => {
 };
 
 const updateUserPassword = async (
-  { body: { oldPassword, newPassword }, user: { userId } }: Request,
+  { body: { oldPassword, newPassword }, user: { email } }: Request,
   res: Response
 ) => {
   if (!oldPassword || !newPassword)
     throw new BadRequestError("both new and old password must be provided");
 
-  const user = (await User.findOne({ _id: userId }))!;
+  const user = (await User.findOne({ email }))!;
 
-  const isPasswordmatch = await user.comparePassword(oldPassword);
+  // const isPasswordmatch = await user.comparePassword(oldPassword);
 
-  if (!isPasswordmatch)
-    throw new UnauthenticatedError(
-      "old password does not match users password"
-    );
+  // if (!isPasswordmatch)
+  //   throw new UnauthenticatedError(
+  //     "old password does not match users password"
+  //   );
 
-  user.password = newPassword;
+  // user.password = newPassword;
   await user.save();
   res.status(StatusCodes.OK).json({ success: true });
 };
 
 const updateUser = async (
-  { body: { name, email }, user: { userId } }: Request,
+  { body: { name, email }, user: { zid } }: Request,
   res: Response
 ) => {
   if (!name || !email)
     throw new BadRequestError("both a new name and email must be provided");
 
   const updatedUser = (await User.findOneAndUpdate(
-    { _id: userId },
+    { _id: zid },
     { name, email },
     {
       new: true,

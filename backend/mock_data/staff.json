@@ -108,5 +108,29 @@
     "School_Name": "CSE",
     "Title": "Mr",
     "Role": "NA"
+  },
+  {
+    "No": 46,
+    "Staff_z_ID": "z65338",
+    "Staff_Name": "gftyu",
+    "Test": "unsw.edu.au",
+    "Email_ID": "gftyu@unsw.edu.au",
+    "Faculty_Name": "ENG",
+    "School_Name": "Electrical",
+    "Title": "Prof",
+    "Role": "Academic",
+    "": ""
+  },
+  {
+    "No": 60,
+    "Staff_z_ID": "z57459",
+    "Staff_Name": "ddbgfyb",
+    "Test": "unsw.edu.au",
+    "Email_ID": "ddbgfyb@unsw.edu.au",
+    "Faculty_Name": "ENG",
+    "School_Name": "Mech",
+    "Title": "A/Prof",
+    "Role": "Academic",
+    "": ""
   }
 ]

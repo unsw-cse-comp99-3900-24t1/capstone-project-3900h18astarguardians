@@ -14,11 +14,10 @@ import {
 import { Router } from "express";
 
 const router = Router();
-
-router
-  .route("/")
-  .get(authorizePermissions("admin"), getAllOrders)
-  .post(createOrder);
+// router
+//   .route("/")
+//   .get(authorizePermissions("admin"), getAllOrders)
+//   .post(createOrder);
 
 router.route("/showAllMyOrders").get(getCurrentUserOrders);
 

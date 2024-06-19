@@ -130,39 +130,5 @@
     "School_Name": "School of Computer Sci & Eng",
     "Degree_PhDMRes": "Doctorate",
     "Other_roles_within_CSE": ""
-  },
-  {
-    "No": 13,
-    "Candidate_zID": "z27693",
-    "Candidate_Name": "eboiy",
-    "Test": "ad.student.unsw.edu.au",
-    "Email_ID": "z27693@ad.student.unsw.edu.au",
-    "Faculty_Name": "Faculty of Engineering",
-    "School_Name": "School of Computer Sci & Eng",
-    "Degree_PhDMRes": "Doctorate",
-    "Other_roles_within_CSE": ""
-  },
-  {
-    "No": 14,
-    "Candidate_zID": "z26743",
-    "Candidate_Name": "cjclw",
-    "Test": "ad.student.unsw.edu.au",
-    "Email_ID": "z26743@ad.student.unsw.edu.au",
-    "Faculty_Name": "Faculty of Engineering",
-    "School_Name": "School of Computer Sci & Eng",
-    "Degree_PhDMRes": "Doctorate",
-    "Other_roles_within_CSE": "Casual Academic"
-  },
-  {
-    "No": 15,
-    "Candidate_zID": "z11330",
-    "Candidate_Name": "cmpxy",
-    "Test": "ad.student.unsw.edu.au",
-    "Email_ID": "z11330@ad.student.unsw.edu.au",
-    "Faculty_Name": "Faculty of Engineering",
-    "School_Name": "School of Computer Sci & Eng",
-    "Degree_PhDMRes": "Doctorate",
-    "Other_roles_within_CSE": "Casual Academic"
   }
-  
 ]
