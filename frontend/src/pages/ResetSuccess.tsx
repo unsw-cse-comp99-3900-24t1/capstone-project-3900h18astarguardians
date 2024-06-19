@@ -12,25 +12,13 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
-const Login = () => {
+
+const ResetSuccess = () => {
   const { displayError, displaySuccess, handleToken } = useGlobalContext();
 
   const navigate = useNavigate();
-  const checkLoggedIn = async () => {
-    try {
-      await request.get("/users/showMe");
-      displaySuccess("Logged In");
-      navigate("/dashboard");
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  useEffect(() => {
-    checkLoggedIn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  
+  const handleRecovery = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
@@ -50,6 +38,7 @@ const Login = () => {
       }
     }
   };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -64,30 +53,19 @@ const Login = () => {
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Login
+        <Typography component="h1" variant="h4">
+          Congratulations!
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleRecovery} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="Please enter your email address"
                 name="email"
                 autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
               />
             </Grid>
           </Grid>
@@ -97,20 +75,15 @@ const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Login
+            Send Link
           </Button>
-          <Grid container justifyContent="space-between">
-            <Grid item>
-              <Link to="/register">Dont have an account? Register</Link>
-            </Grid>
-            <Grid item>
-              <Link to="/recovery">Forgot password?</Link>
-            </Grid>
-          </Grid>
+          <Typography component="text" variant="subtitle1" justifyContent="space-evenly">
+            Enter your email address, and if there is a matching account we'll send you a link to reset your password.
+          </Typography>
         </Box>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default Login;
+export default ResetSuccess;
