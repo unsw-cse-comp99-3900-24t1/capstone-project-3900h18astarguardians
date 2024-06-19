@@ -51,13 +51,7 @@ const userSchema = new Schema<mongooseUserI, UserModel, mongooseUserMethodsI>({
   // },
   type: {
     type: String,
-    enum: [
-      "cse_staff",
-      "non_cse_staff",
-      "hdr_student",
-      "academic_staff",
-      "admin",
-    ],
+    enum: ["cse_staff", "non_cse_staff", "hdr_student", "admin"],
     required: true,
   },
 });

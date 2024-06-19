@@ -9,20 +9,19 @@ import {
 } from "../utils";
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const users = await User.find({ role: "user" }).select("-password");
+  const users = await User.find({});
 
   res.status(StatusCodes.OK).json({ users });
 };
 
-const getSingleUser = async (req: Request, res: Response) => {
+const getSingleUser = async ({ params: { id } }: Request, res: Response) => {
   const user = await User.findOne({
-    _id: req.params.id,
-    role: "user",
-  }).select("-password");
+    _id: id,
+  });
 
-  if (!user) throw new BadRequestError(`No user with id ${req.user.email}`);
+  if (!user) throw new BadRequestError(`No user with id ${id}`);
 
-  checkPermissions(req.user, user._id.toString());
+  // checkPermissions(req.user, user._id.toString());
 
   res.status(StatusCodes.OK).json({ user });
 };

@@ -29,22 +29,34 @@ const augmentedStaff = staff.map(
     Staff_Name: name,
     Staff_z_ID: zid,
     Title: title,
-  }) => ({
-    email,
-    faculty,
-    role,
-    school,
-    name,
-    zid,
-    type: school === "CSE" ? "cse_staff" : "non_cse_staff",
-    title,
-  })
+  }) => {
+    let type;
+
+    if (school === "CSE" && role === "Professional") type = "admin";
+    else if (school === "CSE") type = "cse_staff";
+    else {
+      type = "non_cse_staff";
+    }
+
+    return {
+      email,
+      faculty,
+      role,
+      school,
+      name,
+      zid,
+      type,
+      title,
+    };
+  }
 );
 
 const start = async () => {
   try {
     await connectDB(MONGO_URI as string);
     await User.deleteMany();
+    await Room.deleteMany();
+
     await User.create([...augmentedStaff, ...augmentedStudents]);
     await Room.create(rooms);
     console.log("Success!!!!");

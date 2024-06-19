@@ -7,5 +7,6 @@ export const createTokenUser = (user: userDB_I) => {
     zid: user.zid,
     email: user.email,
     name: user.name,
+    userId: user._id.toString(),
   };
 };

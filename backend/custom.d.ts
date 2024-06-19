@@ -5,6 +5,7 @@ declare namespace Express {
       zid: string;
       email: string;
       name: string;
+      userId: string;
     };
   }
 }

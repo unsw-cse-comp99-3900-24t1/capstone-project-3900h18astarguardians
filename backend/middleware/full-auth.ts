@@ -12,7 +12,7 @@ const authenticateUser = async (
     throw new UnauthenticatedError("Authentication invalid");
 
   try {
-    const { email, type, name, zid } = isTokenValid(
+    const { email, type, name, zid, userId } = isTokenValid(
       req.signedCookies.token
     ) as tokenUserI;
     // Attach the user and his permissions to the req object
@@ -21,6 +21,7 @@ const authenticateUser = async (
       type,
       name,
       zid,
+      userId,
     };
 
     next();

@@ -1,14 +1,9 @@
-import { Types } from "mongoose";
+import { Date, Types } from "mongoose";
 import { singleOrderItemSchema } from "./models/Order";
 import { StringifyOptions } from "querystring";
 
 interface mongooseUserI {
-  type:
-    | "cse_staff"
-    | "non_cse_staff"
-    | "hdr_student"
-    | "academic_staff"
-    | "admin";
+  type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
   zid: string;
   name: string;
   email: string;
@@ -33,6 +28,7 @@ interface tokenUserI {
   zid: string;
   email: string;
   name: string;
+  userId: string;
 }
 interface mongooseUserMethodsI {
   comparePassword: (candidatePassword: string) => Promise<boolean>;
@@ -42,6 +38,14 @@ interface mongooseRoomI {
   size: number;
   name: string;
 }
+interface mongooseBookingI {
+  user: Types.ObjectId;
+  room: Types.ObjectId;
+  start: Date;
+  end: Date;
+  duration: number;
+}
+interface mongooseBookingMethods {}
 interface mongooseProductI {
   name: string;
   price: number;
@@ -115,4 +119,6 @@ export type {
   cartItemI,
   mongooseRoomI,
   mongooseRoomMethodsI,
+  mongooseBookingI,
+  mongooseBookingMethods,
 };

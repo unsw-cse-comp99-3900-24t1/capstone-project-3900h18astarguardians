@@ -14,7 +14,6 @@ import {
 import { Router } from "express";
 
 const router = Router();
-// @ts-ignore dsdsadsada
 // router
 //   .route("/")
 //   .get(authorizePermissions("admin"), getAllOrders)

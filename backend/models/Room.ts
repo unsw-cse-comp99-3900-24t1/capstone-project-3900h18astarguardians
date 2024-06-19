@@ -2,13 +2,13 @@ import mongoose, { Schema, model } from "mongoose";
 import { Model } from "mongoose";
 import type { mongooseRoomI, mongooseRoomMethodsI } from "../types";
 
-type OrderModel = Model<
+type RoomModel = Model<
   mongooseRoomI,
   Record<string, never>,
   mongooseRoomMethodsI
 >;
 
-const roomSchema = new Schema<mongooseRoomI, OrderModel, mongooseRoomMethodsI>({
+const roomSchema = new Schema<mongooseRoomI, RoomModel, mongooseRoomMethodsI>({
   name: {
     type: String,
     required: [true, "an room must have a name"],
@@ -22,4 +22,4 @@ const roomSchema = new Schema<mongooseRoomI, OrderModel, mongooseRoomMethodsI>({
     required: [true, "an room must have a type"],
   },
 });
-export const Room = model<mongooseRoomI, OrderModel>("Room", roomSchema);
+export const Room = model<mongooseRoomI, RoomModel>("Room", roomSchema);
