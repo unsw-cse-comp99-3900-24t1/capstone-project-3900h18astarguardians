@@ -31,7 +31,7 @@ const Recovery = () => {
       });
       handleOTP(code);
       displaySuccess("Verification link sent!");
-      navigate("/OTPInput");
+      navigate("/OTP");
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;

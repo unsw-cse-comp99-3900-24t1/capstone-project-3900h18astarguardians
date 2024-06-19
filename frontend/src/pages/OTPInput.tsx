@@ -21,10 +21,14 @@ const OTPInput = () => {
   const handleOTPSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    if (data.get("code") == otp) {
+    let code = data.get("otp") == null ? -1 : data.get("otp");
+    // @ts-ignore
+    if (otp == parseInt(code)) {
       removeOTP();
+      navigate("reset-password");
+    } else {
+      displayError("Code is incorrect")
     }
-    navigate("/reset-password");
   };
 
   return (
@@ -50,10 +54,11 @@ const OTPInput = () => {
               <TextField
                 required
                 fullWidth
-                id="email"
-                label="Please enter your email address"
-                name="email"
-                autoComplete="email"
+                id="otp"
+                label="6-digit code"
+                type="password"
+                name="otp"
+                autoComplete="otp"
               />
             </Grid>
           </Grid>
@@ -63,11 +68,8 @@ const OTPInput = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Send Link
+            Submit
           </Button>
-          <Typography component="text" variant="subtitle1" justifyContent="space-evenly">
-            We have sent a code to your email
-          </Typography>
         </Box>
       </Box>
     </Container>
