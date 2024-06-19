@@ -1,7 +1,6 @@
 openapi: 3.0.0
-
 info:
-  title: comp3900-Project-API
+  title: comp3900_project
   contact: {}
   version: "1.0"
 servers:
@@ -15,35 +14,6 @@ paths:
       summary: logout
       operationId: logout
       parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security: []
-  /auth/register:
-    post:
-      tags:
-        - Auth
-      summary: register
-      operationId: register
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/registerrequest"
-                - example:
-                    name: "12345678"
-                    email: 12345678@gmail.com
-                    password: secret
-            example:
-              name: "12345678"
-              email: 12345678@gmail.com
-              password: secret
-        required: true
       responses:
         "200":
           description: ""
@@ -65,11 +35,9 @@ paths:
               allOf:
                 - $ref: "#/components/schemas/loginrequest"
                 - example:
-                    email: 12345678@gmail.com
-                    password: secret
+                    email: aooif@unsw.edu.au
             example:
-              email: 12345678@gmail.com
-              password: secret
+              email: aooif@unsw.edu.au
         required: true
       responses:
         "200":
@@ -120,64 +88,12 @@ paths:
           description: ""
           headers: {}
       deprecated: false
-  /users/updateUser:
-    patch:
-      tags:
-        - User
-      summary: update User
-      operationId: updateUser
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/updateUserRequest"
-                - example:
-                    name: something else
-                    email: world1@gmail.com
-            example:
-              name: something else
-              email: world1@gmail.com
-        required: true
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-  /users/updateUserPassword:
-    patch:
-      tags:
-        - User
-      summary: update User Password
-      operationId: updateUserPassword
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/updateUserPasswordRequest"
-                - example:
-                    oldPassword: secret
-                    newPassword: secret2
-            example:
-              oldPassword: secret
-              newPassword: secret2
-        required: true
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-  /products:
+  /rooms:
     get:
       tags:
-        - Product
-      summary: Get All Products
-      operationId: GetAllProducts
+        - Room
+      summary: Get All Rooms
+      operationId: GetAllRooms
       parameters: []
       responses:
         "200":
@@ -188,38 +104,10 @@ paths:
         - bearer: []
     post:
       tags:
-        - Product
-      summary: Create Product
-      operationId: CreateProduct
+        - Room
+      summary: Create Room
+      operationId: CreateRoom
       parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/CreateProductRequest"
-                - example:
-                    name: albany sectional2
-                    price: 90000
-                    image: https://dl.airtable.com/.attachmentThumbnails/0be1af59cf889899b5c9abb1e4db38a4/d631ac52
-                    colors:
-                      - "#000"
-                      - "#ffb900"
-                    company: liddy
-                    description: Cloud bread VHS hell of banjo bicycle rights jianbing umami mumblecore etsy 8-bit pok pok +1 wolf. Vexillologist yr dreamcatcher waistcoat, authentic chillwave trust fund. Viral typewriter fingerstache pinterest pork belly narwhal. Schlitz venmo everyday carry kitsch pitchfork chillwave iPhone taiyaki trust fund hashtag kinfolk microdosing gochujang live-edge
-                    category: kitchen
-            example:
-              name: albany sectional2
-              price: 90000
-              image: https://dl.airtable.com/.attachmentThumbnails/0be1af59cf889899b5c9abb1e4db38a4/d631ac52
-              colors:
-                - "#000"
-                - "#ffb900"
-              company: liddy
-              description: Cloud bread VHS hell of banjo bicycle rights jianbing umami mumblecore etsy 8-bit pok pok +1 wolf. Vexillologist yr dreamcatcher waistcoat, authentic chillwave trust fund. Viral typewriter fingerstache pinterest pork belly narwhal. Schlitz venmo everyday carry kitsch pitchfork chillwave iPhone taiyaki trust fund hashtag kinfolk microdosing gochujang live-edge
-              category: kitchen
-        required: true
       responses:
         "200":
           description: ""
@@ -227,19 +115,19 @@ paths:
       deprecated: false
       security:
         - bearer: []
-  /products/{id}:
+  /rooms/{id}:
     parameters:
       - in: path
         name: id
         schema:
           type: string
         required: true
-        description: The product ID
+        description: The room ID
     get:
       tags:
-        - Product
-      summary: Get Single Product
-      operationId: GetSingleProduct
+        - Room
+      summary: Get Single Room
+      operationId: GetSingleRoom
       parameters: []
       responses:
         "200":
@@ -250,24 +138,10 @@ paths:
         - bearer: []
     patch:
       tags:
-        - Product
-      summary: Update Product
-      operationId: UpdateProduct
+        - Room
+      summary: Update Room
+      operationId: UpdateRoom
       parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/UpdateProductRequest"
-                - example:
-                    company: marcos
-                    name: ur mom
-            example:
-              company: marcos
-              name: ur mom
-        required: true
       responses:
         "200":
           description: ""
@@ -277,9 +151,9 @@ paths:
         - bearer: []
     delete:
       tags:
-        - Product
-      summary: Delete Product
-      operationId: DeleteProduct
+        - Room
+      summary: Delete Room
+      operationId: DeleteRoom
       parameters: []
       responses:
         "200":
@@ -288,130 +162,20 @@ paths:
       deprecated: false
       security:
         - bearer: []
-  /products/{id}/reviews:
+  /bookings/{id}:
     parameters:
       - in: path
         name: id
         schema:
           type: string
         required: true
-        description: The product ID
+        description: The booking ID
     get:
       tags:
-        - Product
-      summary: Get Single Product Reviews
-      operationId: GetSingleProductReviews
+        - Booking
+      summary: Get Single Booking
+      operationId: GetSingleBooking
       parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-
-  /products/uploadImage:
-    post:
-      tags:
-        - Product
-      summary: Upload Image
-      operationId: UploadImage
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-  /reviews:
-    get:
-      tags:
-        - Review
-      summary: get all Reviews
-      operationId: getallReviews
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-    post:
-      tags:
-        - Review
-      summary: create Review
-      operationId: createReview
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/createReviewRequest"
-                - example:
-                    product: 65b74594037a1f8351da5a73
-                    rating: 5
-                    title: hehe
-                    comment: hehe
-            example:
-              product: 65b74594037a1f8351da5a73
-              rating: 5
-              title: hehe
-              comment: hehe
-        required: true
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-  /reviews/{id}:
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: The review ID
-    get:
-      tags:
-        - Review
-      summary: get single Review
-      operationId: getsingleReview
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-    patch:
-      tags:
-        - Review
-      summary: update Review
-      operationId: updateReview
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/updateReviewRequest"
-                - example:
-                    title: this is alright product
-                    rating: 1
-                    comment: very alright product
-            example:
-              title: this is alright product
-              rating: 1
-              comment: very alright product
-        required: true
       responses:
         "200":
           description: ""
@@ -421,9 +185,9 @@ paths:
         - bearer: []
     delete:
       tags:
-        - Review
-      summary: delete Review
-      operationId: deleteReview
+        - Booking
+      summary: Delete Booking
+      operationId: DeleteBooking
       parameters: []
       responses:
         "200":
@@ -432,12 +196,26 @@ paths:
       deprecated: false
       security:
         - bearer: []
-  /orders:
+  /bookings/showAllMyBookings:
     get:
       tags:
-        - Order
-      summary: get all Orders
-      operationId: getallOrders
+        - Booking
+      summary: get current users bookings
+      operationId: getcurrentusersbookings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /bookings:
+    get:
+      tags:
+        - Booking
+      summary: Get All Bookings
+      operationId: GetAllBookings
       parameters: []
       responses:
         "200":
@@ -448,9 +226,9 @@ paths:
         - bearer: []
     post:
       tags:
-        - Order
-      summary: create Order
-      operationId: createOrder
+        - Booking
+      summary: Create Booking
+      operationId: CreateBooking
       parameters: []
       requestBody:
         description: ""
@@ -458,96 +236,18 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: "#/components/schemas/createOrderRequest"
+                - $ref: "#/components/schemas/CreateBookingRequest"
                 - example:
-                    tax: 499
-                    shippingFee: 799
-                    items:
-                      - name: bed
-                        price: 2699
-                        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-                        amount: 3
-                        product: 65b74594037a1f8351da5a73
-                      - name: chair
-                        price: 2999
-                        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-                        amount: 2
-                        product: 65b77f72a74343c3dec36d6a
+                    user: 666111538a5f81663714c636
+                    room: 666d91548a5f81663714c666
+                    start: 2024-07-21T14:34:21.373Z
+                    duration: "3"
             example:
-              tax: 499
-              shippingFee: 799
-              items:
-                - name: bed
-                  price: 2699
-                  image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-                  amount: 3
-                  product: 65b74594037a1f8351da5a73
-                - name: chair
-                  price: 2999
-                  image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-                  amount: 2
-                  product: 65b77f72a74343c3dec36d6a
+              user: 666111538a5f81663714c636
+              room: 666d91548a5f81663714c666
+              start: 2024-07-21T14:34:21.373Z
+              duration: "3"
         required: true
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-  /orders/{id}:
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: The order ID
-    get:
-      tags:
-        - Order
-      summary: get single Order
-      operationId: getsingleOrder
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-    patch:
-      tags:
-        - Order
-      summary: update Order
-      operationId: updateOrder
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/updateOrderRequest"
-                - example:
-                    paymentIntentId: daih3u2d2bd23
-            example:
-              paymentIntentId: daih3u2d2bd23
-        required: true
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
-  /orders/showAllMyOrders:
-    get:
-      tags:
-        - Order
-      summary: get current users orders
-      operationId: getcurrentusersorders
-      parameters: []
       responses:
         "200":
           description: ""
@@ -557,261 +257,38 @@ paths:
         - bearer: []
 components:
   schemas:
-    registerrequest:
-      title: registerrequest
-      required:
-        - name
-        - email
-        - password
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-      example:
-        name: "12345678"
-        email: 12345678@gmail.com
-        password: secret
     loginrequest:
       title: loginrequest
       required:
         - email
-        - password
       type: object
       properties:
         email:
           type: string
-        password:
-          type: string
       example:
-        email: 12345678@gmail.com
-        password: secret
-    updateUserRequest:
-      title: updateUserRequest
+        email: aooif@unsw.edu.au
+    CreateBookingRequest:
+      title: CreateBookingRequest
       required:
-        - name
-        - email
+        - user
+        - room
+        - start
+        - duration
       type: object
       properties:
-        name:
+        user:
           type: string
-        email:
+        room:
           type: string
-      example:
-        name: something else
-        email: world1@gmail.com
-    updateUserPasswordRequest:
-      title: updateUserPasswordRequest
-      required:
-        - oldPassword
-        - newPassword
-      type: object
-      properties:
-        oldPassword:
+        start:
           type: string
-        newPassword:
+        duration:
           type: string
       example:
-        oldPassword: secret
-        newPassword: secret2
-    CreateProductRequest:
-      title: CreateProductRequest
-      required:
-        - name
-        - price
-        - image
-        - colors
-        - company
-        - description
-        - category
-      type: object
-      properties:
-        name:
-          type: string
-        price:
-          type: integer
-          format: int32
-        image:
-          type: string
-        colors:
-          type: array
-          items:
-            type: string
-          description: ""
-        company:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-      example:
-        name: albany sectional2
-        price: 90000
-        image: https://dl.airtable.com/.attachmentThumbnails/0be1af59cf889899b5c9abb1e4db38a4/d631ac52
-        colors:
-          - "#000"
-          - "#ffb900"
-        company: liddy
-        description: Cloud bread VHS hell of banjo bicycle rights jianbing umami mumblecore etsy 8-bit pok pok +1 wolf. Vexillologist yr dreamcatcher waistcoat, authentic chillwave trust fund. Viral typewriter fingerstache pinterest pork belly narwhal. Schlitz venmo everyday carry kitsch pitchfork chillwave iPhone taiyaki trust fund hashtag kinfolk microdosing gochujang live-edge
-        category: kitchen
-    UpdateProductRequest:
-      title: UpdateProductRequest
-      required:
-        - company
-        - name
-      type: object
-      properties:
-        company:
-          type: string
-        name:
-          type: string
-      example:
-        company: marcos
-        name: ur mom
-    DeleteProductRequest:
-      title: DeleteProductRequest
-      required:
-        - company
-        - position
-      type: object
-      properties:
-        company:
-          type: string
-        position:
-          type: string
-      example:
-        company: blah
-        position: back-end
-    createReviewRequest:
-      title: createReviewRequest
-      required:
-        - product
-        - rating
-        - title
-        - comment
-      type: object
-      properties:
-        product:
-          type: string
-        rating:
-          type: integer
-          format: int32
-        title:
-          type: string
-        comment:
-          type: string
-      example:
-        product: 65b74594037a1f8351da5a73
-        rating: 5
-        title: hehe
-        comment: hehe
-    updateReviewRequest:
-      title: updateReviewRequest
-      required:
-        - title
-        - rating
-        - comment
-      type: object
-      properties:
-        title:
-          type: string
-        rating:
-          type: integer
-          format: int32
-        comment:
-          type: string
-      example:
-        title: this is alright product
-        rating: 1
-        comment: very alright product
-    deleteReviewRequest:
-      title: deleteReviewRequest
-      required:
-        - name
-        - isCompleted
-      type: object
-      properties:
-        name:
-          type: string
-        isCompleted:
-          type: boolean
-      example:
-        name: ""
-        isCompleted: false
-    createOrderRequest:
-      title: createOrderRequest
-      required:
-        - tax
-        - shippingFee
-        - items
-      type: object
-      properties:
-        tax:
-          type: integer
-          format: int32
-        shippingFee:
-          type: integer
-          format: int32
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/Item"
-          description: ""
-      example:
-        tax: 499
-        shippingFee: 799
-        items:
-          - name: bed
-            price: 2699
-            image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-            amount: 3
-            product: 65b74594037a1f8351da5a73
-          - name: chair
-            price: 2999
-            image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-            amount: 2
-            product: 65b77f72a74343c3dec36d6a
-    Item:
-      title: Item
-      required:
-        - name
-        - price
-        - image
-        - amount
-        - product
-      type: object
-      properties:
-        name:
-          type: string
-        price:
-          type: integer
-          format: int32
-        image:
-          type: string
-        amount:
-          type: integer
-          format: int32
-        product:
-          type: string
-      example:
-        name: bed
-        price: 2699
-        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
-        amount: 3
-        product: 65b74594037a1f8351da5a73
-    updateOrderRequest:
-      title: updateOrderRequest
-      required:
-        - paymentIntentId
-      type: object
-      properties:
-        paymentIntentId:
-          type: string
-      example:
-        paymentIntentId: daih3u2d2bd23
+        user: 666111538a5f81663714c636
+        room: 666d91548a5f81663714c666
+        start: 2024-07-21T14:34:21.373Z
+        duration: "3"
   securitySchemes:
     bearer:
       type: http
@@ -820,6 +297,5 @@ security: []
 tags:
   - name: Auth
   - name: User
-  - name: Product
-  - name: Review
-  - name: Order
+  - name: Room
+  - name: Booking
