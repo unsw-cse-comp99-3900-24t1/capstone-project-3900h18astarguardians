@@ -14,28 +14,17 @@ import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 
 const OTPInput = () => {
-  const { displayError, displaySuccess, removeOTP } = useGlobalContext();
+  const { displayError, otp, removeOTP } = useGlobalContext();
 
   const navigate = useNavigate();
   
   const handleOTPSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const data = new FormData(e.currentTarget);
-      const {
-        data: { user },
-      } = await request.post("/auth/login", {
-        email: data.get("email"),
-        password: data.get("password"),
-      });
-      displaySuccess("Logged In");
-      navigate("/dashboard");
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const msg = err.response!.data.msg;
-        displayError(msg);
-      }
+    const data = new FormData(e.currentTarget);
+    if (data.get("code") == otp) {
+      removeOTP();
     }
+    navigate("/reset-password");
   };
 
   return (
@@ -77,7 +66,7 @@ const OTPInput = () => {
             Send Link
           </Button>
           <Typography component="text" variant="subtitle1" justifyContent="space-evenly">
-            Enter your email address, and if there is a matching account we'll send you a link to reset your password.
+            We have sent a code to your email
           </Typography>
         </Box>
       </Box>

@@ -22,7 +22,7 @@ const Recovery = () => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
-      const code = Math.floor(Math.random() * 9000  + 1000);
+      const code = Math.floor(Math.random() * 9000  + 100000);
       const {
         data: { user },
       } = await request.post("/auth/requestOTP", {
@@ -30,7 +30,7 @@ const Recovery = () => {
         otp: code,
       });
       handleOTP(code);
-      displaySuccess("If the account exists, an email has been sent");
+      displaySuccess("Verification link sent!");
       navigate("/OTPInput");
     } catch (err) {
       if (err instanceof AxiosError) {

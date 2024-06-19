@@ -18,7 +18,7 @@ const Reset = () => {
 
   const navigate = useNavigate();
   
-  const handleRecovery = async (e: FormEvent<HTMLFormElement>) => {
+  const handleReset = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
@@ -55,16 +55,27 @@ const Reset = () => {
         <Typography component="h1" variant="h4">
           Reset your password
         </Typography>
-        <Box component="form" noValidate onSubmit={handleRecovery} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleReset} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
                 id="email"
-                label="Please enter your email address"
+                label="Email Address"
                 name="email"
                 autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
               />
             </Grid>
           </Grid>
@@ -74,11 +85,16 @@ const Reset = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Send Link
+            Login
           </Button>
-          <Typography component="text" variant="subtitle1" justifyContent="space-evenly">
-            Enter your email address, and if there is a matching account we'll send you a link to reset your password.
-          </Typography>
+          <Grid container justifyContent="space-between">
+            <Grid item>
+              <Link to="/register">Dont have an account? Register</Link>
+            </Grid>
+            <Grid item>
+              <Link to="/recovery">Forgot password?</Link>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
     </Container>
