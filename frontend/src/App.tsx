@@ -6,6 +6,9 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Recovery from "./pages/Recovery";
+import OTPInput from "./pages/OTPInput";
+import Reset from "./pages/Reset";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
@@ -21,6 +24,12 @@ const App = () => {
   const [token, setToken] = useState<tokenI>(
     localStorage.getItem("token") && JSON.parse(localStorage.getItem("token")!)
   );
+  const [otp, setOTP] = useState(
+    localStorage.getItem("otp") && JSON.parse(localStorage.getItem("otp")!)
+  )
+  const [email, setEmail] = useState(
+    localStorage.getItem("email") && JSON.parse(localStorage.getItem("email")!)
+  )
 
   const displayError = (msg: string) =>
     enqueueSnackbar(msg, { variant: "error" });
@@ -43,6 +52,24 @@ const App = () => {
     localStorage.removeItem("token");
   };
 
+  const handleOTP = (code: number) => {
+    setOTP(code);
+    localStorage.setItem("otp", JSON.stringify(code));
+  }
+  const removeOTP = () => {
+    setOTP(null);
+    localStorage.removeItem("otp");
+  }
+
+  const handleEmail = (email: string) => {
+    setEmail(email);
+    localStorage.setItem("email", JSON.stringify(email));
+  }
+  const removeEmail = () => {
+    setEmail(null);
+    localStorage.removeItem("email");
+  }
+
   const globalVars = {
     displayError,
     displaySuccess,
@@ -51,6 +78,12 @@ const App = () => {
     handleToken,
     removeToken,
     token,
+    handleOTP,
+    removeOTP,
+    otp,
+    handleEmail,
+    removeEmail,
+    email
   };
 
   return (
@@ -63,6 +96,9 @@ const App = () => {
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
+            <Route path="recovery" element={<Recovery />} />
+            <Route path="OTP" element={<OTPInput />} />
+            <Route path="reset-password" element={<Reset />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
           </Routes>
         </MyGlobalContext.Provider>
