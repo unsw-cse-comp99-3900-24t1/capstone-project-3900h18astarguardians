@@ -87,10 +87,10 @@ const getSingleOrder = async (
   res.status(StatusCodes.OK).json({ order });
 };
 const getCurrentUserOrders = async (
-  { user: { userId } }: Request,
+  { user: { zid } }: Request,
   res: Response
 ) => {
-  const orders = await Order.find({ user: userId });
+  const orders = await Order.find({ user: zid });
 
   res.status(StatusCodes.OK).json({ count: orders.length, orders });
 };

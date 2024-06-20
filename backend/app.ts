@@ -16,7 +16,8 @@ const swaggerDocument = YAML.load("./swagger.yaml");
 // routers
 import { authRouter } from "./routes/authRoutes";
 import { userRouter } from "./routes/userRoutes";
-import { productRouter } from "./routes/productRoutes";
+import { roomRouter } from "./routes/roomRouter";
+import { bookingRouter } from "./routes/bookingRoutes";
 import { reviewRouter } from "./routes/reviewRoutes";
 
 import { authenticateUser } from "./middleware/full-auth";
@@ -57,10 +58,12 @@ app.get("/", (req: Request, res: Response) =>
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/rooms", roomRouter);
+app.use("/api/v1/bookings", authenticateUser, bookingRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
-app.use("/api/v1/products", productRouter);
-app.use("/api/v1/reviews", reviewRouter);
-app.use("/api/v1/orders", authenticateUser, orderRouter);
+
+// app.use("/api/v1/orders", authenticateUser, orderRouter);
+// app.use("/api/v1/reviews", reviewRouter);
 
 app.use(notFound);
 // error handler must be last middlware by express rules

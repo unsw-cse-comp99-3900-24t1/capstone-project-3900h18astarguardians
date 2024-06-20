@@ -9,7 +9,7 @@ import {
 } from "../controllers/userController";
 const router = express.Router();
 
-router.route("/").get(authorizePermissions("admin"), getAllUsers);
+router.route("/").get(getAllUsers);
 
 router.route("/showMe").get(showCurrentUser);
 
