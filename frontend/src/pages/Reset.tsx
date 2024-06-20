@@ -14,7 +14,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 
 const Reset = () => {
-  const { displayError, displaySuccess } = useGlobalContext();
+  const { displayError, displaySuccess, email } = useGlobalContext();
 
   const navigate = useNavigate();
   
@@ -23,12 +23,12 @@ const Reset = () => {
     const data = new FormData(e.currentTarget);
     if (data.get("password") != data.get("confirm-password")) {
       displayError("Password confirmation is incorrect");
-    } else {
+    } else { 
       try {
         const {
           data: { user },
         } = await request.post("/auth/reset", {
-          email: data.get("email"),
+          email: email,
           password: data.get("password"),
         });
         displaySuccess("Password successfully reset");

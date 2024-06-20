@@ -27,6 +27,9 @@ const App = () => {
   const [otp, setOTP] = useState(
     localStorage.getItem("otp") && JSON.parse(localStorage.getItem("otp")!)
   )
+  const [email, setEmail] = useState(
+    localStorage.getItem("email") && JSON.parse(localStorage.getItem("email")!)
+  )
 
   const displayError = (msg: string) =>
     enqueueSnackbar(msg, { variant: "error" });
@@ -58,6 +61,15 @@ const App = () => {
     localStorage.removeItem("otp");
   }
 
+  const handleEmail = (email: string) => {
+    setEmail(email);
+    localStorage.setItem("email", JSON.stringify(email));
+  }
+  const removeEmail = () => {
+    setEmail(null);
+    localStorage.removeItem("email");
+  }
+
   const globalVars = {
     displayError,
     displaySuccess,
@@ -68,7 +80,10 @@ const App = () => {
     token,
     handleOTP,
     removeOTP,
-    otp
+    otp,
+    handleEmail,
+    removeEmail,
+    email
   };
 
   return (

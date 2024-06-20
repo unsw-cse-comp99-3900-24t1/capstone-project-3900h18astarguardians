@@ -14,7 +14,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 
 const Recovery = () => {
-  const { displayError, displaySuccess, handleOTP } = useGlobalContext();
+  const { displayError, displaySuccess, handleOTP, handleEmail } = useGlobalContext();
 
   const navigate = useNavigate();
   
@@ -30,12 +30,14 @@ const Recovery = () => {
         otp: code,
       });
       handleOTP(code);
+      // @ts-ignore
+      handleEmail(data.get("email"));
       displaySuccess("Verification link sent!");
       navigate("/OTP");
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;
-        displayError('shiet');
+        displayError(msg);
       }
     }
   };

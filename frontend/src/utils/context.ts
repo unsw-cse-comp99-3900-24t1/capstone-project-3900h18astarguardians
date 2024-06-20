@@ -11,6 +11,9 @@ export type GlobalContent = {
   handleOTP: (code: number) => void;
   removeOTP: () => void;
   otp: number;
+  handleEmail: (email: string) => void;
+  removeEmail: () => void;
+  email: string;
 };
 export const MyGlobalContext = createContext<GlobalContent>({
   displayError: () => {},
@@ -23,5 +26,8 @@ export const MyGlobalContext = createContext<GlobalContent>({
   handleOTP: () => {},
   removeOTP: () => {},
   otp: 0, 
+  handleEmail: () => {},
+  removeEmail: () => {},
+  email: "",
 });
 export const useGlobalContext = () => useContext(MyGlobalContext);

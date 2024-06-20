@@ -14,7 +14,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 
 const OTPInput = () => {
-  const { displayError, otp, removeOTP } = useGlobalContext();
+  const { displayError, otp, removeOTP, removeEmail } = useGlobalContext();
 
   const navigate = useNavigate();
   
@@ -25,6 +25,7 @@ const OTPInput = () => {
     // @ts-ignore
     if (otp == parseInt(code)) {
       removeOTP();
+      removeEmail();
       navigate("reset-password");
     } else {
       displayError("Code is incorrect")

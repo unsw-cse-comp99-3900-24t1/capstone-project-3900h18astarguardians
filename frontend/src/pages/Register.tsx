@@ -30,6 +30,9 @@ const Register = () => {
       return displayError("Passwords dont match");
     }
     try {
+      console.log(data.get("name"));
+      console.log(data.get("email"));
+      console.log(data.get("password"));
       const {
         data: { user },
       } = await request.post("/auth/register", {
