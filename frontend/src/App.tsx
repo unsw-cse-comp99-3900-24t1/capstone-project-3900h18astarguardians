@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
+import MyBookings from "./pages/MyBookings";
 
 export type tokenI = {
   user: string;
@@ -63,6 +64,7 @@ const App = () => {
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
+            <Route path="myBookings" element={<MyBookings />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
           </Routes>
         </MyGlobalContext.Provider>
