@@ -8,11 +8,10 @@
 // import Container from '@mui/material/Container';
 // import { CssBaseline, Fab } from '@mui/material';
 // import AddIcon from '@mui/icons-material/Add';
-import { Scheduler } from "@aldabil/react-scheduler";
 import RoomTimetable from "../components/RoomTimetable";
-import { Box, Button, MenuItem, Select } from "@mui/material";
-import { useState, useEffect } from "react";
-import { request } from "../utils/axios";
+import { Box, Button, Container, MenuItem, Select } from "@mui/material";
+import { useState } from "react";
+import "../styles/Dashboard.css";
 
 
 const Dashboard = () => {
@@ -44,30 +43,32 @@ const Dashboard = () => {
   // console.log(rooms);
   console.log(selectedDate.getMonth());
   return <>
-    <Box sx={{display: 'flex', alignItems: 'center', gap: '25px'}}>
-    <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      value={currLevel}
-      label="Level"
-      onChange={handleChange}
-        >
-      <MenuItem value={1}>Level One</MenuItem>
-      <MenuItem value={2}>Level Two</MenuItem>
-      <MenuItem value={33}>Level Three</MenuItem>
-    </Select>
-      <Box>
-        {`${selectedDate.getDate()}/${selectedDate.getMonth()+1}/${selectedDate.getFullYear()}`}
+    <Container className="scheduler-container">
+      <Box sx={{justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '25px'}}>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={currLevel}
+          label="Level"
+          onChange={handleChange}
+            >
+          <MenuItem value={1}>Level One</MenuItem>
+          <MenuItem value={2}>Level Two</MenuItem>
+          <MenuItem value={33}>Level Three</MenuItem>
+        </Select>
+        <Box>
+          {`${selectedDate.getDate()}/${selectedDate.getMonth()+1}/${selectedDate.getFullYear()}`}
+        </Box>
+        <Button variant="outlined">
+          &lt;
+        </Button>
+        <Button variant="outlined">
+          &gt; 
+        </Button>
       </Box>
-      <Button variant="outlined">
-        &lt;
-      </Button>
-      <Button variant="outlined">
-        &gt; 
-      </Button>
-
-    </Box>
-    <RoomTimetable />
+      <RoomTimetable />
+    </Container>
+    
   </>
 }
 

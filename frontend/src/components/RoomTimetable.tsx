@@ -1,6 +1,7 @@
 import { Scheduler } from "@aldabil/react-scheduler";
 import { useEffect, useState } from "react";
 import { request } from "../utils/axios";
+import "../styles/RoomTimetable.css";
 
 // Define interfaces
 interface Room {
@@ -66,9 +67,10 @@ const RoomTimetable = () => {
 
   const getColorForRoomType = (type: string): string => {
     switch(type) {
-      case "staff room": return "#ff6347";
-      case "meeting room": return "#4682b4";
-      default: return "#808080";
+      case "meeting room": return "green";
+      case "hot desk": return "red";
+      case "normal": return "orange";
+      default: return "grey";
     }
   };
 
@@ -78,27 +80,33 @@ const RoomTimetable = () => {
   }
   console.log(events);
   // Render the Scheduler component when data has been loaded
-  return <Scheduler
-  view="day"
-  day={{
-    startHour: 0,
-    endHour: 24,
-    step: 60
-  }}
-  navigation={false}
-  disableViewer={true}
-  selectedDate={new Date()}
-  disableViewNavigator={true}
-  resourceViewMode={"default"}
-  resources={rooms}
-  events={events}
-  resourceFields={{
-    idField: "admin_id",
-    textField: "title",
-    avatarField: "title",
-    colorField: "color"
-  }}
-/>
+  return <>
+    <div className="scrollable-scheduler">
+      <Scheduler
+        view="day"
+        day={{
+          startHour: 0,
+          endHour: 24,
+          step: 60
+        }}
+        hourFormat="24"
+        navigation={false}
+        disableViewer={true}
+        selectedDate={new Date()}
+        disableViewNavigator={true}
+        resourceViewMode={"default"}
+        resources={rooms}
+        events={events}
+        resourceFields={{
+          idField: "admin_id",
+          textField: "title",
+          avatarField: "title",
+          colorField: "color"
+        }}
+      />
+    </div>
+  </>
+  
 };
 
 export default RoomTimetable;
