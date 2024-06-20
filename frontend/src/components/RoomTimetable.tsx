@@ -1,184 +1,83 @@
-// import React, { useContext, useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { UserContext } from '../App';
-// import TextModal from '../components/TextModal';
-// import { getUserStore, putUserStore } from '../helpers';
-// import { v4 as uuidv4 } from 'uuid';
-// import PresentationCard from '../components/PresentationCard';
-// import Container from '@mui/material/Container';
-// import { CssBaseline, Fab } from '@mui/material';
-// import AddIcon from '@mui/icons-material/Add';
 import { Scheduler } from "@aldabil/react-scheduler";
-export const RESOURCES = [
-  {
-    admin_id: 1,
-    title: "Room 1",
-    avatar: "https://picsum.photos/200/300",
-    color: "#ab2d2d"
-  },
-  {
-    admin_id: 2,
-    title: "Room 2",
-    avatar: "https://picsum.photos/200/300",
-    color: "#58ab2d"
-  },
-  {
-    admin_id: 3,
-    title: "Room 3",
-    avatar: "https://picsum.photos/200/300",
-    color: "#a001a2"
-  },
-  {
-    admin_id: 4,
-    title: "Room 4",
-    avatar: "https://picsum.photos/200/300",
-    color: "#08c5bd"
-  }
-];
+import { useEffect, useState } from "react";
+import { request } from "../utils/axios";
 
-export const EVENTS =  [
-  {
-    event_id: 1,
-    title: "Event 1",
-    start: new Date(new Date(new Date().setHours(9)).setMinutes(30)),
-    end: new Date(new Date(new Date().setHours(10)).setMinutes(30)),
-    admin_id: 1
-  },
-  {
-    event_id: 2,
-    title: "Event 2",
-    start: new Date(new Date(new Date().setHours(10)).setMinutes(0)),
-    end: new Date(new Date(new Date().setHours(11)).setMinutes(0)),
-    admin_id: 2
-  },
-  // {
-  //   event_id: 3,
-  //   title: "Event 3",
-  //   start: new Date(
-  //     new Date(new Date(new Date().setHours(9)).setMinutes(0)).setDate(
-  //       new Date().getDate() - 1
-  //     )
-  //   ),
-  //   end: new Date(new Date(new Date().setHours(10)).setMinutes(0)),
-  //   admin_id: 1
-  // },
-  {
-    event_id: 4,
-    title: "Event 4",
-    start: new Date(
-      new Date(new Date(new Date().setHours(9)).setMinutes(0)).setDate(
-        new Date().getDate() - 2
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(10)).setMinutes(0)).setDate(
-        new Date().getDate() - 2
-      )
-    ),
-    admin_id: 2
-  },
-  // {
-  //   event_id: 5,
-  //   title: "Event 5",
-  //   start: new Date(
-  //     new Date(new Date(new Date().setHours(10)).setMinutes(0)).setDate(
-  //       new Date().getDate() - 2
-  //     )
-  //   ),
-  //   end: new Date(
-  //     new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-  //       new Date().getDate() + 10
-  //     )
-  //   ),
-  //   admin_id: 4
-  // },
-  {
-    event_id: 6,
-    title: "Event 6",
-    start: new Date(new Date(new Date().setHours(11)).setMinutes(0)),
-    end: new Date(new Date(new Date().setHours(12)).setMinutes(0)),
-    admin_id: 2
-  },
-  {
-    event_id: 7,
-    title: "Event 7",
-    start: new Date(
-      new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(12)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    admin_id: 3
-  },
-  {
-    event_id: 8,
-    title: "Event 8",
-    start: new Date(
-      new Date(new Date(new Date().setHours(13)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(14)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    admin_id: 4
-  },
-  {
-    event_id: 9,
-    title: "Event 11",
-    start: new Date(
-      new Date(new Date(new Date().setHours(13)).setMinutes(0)).setDate(
-        new Date().getDate() + 1
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(15)).setMinutes(30)).setDate(
-        new Date().getDate() + 1
-      )
-    ),
-    admin_id: 1
-  },
-  {
-    event_id: 10,
-    title: "Event 9",
-    start: new Date(
-      new Date(new Date(new Date().setHours(15)).setMinutes(0)).setDate(
-        new Date().getDate() + 1
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(16)).setMinutes(30)).setDate(
-        new Date().getDate() + 1
-      )
-    ),
-    admin_id: 2
-  },
-  {
-    event_id: 11,
-    title: "Event 10",
-    start: new Date(
-      new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    end: new Date(
-      new Date(new Date(new Date().setHours(15)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
-    ),
-    admin_id: 1
-  }
-];
+// Define interfaces
+interface Room {
+  _id: string;
+  name: string;
+  size: number;
+  type: string;
+  color?: string;
+}
 
+interface Event {
+  event_id: string;
+  _id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  room: {
+    name: string;
+    size: number;
+    type: string;
+    _id: string;
+  }
+}
 
 const RoomTimetable = () => {
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
+  useEffect(() => {
+    fetchRoomsAndEvents();
+  }, []);
+
+  const fetchRoomsAndEvents = async () => {
+    try {
+      setIsLoading(true); // Set loading state to true when fetching starts
+      const roomsResponse = await request.get<{ rooms: Room[] }>("/rooms");
+      const eventsResponse = await request.get<{ bookings: Event[] }>("/bookings");
+
+      const coloredRooms = roomsResponse.data.rooms.map((room: Room) => ({
+        ...room,
+        color: getColorForRoomType(room.type),
+        admin_id: room._id,
+        title: room.name,
+        avatar: "https://picsum.photos/200/300",
+      }));
+
+      setRooms(coloredRooms);
+      setEvents(eventsResponse.data.bookings.map((event: Event) => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end),
+        event_id: event._id,
+        title: "dummy title",
+        admin_id: event.room._id,
+      })));
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+    } finally {
+      setIsLoading(false); // Set loading state to false when fetching ends
+    }
+  };
+
+  const getColorForRoomType = (type: string): string => {
+    switch(type) {
+      case "staff room": return "#ff6347";
+      case "meeting room": return "#4682b4";
+      default: return "#808080";
+    }
+  };
+
+  // Render a loading message while data is being fetched
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+  console.log(events);
+  // Render the Scheduler component when data has been loaded
   return <Scheduler
   view="day"
   day={{
@@ -191,29 +90,14 @@ const RoomTimetable = () => {
   selectedDate={new Date()}
   disableViewNavigator={true}
   resourceViewMode={"default"}
-  resources={RESOURCES}
-  events={EVENTS}
+  resources={rooms}
+  events={events}
   resourceFields={{
     idField: "admin_id",
     textField: "title",
     avatarField: "title",
     colorField: "color"
   }}
-  fields={[
-    {
-      name: "admin_id",
-      type: "select",
-      default: RESOURCES[0].admin_id,
-      options: RESOURCES.map((res) => {
-        return {
-          id: res.admin_id,
-          text: '',
-          value: res.admin_id //Should match "name" property
-        };
-      }),
-      config: { label: "Assignee", required: true }
-    }
-  ]}
 />
 };
 
