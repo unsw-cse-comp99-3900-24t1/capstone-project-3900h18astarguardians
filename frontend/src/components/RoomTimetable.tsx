@@ -77,7 +77,7 @@ const RoomTimetable = () => {
         start: new Date(event.start),
         end: new Date(event.end),
         event_id: event._id,
-        title: "dummy title",
+        title: event.title,
         admin_id: event.room._id,
         editable: false,
         deletable: true,
@@ -165,7 +165,7 @@ const RoomTimetable = () => {
           //@ts-ignore
           event_id: event.event_id,
           _id: event._id,
-          title: event.title,
+          title: "dummy title",
           start: event.start,
           end: event.end,
           // @ts-ignore
