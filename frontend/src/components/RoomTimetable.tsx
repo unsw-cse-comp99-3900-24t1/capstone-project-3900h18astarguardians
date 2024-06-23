@@ -5,6 +5,8 @@ import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
+import { useGlobalContext } from "../utils/context";
+
 
 // Define interfaces
 interface Room {
@@ -39,6 +41,8 @@ const RoomTimetable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const roomsDisplay = 5;
+  const { displaySuccess, displayError } =
+    useGlobalContext();
 
   const nextPage = () => {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + roomsDisplay, rooms.length - roomsDisplay));
@@ -76,7 +80,7 @@ const RoomTimetable = () => {
         title: "dummy title",
         admin_id: event.room._id,
         editable: false,
-        deletable: false,
+        deletable: true,
         draggable: false,
       })));
     } catch (error) {
@@ -94,6 +98,26 @@ const RoomTimetable = () => {
       default: return "grey";
     }
   };
+
+  const deleteBookings = async (event_id: string) => {
+    console.log('deleteBookings', event_id)
+    try {
+      setIsLoading(true);
+      const {
+        data: { success },
+      } = await request.delete(`/bookings/${event_id}`);
+      console.log('deleteBookingsResponse', success)
+      if(success) {
+        displaySuccess("Successfully delete bookings");
+        setEvents(events.filter(item => item.event_id !== event_id)) // change event
+      }
+    } catch(error) {
+      console.error("Failed to delete bookings", error);
+      displayError(`Failed to delete bookings`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!isLoading) {
@@ -197,6 +221,8 @@ const RoomTimetable = () => {
         disableViewNavigator={true}
         resourceViewMode={"default"}
         resources={displayedRooms}
+        draggable={false}
+        onDelete={deleteBookings}
         events={events}
         onConfirm={onConfirm}
         fields={[
