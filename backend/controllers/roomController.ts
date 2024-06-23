@@ -3,11 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { Room } from "../models/Room";
 import { BadRequestError } from "../errors";
 import { mongooseRoomI, tokenUserI } from "../types";
-import cloudinary from "cloudinary";
-import { unlink } from "fs/promises";
-import type { fileI } from "../types";
-import { Review } from "../models/Review";
-import mongoose from "mongoose";
 
 const createRoom = async (
   { body, user }: { body: mongooseRoomI; user: tokenUserI },
@@ -17,10 +12,21 @@ const createRoom = async (
   res.status(StatusCodes.CREATED).json({ room });
 };
 
-const getAllRooms = async (req: Request, res: Response) => {
-  const rooms = await Room.find({});
+const getAllRooms = async ({ user: { type } }: Request, res: Response) => {
+  let rooms;
+  if (type === "admin") rooms = Room.find({ $nor: [{ type: "normal" }] });
+  if (type === "cse_staff")
+    rooms = Room.find({
+      $or: [{ type: "meeting room" }, { type: "staff room" }],
+    });
+  if (type === "hdr_student") rooms = Room.find({ type: "hot desk" });
+  if (type === "non_cse_staff") rooms = Room.find({ type: "meeting room" });
 
-  res.status(StatusCodes.OK).json({ count: rooms.length, rooms });
+  const normalRooms = await Room.find({ type: "normal" });
+  rooms = await rooms;
+
+  const result = [...normalRooms, ...rooms!];
+  res.status(StatusCodes.OK).json({ count: result.length, result });
 };
 const getSingleRoom = async (
   { params: { id: roomId } }: Request,

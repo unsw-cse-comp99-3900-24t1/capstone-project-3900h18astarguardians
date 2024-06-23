@@ -16,7 +16,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(getAllRooms)
+  .get([authenticateUser], getAllRooms)
   .post([authenticateUser, authorizePermissions("admin")], createRoom);
 
 router

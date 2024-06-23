@@ -37,6 +37,7 @@ interface mongooseRoomI {
   type: "meeting room" | "hot desk" | "staff room" | "normal room";
   size: number;
   name: string;
+  level: number;
 }
 interface mongooseBookingI {
   user: Types.ObjectId;
