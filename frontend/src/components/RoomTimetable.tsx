@@ -129,11 +129,13 @@ const RoomTimetable = () => {
 
     const makePostRequest = async () => {
       try {
-        console.log(event.start.toISOString())
+        console.log(event.start.toISOString());
+        console.log(event.start)
         const response = await request.post("/bookings", {
           "room": event.room_id,
           "start": event.start.toString(),
-          "duration": 2
+          //@ts-ignore
+          "duration": Math.abs(event.end - event.start)/36e5,
         });
 
         console.log(response);
