@@ -21,6 +21,9 @@ interface Event {
   title: string;
   start: Date;
   end: Date;
+  editable: boolean;
+  deletable: boolean;
+  draggable: boolean;
   room: {
     name: string;
     size: number;
@@ -71,6 +74,9 @@ const RoomTimetable = () => {
         event_id: event._id,
         title: "dummy title",
         admin_id: event.room._id,
+        editable: false,
+        deletable: false,
+        draggable: false,
       })));
     } catch (error) {
       console.error("Failed to fetch data", error);
@@ -119,11 +125,13 @@ const RoomTimetable = () => {
 
   const onConfirm = (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
     // make a booking request
+    console.log(event);
+
     const makePostRequest = async () => {
       try {
         console.log(event.start.toISOString())
         const response = await request.post("/bookings", {
-          "room": "6672aff87c6d9306ed548e9d",
+          "room": event.room_id,
           "start": event.start.toString(),
           "duration": 2
         });
@@ -177,6 +185,19 @@ const RoomTimetable = () => {
             type: "input",
             default: "Default Value...",
             config: { label: "Details", multiline: true, rows: 4 }
+          },
+          {
+            name: "room_id",
+            type: "select",
+            default: rooms[0]._id,
+            options: rooms.map((res) => {
+              return {
+                id: res._id,
+                text: `${res.name}`,
+                value: res._id //Should match "name" property
+              };
+            }),
+            config: { label: "Room", required: true }
           }
         ]}
         resourceFields={{
