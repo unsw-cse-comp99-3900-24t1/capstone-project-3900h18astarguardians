@@ -45,7 +45,7 @@ const App = () => {
   const displayInfo = (msg: string) =>
     enqueueSnackbar(msg, { variant: "info" });
 
-  const handleToken = (token: tokenI) => {
+  const handleToken = (token: tokenUserI) => {
     setToken(token);
     localStorage.setItem("token", JSON.stringify(token));
   };
