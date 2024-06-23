@@ -28,13 +28,19 @@ const MyBookings  = () => {
   const getBookings = async () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
-      const data = resp.data;
+      let data = resp.data.bookings;
+      console.log(data);
+      // console.log(data);
+      // let data = resp.data.bookings;
+      data.sort((a, b) => {
+        return new Date(a.start) - new Date(b.start);
+      })
       let newBookings: Booking[] = [];
-      for (let i = 0; i < data.bookings.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         // set bookings
-        let startTime = new Date(data.bookings[i].start);
-        let endTime = new Date(data.bookings[i].end);
-        let roomName = data.bookings[i].room.name;
+        let startTime = new Date(data[i].start);
+        let endTime = new Date(data[i].end);
+        let roomName = data[i].room.name;
 
 
         `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`
@@ -47,11 +53,11 @@ const MyBookings  = () => {
           description: 'description not implemented',
         }
 
+
         newBookings.push(b)
       }
       // let date = data.book
       setBookings(newBookings);
-      console.log(data.bookings);
     } catch (e) {
       console.log(e);
     }
