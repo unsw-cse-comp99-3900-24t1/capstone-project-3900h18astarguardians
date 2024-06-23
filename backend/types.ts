@@ -44,6 +44,7 @@ interface mongooseBookingI {
   start: Date;
   end: Date;
   duration: number;
+  description: String;
 }
 interface mongooseBookingMethods {}
 interface mongooseProductI {

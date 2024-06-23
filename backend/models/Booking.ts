@@ -36,6 +36,9 @@ const bookingSchema = new Schema<
     min: 1,
     max: 8,
   },
+  description: {
+    type: String,
+  },
 });
 // bookingSchema.virtual("end").get(function () {
 //   return moment(this.start as unknown as Date).add(this.duration, "hours");

@@ -20,11 +20,12 @@ interface createBookingBody {
   room: string;
   duration: number;
   start: Date;
+  description: string;
 }
 
 const createBooking = async (
   {
-    body: { room: roomId, duration, start },
+    body: { room: roomId, duration, start, description },
     user: { userId },
   }: { body: createBookingBody; user: tokenUserI },
   res: Response
@@ -62,6 +63,7 @@ const createBooking = async (
     start,
     user: userId,
     end,
+    description,
   });
   res.status(StatusCodes.CREATED).json({ booking });
 };
