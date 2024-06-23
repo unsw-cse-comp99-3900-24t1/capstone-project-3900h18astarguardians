@@ -89,7 +89,6 @@ const RoomTimetable = () => {
   };
 
   const deleteBookings = async (event_id: string) => {
-    console.log('deleteBookings', event_id, events)
     try {
       setIsLoading(true);
       const {
