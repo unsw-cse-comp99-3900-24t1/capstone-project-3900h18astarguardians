@@ -28,15 +28,6 @@ interface Event {
   }
 }
 
-// deleteInterface
-interface DeleteBookingsError {
-  data: DeleteBookingsResData;
-}
-interface DeleteBookingsResData {
-  msg: string;
-  success: string;
-}
-
 const RoomTimetable = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
