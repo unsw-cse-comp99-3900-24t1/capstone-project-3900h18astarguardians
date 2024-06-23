@@ -2,15 +2,10 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError } from "../errors";
 import { mongooseBookingI, tokenUserI } from "../types";
-import cloudinary from "cloudinary";
-import { unlink } from "fs/promises";
-import type { fileI } from "../types";
-import { DateTime } from "luxon";
 import { Room } from "../models/Room";
 import { Booking } from "../models/Booking";
 import moment from "moment";
-import mongoose from "mongoose";
-import internal from "stream";
+import { User } from "../models/User";
 import { checkPermissions } from "../utils";
 
 // check that the booking doesent clash with any other bookings
@@ -21,15 +16,26 @@ interface createBookingBody {
   duration: number;
   start: Date;
   description: string;
+  user?: string;
 }
 
 const createBooking = async (
   {
-    body: { room: roomId, duration, start, description },
-    user: { userId },
+    body: { room: roomId, duration, start, description, user },
+    user: { userId, type },
   }: { body: createBookingBody; user: tokenUserI },
   res: Response
 ) => {
+  if (user && type !== "admin")
+    throw new BadRequestError(
+      `A ${type} is not authorized to book on behalf of someone else`
+    );
+  if (user) {
+    const userToBook = await User.findById(user)!;
+    if (!userToBook) throw new BadRequestError(`user ${user} does not exist `);
+    if (userToBook.type !== "cse_staff")
+      throw new BadRequestError(`Admins can only book on behalf of CSE staff`);
+  }
   // check that the user is able to book that type of room, we will do this by adding a 'whoCanBook' field in the room model which is a space
   // seperate list of types of users who can book it (e.g. ['hdr_student', 'cse_staff']), we'll do this later
 
@@ -61,7 +67,7 @@ const createBooking = async (
     room: roomId,
     duration,
     start,
-    user: userId,
+    user: user ? user : userId,
     end,
     description,
   });
@@ -77,7 +83,7 @@ const getCurrentUserBookings = async (
       path: "room",
       select: "name size type",
     })
-    .sort("start");
+    .sort("-start");
 
   res.status(StatusCodes.OK).json({ count: bookings.length, bookings });
 };
