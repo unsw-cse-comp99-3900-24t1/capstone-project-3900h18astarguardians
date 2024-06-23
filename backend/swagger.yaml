@@ -238,15 +238,15 @@ paths:
               allOf:
                 - $ref: "#/components/schemas/CreateBookingRequest"
                 - example:
-                    user: 666111538a5f81663714c636
                     room: 666d91548a5f81663714c666
                     start: 2024-07-21T14:34:21.373Z
                     duration: "3"
+                    description: a staff meeting i guess idk lol
             example:
-              user: 666111538a5f81663714c636
               room: 666d91548a5f81663714c666
               start: 2024-07-21T14:34:21.373Z
               duration: "3"
+              description: a staff meeting i guess idk lol
         required: true
       responses:
         "200":
@@ -285,10 +285,10 @@ components:
         duration:
           type: string
       example:
-        user: 666111538a5f81663714c636
         room: 666d91548a5f81663714c666
         start: 2024-07-21T14:34:21.373Z
         duration: "3"
+        description: a staff meeting i guess idk lol
   securitySchemes:
     bearer:
       type: http
