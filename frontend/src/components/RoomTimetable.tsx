@@ -35,6 +35,7 @@ interface Event {
 const RoomTimetable = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [update, setUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const roomsDisplay = 5;
@@ -49,7 +50,7 @@ const RoomTimetable = () => {
 
   useEffect(() => {
     fetchRoomsAndEvents();
-  }, []);
+  }, [update]);
 
   const fetchRoomsAndEvents = async () => {
     try {
@@ -130,14 +131,31 @@ const RoomTimetable = () => {
     const makePostRequest = async () => {
       try {
         console.log(event.start.toISOString());
-        console.log(event.start)
         const response = await request.post("/bookings", {
           "room": event.room_id,
           "start": event.start.toString(),
           //@ts-ignore
           "duration": Math.abs(event.end - event.start)/36e5,
         });
-
+        events.push({
+          //@ts-ignore
+          event_id: event.event_id,
+          _id: event._id,
+          title: event.title,
+          start: event.start,
+          end: event.end,
+          // @ts-ignore
+          editable: event.editable,
+          // @ts-ignore
+          deletable: event.deletable,
+          // @ts-ignore
+          draggable: event.draggable,
+          room: event.room,
+        }
+        );
+        setEvents(events);
+        setUpdate(!update);
+        console.log(update);
         console.log(response);
       } catch (error) {
         if (axios.isAxiosError(error)) {
