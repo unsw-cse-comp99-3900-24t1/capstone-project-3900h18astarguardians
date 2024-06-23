@@ -1,13 +1,13 @@
 import { createContext, useContext } from "react";
-import { tokenI } from "../App";
+import { tokenUserI } from "../App";
 export type GlobalContent = {
   displayError: (s: string) => void;
   displaySuccess: (s: string) => void;
   displayWarning: (s: string) => void;
   displayInfo: (s: string) => void;
-  handleToken: (token: tokenI) => void;
+  handleToken: (token: tokenUserI) => void;
   removeToken: () => void;
-  token: tokenI;
+  token: tokenUserI;
   handleOTP: (code: number) => void;
   removeOTP: () => void;
   otp: number;
@@ -25,7 +25,7 @@ export const MyGlobalContext = createContext<GlobalContent>({
   token: null,
   handleOTP: () => {},
   removeOTP: () => {},
-  otp: 0, 
+  otp: 0,
   handleEmail: () => {},
   removeEmail: () => {},
   email: "",

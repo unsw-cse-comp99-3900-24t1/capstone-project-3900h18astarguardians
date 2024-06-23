@@ -13,23 +13,25 @@ import Reset from "./pages/Reset";
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
 
-export type tokenI = {
-  user: string;
+export type tokenUserI = {
+  type: string;
+  zid: string;
+  email: string;
   name: string;
   userId: string;
 } | null;
 
 const App = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [token, setToken] = useState<tokenI>(
+  const [token, setToken] = useState<tokenUserI>(
     localStorage.getItem("token") && JSON.parse(localStorage.getItem("token")!)
   );
   const [otp, setOTP] = useState(
     localStorage.getItem("otp") && JSON.parse(localStorage.getItem("otp")!)
-  )
+  );
   const [email, setEmail] = useState(
     localStorage.getItem("email") && JSON.parse(localStorage.getItem("email")!)
-  )
+  );
 
   const displayError = (msg: string) =>
     enqueueSnackbar(msg, { variant: "error" });
@@ -55,20 +57,20 @@ const App = () => {
   const handleOTP = (code: number) => {
     setOTP(code);
     localStorage.setItem("otp", JSON.stringify(code));
-  }
+  };
   const removeOTP = () => {
     setOTP(null);
     localStorage.removeItem("otp");
-  }
+  };
 
   const handleEmail = (email: string) => {
     setEmail(email);
     localStorage.setItem("email", JSON.stringify(email));
-  }
+  };
   const removeEmail = () => {
     setEmail(null);
     localStorage.removeItem("email");
-  }
+  };
 
   const globalVars = {
     displayError,
@@ -83,7 +85,7 @@ const App = () => {
     otp,
     handleEmail,
     removeEmail,
-    email
+    email,
   };
 
   return (
