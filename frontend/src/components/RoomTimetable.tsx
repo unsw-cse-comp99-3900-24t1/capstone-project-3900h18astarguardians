@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
+import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
+import axios from "axios";
 
 // Define interfaces
 interface Room {
@@ -61,6 +63,7 @@ const RoomTimetable = () => {
       }));
 
       setRooms(coloredRooms);
+      console.log(eventsResponse.data.bookings);
       setEvents(eventsResponse.data.bookings.map((event: Event) => ({
         ...event,
         start: new Date(event.start),
@@ -114,6 +117,34 @@ const RoomTimetable = () => {
 
   const displayedRooms = rooms.slice(currentIndex, currentIndex + roomsDisplay);
 
+  const onConfirm = (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
+    // make a booking request
+    const makePostRequest = async () => {
+      try {
+        console.log(event.start.toISOString())
+        const response = await request.post("/bookings", {
+          "room": "6672aff87c6d9306ed548e9d",
+          "start": event.start.toString(),
+          "duration": 2
+        });
+
+        console.log(response);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('Error message:', error.message);
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      }
+    };
+    
+    // Call the function to make the POST request
+    makePostRequest();
+    console.log('confirmed!');
+    return Promise.resolve(event);
+  }
+
+
   // Render the Scheduler component when data has been loaded
   return <>
     <Button onClick={prevPage} disabled={currentIndex === 0}>
@@ -133,12 +164,21 @@ const RoomTimetable = () => {
         }}
         hourFormat="24"
         navigation={false}
-        disableViewer={true}
+        disableViewer={false}
         selectedDate={new Date()}
         disableViewNavigator={true}
         resourceViewMode={"default"}
         resources={displayedRooms}
         events={events}
+        onConfirm={onConfirm}
+        fields={[
+          {
+            name: "Description",
+            type: "input",
+            default: "Default Value...",
+            config: { label: "Details", multiline: true, rows: 4 }
+          }
+        ]}
         resourceFields={{
           idField: "admin_id",
           textField: "title",
