@@ -4,10 +4,15 @@ import { BadRequestError } from "../errors";
 import { mongooseBookingI, tokenUserI } from "../types";
 import { Room } from "../models/Room";
 import { Booking } from "../models/Booking";
-import moment from "moment";
 import { User } from "../models/User";
 import { checkPermissions } from "../utils";
 import { userToRoomTypesMap } from "./roomController";
+import { createTransport, createTestAccount } from "nodemailer";
+import sgMail from "@sendgrid/mail";
+import { isIn } from "validator";
+import { Types } from "mongoose";
+import moment from "moment";
+
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
 
@@ -120,8 +125,10 @@ const getAllBookings = async (
         $lte: e,
       },
     };
-  else queryObject = {};
-
+  else {
+    queryObject = {};
+  }
+  console.log(queryObject);
   // level filter doesent work right now since 'level' isent an attribute of a booking, some mongoose $loopup operations will have to
   // be done here, I'll do it later
 
@@ -168,6 +175,52 @@ const deleteBooking = async (
   await bookingToDelete.deleteOne();
   res.status(StatusCodes.OK).json({ success: "booking deleted" });
 };
+const createEmailMessage = (
+  email: string,
+  booking: mongooseBookingI & {
+    _id: Types.ObjectId;
+  },
+  isConfirmation: boolean
+) => {
+  let sendAt = undefined;
+  if (!isConfirmation) {
+    const start = String(booking.start);
+    const before = moment(start).subtract(15, "minutes").valueOf();
+    sendAt = before;
+  }
+  return {
+    to: email, // Change to your recipient
+    from: "m.arsalah003@gmail.com", // Change to your verified sender
+    subject: isConfirmation
+      ? `Confirmation for booking ${booking._id}`
+      : `Reminder for booking ${booking._id}`,
+    text: isConfirmation
+      ? "Booking information"
+      : "You have a booking in 15 minutes",
+    html: JSON.stringify(booking),
+    sendAt,
+  };
+};
+
+const sendEmail = async (
+  { body: { booking: bookingId, isConfirmation } }: Request,
+  res: Response
+) => {
+  const { SENDGRID_API_KEY } = process.env;
+  sgMail.setApiKey(SENDGRID_API_KEY as string);
+  const booking = await Booking.findById(bookingId);
+
+  if (!booking)
+    throw new BadRequestError(`There is no booking with id ${bookingId}`);
+
+  const user = (await User.findById(booking.user))!;
+
+  const email = user.email;
+
+  const msg = createEmailMessage(email, booking, Boolean(isConfirmation));
+  const info = await sgMail.send(msg);
+  res.status(StatusCodes.OK).json(info);
+};
 
 export {
   createBooking,
@@ -175,4 +228,5 @@ export {
   getSingleBooking,
   deleteBooking,
   getCurrentUserBookings,
+  sendEmail,
 };
