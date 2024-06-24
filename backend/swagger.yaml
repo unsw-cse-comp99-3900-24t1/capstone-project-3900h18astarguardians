@@ -4,7 +4,7 @@ info:
   contact: {}
   version: "1.0"
 servers:
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:3000
     variables: {}
 paths:
   /auth/logout:
@@ -19,7 +19,6 @@ paths:
           description: ""
           headers: {}
       deprecated: false
-      security: []
   /auth/login:
     post:
       tags:
@@ -35,9 +34,9 @@ paths:
               allOf:
                 - $ref: "#/components/schemas/loginrequest"
                 - example:
-                    email: aooif@unsw.edu.au
+                    email: m.arsalah003@gmail.com
             example:
-              email: aooif@unsw.edu.au
+              email: m.arsalah003@gmail.com
         required: true
       responses:
         "200":
@@ -162,6 +161,51 @@ paths:
       deprecated: false
       security:
         - bearer: []
+  /bookings:
+    get:
+      tags:
+        - Booking
+      summary: Get All Bookings
+      operationId: GetAllBookings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    post:
+      tags:
+        - Booking
+      summary: Create Booking
+      operationId: CreateBooking
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/CreateBookingRequest"
+                - example:
+                    room: 66783deb77dfc185f1e9bd7e
+                    start: 2024-08-24T21:40:00.373Z
+                    duration: "1"
+                    description: a meeting of minds
+            example:
+              room: 66783deb77dfc185f1e9bd7e
+              start: 2024-08-24T21:40:00.373Z
+              duration: "1"
+              description: a meeting of minds
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
   /bookings/{id}:
     parameters:
       - in: path
@@ -202,7 +246,25 @@ paths:
         - Booking
       summary: get current users bookings
       operationId: getcurrentusersbookings
-      parameters: []
+      parameters:
+        - name: start
+          in: query
+          description: ""
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2021-08-25T11:34:21.373Z
+        - name: end
+          in: query
+          description: ""
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2029-08-25T12:34:21.373Z
       responses:
         "200":
           description: ""
@@ -210,25 +272,12 @@ paths:
       deprecated: false
       security:
         - bearer: []
-  /bookings:
-    get:
-      tags:
-        - Booking
-      summary: Get All Bookings
-      operationId: GetAllBookings
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          headers: {}
-      deprecated: false
-      security:
-        - bearer: []
+  /bookings/sendEmail:
     post:
       tags:
         - Booking
-      summary: Create Booking
-      operationId: CreateBooking
+      summary: send email
+      operationId: sendemail
       parameters: []
       requestBody:
         description: ""
@@ -236,17 +285,13 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: "#/components/schemas/CreateBookingRequest"
+                - $ref: "#/components/schemas/sendemailrequest"
                 - example:
-                    room: 666d91548a5f81663714c666
-                    start: 2024-07-21T14:34:21.373Z
-                    duration: "3"
-                    description: a staff meeting i guess idk lol
+                    booking: 6679565641fe80128fcf60bd
+                    isConfirmation: "true"
             example:
-              room: 666d91548a5f81663714c666
-              start: 2024-07-21T14:34:21.373Z
-              duration: "3"
-              description: a staff meeting i guess idk lol
+              booking: 6679565641fe80128fcf60bd
+              isConfirmation: "true"
         required: true
       responses:
         "200":
@@ -266,29 +311,43 @@ components:
         email:
           type: string
       example:
-        email: aooif@unsw.edu.au
+        email: m.arsalah003@gmail.com
+    sendemailrequest:
+      title: sendemailrequest
+      required:
+        - booking
+        - isConfirmation
+      type: object
+      properties:
+        booking:
+          type: string
+        isConfirmation:
+          type: string
+      example:
+        booking: 6679565641fe80128fcf60bd
+        isConfirmation: "true"
     CreateBookingRequest:
       title: CreateBookingRequest
       required:
-        - user
         - room
         - start
         - duration
+        - description
       type: object
       properties:
-        user:
-          type: string
         room:
           type: string
         start:
           type: string
         duration:
           type: string
+        description:
+          type: string
       example:
-        room: 666d91548a5f81663714c666
-        start: 2024-07-21T14:34:21.373Z
-        duration: "3"
-        description: a staff meeting i guess idk lol
+        room: 66783deb77dfc185f1e9bd7e
+        start: 2024-08-24T21:40:00.373Z
+        duration: "1"
+        description: a meeting of minds
   securitySchemes:
     bearer:
       type: http
