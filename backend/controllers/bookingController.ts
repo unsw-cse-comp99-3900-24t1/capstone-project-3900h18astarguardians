@@ -7,7 +7,7 @@ import { Booking } from "../models/Booking";
 import moment from "moment";
 import { User } from "../models/User";
 import { checkPermissions } from "../utils";
-
+import { userToRoomTypesMap } from "./roomController";
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
 
@@ -17,6 +17,10 @@ interface createBookingBody {
   start: Date;
   description: string;
   user?: string;
+}
+interface queryObjectType {
+  [k: string]: any;
+  level?: number;
 }
 
 const createBooking = async (
@@ -75,21 +79,59 @@ const createBooking = async (
 };
 // check for 'active' bookings, that is, a booking from now to the future, not one that has already passes
 const getCurrentUserBookings = async (
-  { user: { userId }, query: {} }: Request,
+  { user: { userId }, query: { start: s, end: e, sort } }: Request,
   res: Response
 ) => {
-  const bookings = await Booking.find({ user: userId })
+  let queryObject: queryObjectType;
+  if (s && e)
+    queryObject = {
+      start: {
+        $gte: s,
+      },
+      end: {
+        $lte: e,
+      },
+    };
+  else queryObject = {};
+
+  queryObject.user = userId;
+  if (sort) sort = (sort as string).split(",").join(" ");
+  const bookings = await Booking.find(queryObject)
     .populate({
       path: "room",
       select: "name size type",
     })
-    .sort("-start");
+    .sort(sort || "-start");
 
   res.status(StatusCodes.OK).json({ count: bookings.length, bookings });
 };
 
-const getAllBookings = async (req: Request, res: Response) => {
-  const bookings = await Booking.find({})
+const getAllBookings = async (
+  { query: { start: s, end: e, sort } }: Request,
+  res: Response
+) => {
+  let queryObject: queryObjectType;
+  if (s && e)
+    queryObject = {
+      start: {
+        $gte: s,
+      },
+      end: {
+        $lte: e,
+      },
+    };
+  else queryObject = {};
+
+  // level filter doesent work right now since 'level' isent an attribute of a booking, some mongoose $loopup operations will have to
+  // be done here, I'll do it later
+
+  // if (level) queryObject.level = Number(level);
+  if (sort) sort = (sort as string).split(",").join(" ");
+
+  // for now, just get all bookings within timeperiod, irrespective of whether the user can actually see those rooms
+  // (i.e. a hdr student cannot see meeting rooms but bookings for meeting rooms might show up in output)
+  // fix this later with aggregation pipeline and/or $lookup mechanism in mongoose, not too big of a deal in the first sprint
+  const bookings = await Booking.find(queryObject)
     .populate({
       path: "room",
       select: "name size type",
@@ -98,7 +140,7 @@ const getAllBookings = async (req: Request, res: Response) => {
       path: "user",
       select: "name email zid type",
     })
-    .sort("start");
+    .sort(sort || "-start");
 
   res.status(StatusCodes.OK).json({ count: bookings.length, bookings });
 };

@@ -39,6 +39,18 @@ const bookingSchema = new Schema<
   description: {
     type: String,
   },
+  isOverrided: {
+    type: Boolean,
+    default: false,
+  },
+  isRequest: {
+    type: Boolean,
+    default: false,
+  },
+  isCheckedIn: {
+    type: Boolean,
+    default: false,
+  },
 });
 // bookingSchema.virtual("end").get(function () {
 //   return moment(this.start as unknown as Date).add(this.duration, "hours");

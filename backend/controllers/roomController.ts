@@ -6,7 +6,7 @@ import { mongooseRoomI, tokenUserI } from "../types";
 import { stringify } from "querystring";
 
 const ROOM_TYPES = ["meeting room", "normal", "hot desk", "staff room"];
-const userToRoomTypesMap = {
+export const userToRoomTypesMap = {
   admin: ROOM_TYPES,
   cse_staff: ["meeting room", "staff room", "normal"],
   non_cse_staff: ["meeting room", "normal"],

@@ -46,6 +46,9 @@ interface mongooseBookingI {
   end: Date;
   duration: number;
   description: String;
+  isOverrided: boolean;
+  isRequest: boolean;
+  isCheckedIn: boolean;
 }
 interface mongooseBookingMethods {}
 interface mongooseProductI {
