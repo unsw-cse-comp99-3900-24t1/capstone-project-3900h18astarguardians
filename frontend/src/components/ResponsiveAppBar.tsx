@@ -17,7 +17,7 @@ import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";
 import { AxiosError } from "axios";
 
-const pages = ["login", "register"];
+const pages = ["login"];
 const settings = ["dashboard", "profile"];
 
 const ResponsiveAppBar = () => {

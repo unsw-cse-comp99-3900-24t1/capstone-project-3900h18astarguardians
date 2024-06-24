@@ -8,6 +8,12 @@ export type GlobalContent = {
   handleToken: (token: tokenI) => void;
   removeToken: () => void;
   token: tokenI;
+  handleOTP: (code: number) => void;
+  removeOTP: () => void;
+  otp: number;
+  handleEmail: (email: string) => void;
+  removeEmail: () => void;
+  email: string;
 };
 export const MyGlobalContext = createContext<GlobalContent>({
   displayError: () => {},
@@ -17,5 +23,11 @@ export const MyGlobalContext = createContext<GlobalContent>({
   handleToken: () => {},
   removeToken: () => {},
   token: null,
+  handleOTP: () => {},
+  removeOTP: () => {},
+  otp: 0, 
+  handleEmail: () => {},
+  removeEmail: () => {},
+  email: "",
 });
 export const useGlobalContext = () => useContext(MyGlobalContext);
