@@ -7,6 +7,7 @@ import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import deleteBookingsFn from "./DeleteBookingsFn";
+import sendEmailFn  from "./SendEmailFn";
 
 
 // Define interfaces
@@ -153,6 +154,9 @@ const RoomTimetable = () => {
           //@ts-ignore
           "duration": Math.abs(event.end - event.start)/36e5,
         });
+        if(response?.data?.booking._id) {
+          sendEmailFn(response?.data?.booking._id, false)
+        }
         events.push({
           //@ts-ignore
           event_id: event.event_id,

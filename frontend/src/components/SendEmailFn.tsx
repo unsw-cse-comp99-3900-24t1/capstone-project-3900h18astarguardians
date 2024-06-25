@@ -2,8 +2,8 @@ import { request } from "../utils/axios";
 
 const sendEmailFn = async (booking_id: string, 
   isConfirmation: boolean,
-  successFn: ()=>void,
-  errorFn: ()=>void
+  successFn: ()=>void = () => {},
+  errorFn: ()=>void = () => {}
 ) => {
     console.log('sendEmail', booking_id)
     try {
