@@ -108,7 +108,9 @@ const RoomTimetable = () => {
     const errorFn = (msg:string) => {
       displayError(msg);
     }
-    deleteBookingsFn(event_id, setIsLoading, successFn, errorFn)
+    setIsLoading(true)
+    await deleteBookingsFn(event_id, successFn, errorFn)
+    setIsLoading(false)
   }
 
   useEffect(() => {
