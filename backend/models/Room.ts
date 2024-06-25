@@ -21,5 +21,11 @@ const roomSchema = new Schema<mongooseRoomI, RoomModel, mongooseRoomMethodsI>({
     type: String,
     required: [true, "an room must have a type"],
   },
+  level: {
+    type: Number,
+    required: [true, "an room must have a level"],
+    min: 1,
+    max: 5,
+  },
 });
 export const Room = model<mongooseRoomI, RoomModel>("Room", roomSchema);

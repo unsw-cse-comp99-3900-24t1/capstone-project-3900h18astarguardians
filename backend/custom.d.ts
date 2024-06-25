@@ -1,7 +1,7 @@
 declare namespace Express {
   export interface Request {
     user: {
-      type: string;
+      type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
       zid: string;
       email: string;
       name: string;

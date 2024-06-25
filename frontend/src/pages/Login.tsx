@@ -13,7 +13,8 @@ import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 const Login = () => {
-  const { displayError, displaySuccess, handleToken } = useGlobalContext();
+  const { displayError, displaySuccess, handleToken, token } =
+    useGlobalContext();
 
   const navigate = useNavigate();
   const checkLoggedIn = async () => {

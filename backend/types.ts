@@ -24,7 +24,7 @@ interface errorObjectI {
 }
 
 interface tokenUserI {
-  type: string;
+  type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
   zid: string;
   email: string;
   name: string;
@@ -37,6 +37,7 @@ interface mongooseRoomI {
   type: "meeting room" | "hot desk" | "staff room" | "normal room";
   size: number;
   name: string;
+  level: number;
 }
 interface mongooseBookingI {
   user: Types.ObjectId;
@@ -44,6 +45,10 @@ interface mongooseBookingI {
   start: Date;
   end: Date;
   duration: number;
+  description: String;
+  isOverrided: boolean;
+  isRequest: boolean;
+  isCheckedIn: boolean;
 }
 interface mongooseBookingMethods {}
 interface mongooseProductI {
