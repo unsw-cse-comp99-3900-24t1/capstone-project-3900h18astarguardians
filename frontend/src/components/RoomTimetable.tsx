@@ -1,12 +1,11 @@
 import { Scheduler } from "@aldabil/react-scheduler";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
-
 
 // Define interfaces
 interface Room {
@@ -15,6 +14,7 @@ interface Room {
   size: number;
   type: string;
   color?: string;
+  level: number;
 }
 
 interface Event {
@@ -32,9 +32,20 @@ interface Event {
     type: string;
     _id: string;
   }
+  user: {
+    email: string;
+    name: string;
+    type: string;
+    zid: string;
+    _id: string;
+  }
+}
+interface RoomTimetableProps {
+  selectedDate: Date;
+  currLevel: number;
 }
 
-const RoomTimetable = () => {
+const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [update, setUpdate] = useState(false);
@@ -54,7 +65,7 @@ const RoomTimetable = () => {
 
   useEffect(() => {
     fetchRoomsAndEvents();
-  }, [update]);
+  }, [update, selectedDate, currLevel]);
 
   const fetchRoomsAndEvents = async () => {
     try {
@@ -65,13 +76,12 @@ const RoomTimetable = () => {
       const coloredRooms = roomsResponse.data.rooms.map((room: Room) => ({
         ...room,
         color: getColorForRoomType(room.type),
-        admin_id: room._id,
         title: room.name,
+        admin_id: room._id,
         avatar: "https://picsum.photos/200/300",
       }));
 
       setRooms(coloredRooms);
-      console.log(eventsResponse.data.bookings);
       setEvents(eventsResponse.data.bookings.map((event: Event) => ({
         ...event,
         start: new Date(event.start),
@@ -141,13 +151,6 @@ const RoomTimetable = () => {
     }
   }, [isLoading, currentIndex]); // Re-run this effect when isLoading changes
 
-  // Render a loading message while data is being fetched
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  const displayedRooms = rooms.slice(currentIndex, currentIndex + roomsDisplay);
-
   const onConfirm = (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
     // make a booking request
     console.log(event);
@@ -196,6 +199,14 @@ const RoomTimetable = () => {
     return Promise.resolve(event);
   }
 
+  
+  const CurrLevelRooms = rooms.filter(room => room.level == currLevel);
+  const displayedRooms = CurrLevelRooms.slice(currentIndex, currentIndex + roomsDisplay);
+
+  // Render a loading message while data is being fetched
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   // Render the Scheduler component when data has been loaded
   return <>
@@ -217,7 +228,7 @@ const RoomTimetable = () => {
         hourFormat="24"
         navigation={false}
         disableViewer={false}
-        selectedDate={new Date()}
+        selectedDate={selectedDate}
         disableViewNavigator={true}
         resourceViewMode={"default"}
         resources={displayedRooms}
@@ -256,6 +267,6 @@ const RoomTimetable = () => {
     </div>
   </>
   
-};
+});
 
 export default RoomTimetable;
