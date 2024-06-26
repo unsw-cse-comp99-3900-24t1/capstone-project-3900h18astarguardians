@@ -3,11 +3,15 @@ import { StatusCodes } from "http-status-codes";
 import { Room } from "../models/Room";
 import { BadRequestError } from "../errors";
 import { mongooseRoomI, tokenUserI } from "../types";
-import cloudinary from "cloudinary";
-import { unlink } from "fs/promises";
-import type { fileI } from "../types";
-import { Review } from "../models/Review";
-import mongoose from "mongoose";
+import { stringify } from "querystring";
+
+const ROOM_TYPES = ["meeting room", "normal", "hot desk", "staff room"];
+export const userToRoomTypesMap = {
+  admin: ROOM_TYPES,
+  cse_staff: ["meeting room", "staff room", "normal"],
+  non_cse_staff: ["meeting room", "normal"],
+  hdr_student: ["hot desk", "normal"],
+};
 
 const createRoom = async (
   { body, user }: { body: mongooseRoomI; user: tokenUserI },
@@ -17,10 +21,26 @@ const createRoom = async (
   res.status(StatusCodes.CREATED).json({ room });
 };
 
-const getAllRooms = async (req: Request, res: Response) => {
-  const rooms = await Room.find({});
+const getAllRooms = async (
+  { user: { type }, query: { level, sort } }: Request,
+  res: Response
+) => {
+  interface queryObjectType {
+    [k: string]: any;
+    level?: number;
+  }
+  const queryObject: queryObjectType = {
+    $or: [
+      ...userToRoomTypesMap[type].map((r: string) => ({
+        type: r,
+      })),
+    ],
+  };
+  if (level) queryObject.level = Number(level);
+  if (sort) sort = (sort as string).split(",").join(" ");
+  let result = await Room.find(queryObject).sort(sort || "name");
 
-  res.status(StatusCodes.OK).json({ count: rooms.length, rooms });
+  res.status(StatusCodes.OK).json({ count: result.length, rooms: result });
 };
 const getSingleRoom = async (
   { params: { id: roomId } }: Request,
