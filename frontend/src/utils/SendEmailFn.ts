@@ -1,4 +1,4 @@
-import { request } from "../utils/axios";
+import { request } from "./axios";
 
 const sendEmailFn = async (booking_id: string, 
   isConfirmation: boolean,

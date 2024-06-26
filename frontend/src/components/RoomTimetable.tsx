@@ -7,7 +7,7 @@ import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import deleteBookingsFn from "./DeleteBookingsFn";
-import sendEmailFn  from "./SendEmailFn";
+import sendEmailFn  from "../utils/SendEmailFn";
 
 // Define interfaces
 interface Room {
