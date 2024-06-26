@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
+import sendEmailFn  from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 
 // Define interfaces
@@ -160,6 +161,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
           //@ts-ignore
           "duration": Math.abs(event.end - event.start)/36e5,
         });
+        if(response?.data?.booking._id) {
+          sendEmailFn(response?.data?.booking._id, true)
+          sendEmailFn(response?.data?.booking._id, false)
+        }
         events.push({
           //@ts-ignore
           event_id: event.event_id,

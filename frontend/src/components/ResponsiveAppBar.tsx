@@ -16,14 +16,16 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";
 import { AxiosError } from "axios";
+import NotificationSettingsModal from '../components/NotificationSettingsModal'
 
 const pages = ["login"];
+const settings = ["dashboard", "profile", "notification setting"];
 const logged_in_pages = ["MyBookings"]
-const settings = ["dashboard", "profile"];
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
   const [anchorElUser, setAnchorElUser] = useState<HTMLElement | null>(null);
+  const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false);
 
   // fn's for opening and closing
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) =>
@@ -32,6 +34,12 @@ const ResponsiveAppBar = () => {
     setAnchorElUser(event.currentTarget);
   const handleCloseNavMenu = () => setAnchorElNav(null);
   const handleCloseUserMenu = () => setAnchorElUser(null);
+  // changeNotificationSettingsModal
+  const handleOpenNotificationSettingsModal = () => {
+    handleCloseUserMenu()
+    setNotificationSettingsOpen(true)
+  }
+  const handleCloseNotificationSettingsModal = () => setNotificationSettingsOpen(false)
 
   const { token, removeToken, displaySuccess, displayError } =
     useGlobalContext();
@@ -205,7 +213,7 @@ const ResponsiveAppBar = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem
+                setting !== 'notification setting'? (<MenuItem
                   sx={{ textTransform: "capitalize" }}
                   key={setting}
                   onClick={handleCloseUserMenu}
@@ -213,7 +221,13 @@ const ResponsiveAppBar = () => {
                   to={`/${setting}`}
                 >
                   <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
+                </MenuItem>):(<MenuItem
+                  sx={{ textTransform: "capitalize" }}
+                  key={setting}
+                  onClick={handleOpenNotificationSettingsModal}
+                >
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>)
               ))}
               <MenuItem
                 onClick={() => {
@@ -225,6 +239,10 @@ const ResponsiveAppBar = () => {
               </MenuItem>
             </Menu>
           </Box>
+          <NotificationSettingsModal
+          open={notificationSettingsOpen}
+          handleClose={handleCloseNotificationSettingsModal}
+          />
         </Toolbar>
       </Container>
     </AppBar>
