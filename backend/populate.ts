@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + "/.env" });
-
 import { connectDB } from "./db/connect";
 import { User } from "./models/User";
 import staff from "./mock_data/staff.json";
@@ -9,6 +8,9 @@ import rooms from "./mock_data/rooms.json";
 import { Room } from "./models/Room";
 
 const { MONGO_URI, JWT_SECRET } = process.env;
+
+// filter rooms to have unique names
+const augmentedRooms = [...new Map(rooms.map((r) => [r["name"], r])).values()];
 
 const augmentedStudents = students.map(
   ({
@@ -58,7 +60,7 @@ const start = async () => {
     await Room.deleteMany();
 
     await User.create([...augmentedStaff, ...augmentedStudents]);
-    await Room.create(rooms);
+    await Room.create(augmentedRooms);
     console.log("Success!!!!");
     process.exit(0);
   } catch (error) {
