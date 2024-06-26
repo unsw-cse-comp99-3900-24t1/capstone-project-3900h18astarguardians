@@ -163,7 +163,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         });
         if(response?.data?.booking._id) {
           sendEmailFn(response?.data?.booking._id, true)
-          //sendEmailFn(response?.data?.booking._id, false)
+          sendEmailFn(response?.data?.booking._id, false)
         }
         events.push({
           //@ts-ignore
