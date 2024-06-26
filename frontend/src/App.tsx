@@ -12,6 +12,7 @@ import Reset from "./pages/Reset";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
+import MyBookings from "./pages/MyBookings";
 
 export type tokenUserI = {
   type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
@@ -98,6 +99,7 @@ const App = () => {
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
+            <Route path="myBookings" element={<MyBookings />} />
             <Route path="recovery" element={<Recovery />} />
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
