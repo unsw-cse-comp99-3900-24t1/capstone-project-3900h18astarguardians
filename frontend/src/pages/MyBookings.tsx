@@ -3,8 +3,13 @@ import { useNavigate } from 'react-router';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useGlobalContext } from "../utils/context";
+
+  
+
 
 type Booking = {
+  id: string;
   date: string;
   start_time: string;
   end_time: string;
@@ -13,6 +18,7 @@ type Booking = {
 };
 
 const MyBookings  = () => {
+  const { displaySuccess, displayError } = useGlobalContext();
   // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
 
@@ -25,6 +31,26 @@ const MyBookings  = () => {
       console.log(e);
     }
   };
+
+  // NOTE: i think this function along with the same function in RoomTimetable
+  // should be handled inside the Dashboard, instead of these components
+  const deleteBooking = async (event_id: string) => {
+    try {
+      const {
+        data: { success },
+      } = await request.delete(`/bookings/${event_id}`);
+      console.log('deleteBookingsResponse', success)
+      if(success) {
+        displaySuccess("Successfully delete bookings");
+      }
+    } catch(error) {
+      console.error("Failed to delete bookings", error);
+      displayError(`Failed to delete bookings`);
+    } finally {
+      getBookings();
+    }
+  }
+
   const getBookings = async () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
@@ -32,27 +58,31 @@ const MyBookings  = () => {
       console.log(data);
       // console.log(data);
       // let data = resp.data.bookings;
-      data.sort((a, b) => {
-        return new Date(a.start) - new Date(b.start);
-      })
       let newBookings: Booking[] = [];
+      let today = new Date();
+      today.setHours(0, 0, 0, 0);
+      console.log(data);
+
       for (let i = 0; i < data.length; i++) {
         // set bookings
         let startTime = new Date(data[i].start);
         let endTime = new Date(data[i].end);
         let roomName = data[i].room.name;
+        
+        // only view bookings from today onward
+        if (startTime <= today) {
+          continue;
+        }
 
-
-        `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`
         let description = 'desc not implemented';
         let b: Booking = {
+          id: `${data[i]._id}`,
           date: `${String(startTime.getDate()).padStart(2, '0')}/${String(startTime.getMonth() + 1).padStart(2, '0')}/${startTime.getFullYear()}`,
           start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
           end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
           room: roomName,
           description: 'description not implemented',
         }
-
 
         newBookings.push(b)
       }
@@ -88,7 +118,7 @@ const MyBookings  = () => {
             <strong>Checked In: False</strong>
           </AccordionDetails>
           <AccordionActions>
-          <Button variant="outlined" color="error">
+          <Button variant="outlined" color="error" onClick={() => deleteBooking(item.id)}>
             Cancel Booking
           </Button>
             <Button variant="contained" color="success" disabled={true} >Check In</Button>
