@@ -47,14 +47,32 @@ interface RoomTimetableProps {
   currLevel: number;
 }
 
+interface User {
+  _id: string;
+  email: string;
+  name: string;
+  faculty: string;
+  zid: string;
+  school: string;
+  type: string;
+  role: string;
+}
+
+
+
+
+
+
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [update, setUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const roomsDisplay = 5;
-  const { displaySuccess, displayError } =
+  const { displaySuccess, displayError, token } =
     useGlobalContext();
 
   const nextPage = () => {
@@ -84,7 +102,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
-      console.log(eventsResponse.data.bookings);
       setEvents(eventsResponse.data.bookings.map((event: Event) => ({
         ...event,
         start: new Date(event.start),
@@ -96,6 +113,19 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         deletable: true,
         draggable: false,
       })));
+
+      const usersResponse = await request.get("/users");
+      let newUsers: User[] = usersResponse.data.users;
+      // put currUser to front
+      const currUserType = token?.type;
+      if (currUserType === "admin") {
+        setIsAdmin(true);
+      }
+
+      setUsers(newUsers.filter(user => 
+        user.type === "cse_staff" || user._id === token?.userId
+      ));
+
     } catch (error) {
       console.error("Failed to fetch data", error);
     } finally {
@@ -150,16 +180,15 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const onConfirm = (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
     // make a booking request
-    console.log(event);
 
     const makePostRequest = async () => {
       try {
-        console.log(event.start.toISOString());
         const response = await request.post("/bookings", {
           "room": event.room_id,
           "start": event.start.toString(),
           //@ts-ignore
           "duration": Math.abs(event.end - event.start)/36e5,
+          ...(isAdmin && event.User !== token?.userId ? {"user": event.User}: {})
         });
         if(response?.data?.booking._id) {
           sendEmailFn(response?.data?.booking._id, true)
@@ -183,8 +212,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         );
         setEvents(events);
         setUpdate(!update);
-        console.log(update);
-        console.log(response);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           console.error('Error message:', error.message);
@@ -196,7 +223,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     
     // Call the function to make the POST request
     makePostRequest();
-    console.log('confirmed!');
     return Promise.resolve(event);
   }
 
@@ -224,7 +250,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         day={{
           startHour: 0,
           endHour: 24,
-          step: 60
+          step: 60,
+          // cellRender stuff
         }}
         hourFormat="24"
         navigation={false}
@@ -256,6 +283,18 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               };
             }),
             config: { label: "Room", required: true }
+          }, {
+            name: "User",
+            type: "select",
+            default: token?.userId,
+            options: users.map((user: User) => {
+              return {
+                id: user._id,
+                text: `${user.name} (${user.zid})`,
+                value: user._id //Should match "name" property
+              };
+            }),
+            config: { label: "User", required: true, disabled: !isAdmin }
           }
         ]}
         resourceFields={{
