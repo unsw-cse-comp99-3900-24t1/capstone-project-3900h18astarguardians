@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { request } from "../utils/axios";
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button } from '@mui/material';
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useGlobalContext } from "../utils/context";
 
@@ -21,9 +21,21 @@ const MyBookings  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
   // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [open, setOpen] = useState(false);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-  const navigate = useNavigate();
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleConfirm = (id: string) => {
+    deleteBooking(id);
+    setOpen(false);
+  };
+
   const checkLoggedIn = async () => {
     try {
       await request.get("/users/showMe");
@@ -100,6 +112,9 @@ const MyBookings  = () => {
   }, []);
   
   return <>
+    {bookings.length === 0 &&
+      <h1>You have no bookings</h1>
+    }
     {
       bookings.map((item, index) => (
         <Accordion key={index}>
@@ -118,10 +133,34 @@ const MyBookings  = () => {
             <strong>Checked In: False</strong>
           </AccordionDetails>
           <AccordionActions>
-          <Button variant="outlined" color="error" onClick={() => deleteBooking(item.id)}>
+          <Button variant="outlined" color="error" onClick={handleClickOpen}>
             Cancel Booking
           </Button>
-            <Button variant="contained" color="success" disabled={true} >Check In</Button>
+          <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to cancel this booking?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={() => handleConfirm(item.id)} color="primary" autoFocus>
+            Yes
+          </Button>
+          {/* <Button onClick={handleConfirm(item.id)} color="primary" autoFocus>
+            Yes
+          </Button> */}
+        </DialogActions>
+      </Dialog>
+          <Button variant="contained" color="success" disabled={true} >Check In</Button>
         </AccordionActions>
         </Accordion>
       ))

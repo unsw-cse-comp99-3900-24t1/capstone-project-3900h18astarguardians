@@ -82,6 +82,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
+      console.log(eventsResponse.data.bookings);
       setEvents(eventsResponse.data.bookings.map((event: Event) => ({
         ...event,
         start: new Date(event.start),
