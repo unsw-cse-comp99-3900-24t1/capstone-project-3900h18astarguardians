@@ -6,7 +6,7 @@ import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
-import deleteBookingsFn from "./DeleteBookingsFn";
+import deleteBookingsFn from "../utils/DeleteBookingsFn";
 
 
 // Define interfaces
