@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
+import deleteBookingsFn from "../utils/DeleteBookingsFn";
 
 // Define interfaces
 interface Room {
@@ -110,23 +111,16 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
   const deleteBookings = async (event_id: string) => {
-    console.log('deleteBookings', event_id)
-    try {
-      setIsLoading(true);
-      const {
-        data: { success },
-      } = await request.delete(`/bookings/${event_id}`);
-      console.log('deleteBookingsResponse', success)
-      if(success) {
-        displaySuccess("Successfully delete bookings");
-        setEvents(events.filter(item => item.event_id !== event_id)) // change event
-      }
-    } catch(error) {
-      console.error("Failed to delete bookings", error);
-      displayError(`Failed to delete bookings`);
-    } finally {
-      setIsLoading(false);
+    const successFn = (msg: string) => {
+      displaySuccess(msg);
+      setEvents(events.filter(item => item.event_id !== event_id)) // change event
     }
+    const errorFn = (msg:string) => {
+      displayError(msg);
+    }
+    setIsLoading(true)
+    await deleteBookingsFn(event_id, successFn, errorFn)
+    setIsLoading(false)
   }
 
   useEffect(() => {
