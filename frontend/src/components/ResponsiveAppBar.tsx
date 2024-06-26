@@ -20,6 +20,7 @@ import NotificationSettingsModal from '../components/NotificationSettingsModal'
 
 const pages = ["login"];
 const settings = ["dashboard", "profile", "notification setting"];
+const logged_in_pages = ["MyBookings"]
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
@@ -66,7 +67,7 @@ const ResponsiveAppBar = () => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/dashboard"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -164,8 +165,26 @@ const ResponsiveAppBar = () => {
                   {page}
                 </Button>
               ))}
+            {token &&
+              logged_in_pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{
+                    my: 1,
+                    display: "block",
+                    color: "white",
+                    outline: "2px solid white",
+                    mx: 1,
+                  }}
+                  variant="contained"
+                  component={RouterLink}
+                  to={`/${page}`}
+                >
+                  {page}
+                </Button>
+              ))}
           </Box>
-
           <Box sx={{ flexGrow: 0 }}>
             {token && (
               <Tooltip title="Open settings">

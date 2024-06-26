@@ -6,8 +6,8 @@ import { Button } from "@mui/material";
 import { EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
-import deleteBookingsFn from "./DeleteBookingsFn";
 import sendEmailFn  from "../utils/SendEmailFn";
+import deleteBookingsFn from "../utils/DeleteBookingsFn";
 
 // Define interfaces
 interface Room {
@@ -84,6 +84,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
+      console.log(eventsResponse.data.bookings);
       setEvents(eventsResponse.data.bookings.map((event: Event) => ({
         ...event,
         start: new Date(event.start),
@@ -107,6 +108,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       case "meeting room": return "green";
       case "hot desk": return "red";
       case "normal": return "orange";
+      case "staff room": return "purple";
       default: return "grey";
     }
   };
@@ -119,7 +121,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     const errorFn = (msg:string) => {
       displayError(msg);
     }
-    deleteBookingsFn(event_id, setIsLoading, successFn, errorFn)
+    setIsLoading(true)
+    await deleteBookingsFn(event_id, successFn, errorFn)
+    setIsLoading(false)
   }
 
   useEffect(() => {
