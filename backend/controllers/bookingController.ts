@@ -64,12 +64,12 @@ const createBooking = async (
     end: {
       $gt: start,
     },
-    room: roomId,
+    user: user ? user : userId,
   });
 
   if (isClashing.length)
     throw new BadRequestError(
-      `This booking clashes with an already existing booking`
+      `Either this booking clashes with an already existing booking OR you cannot book two rooms within the same timeframe`
     );
 
   const booking = await Booking.create({
