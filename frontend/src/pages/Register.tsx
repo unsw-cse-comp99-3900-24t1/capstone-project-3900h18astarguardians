@@ -29,6 +29,11 @@ const Register = () => {
     if (password !== confirmPassword) {
       return displayError("Passwords dont match");
     }
+
+    //@ts-ignore
+    if (password.length < 8) {
+      return displayError("Password must be 8 characters or longer");
+    }
     try {
       console.log(data.get("name"));
       console.log(data.get("email"));

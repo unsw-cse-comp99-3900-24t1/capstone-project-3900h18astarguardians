@@ -80,6 +80,17 @@ const Login = () => {
                 autoComplete="email"
               />
             </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+              />
+            </Grid>
           </Grid>
           <Button
             type="submit"
@@ -90,10 +101,12 @@ const Login = () => {
             Login
           </Button>
           <Grid container justifyContent="space-between">
-            {/* Forgot password section if ever we need it
+            <Grid item>
+              <Link to="/register">Haven't registered yet?</Link>
+            </Grid>
             <Grid item>
               <Link to="/recovery">Forgot password?</Link>
-            </Grid> */}
+            </Grid>
           </Grid>
         </Box>
       </Box>
