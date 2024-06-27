@@ -251,7 +251,30 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
           startHour: 0,
           endHour: 24,
           step: 60,
-          // cellRender stuff
+          cellRenderer: ({ height, start, onClick, ...props }) => {
+            // Fake some condition up
+            // const hour = start.getHours();
+            const currTime = new Date()
+            currTime.setMinutes(0);
+            currTime.setHours(currTime.getHours() - 1);
+            const disabled = start < currTime;
+            const restProps = disabled ? {} : props;
+            return (
+              <Button
+                style={{
+                  height: "100%",
+                  background: disabled ? "#eee" : "transparent",
+                  cursor: disabled ? "not-allowed" : "pointer"
+                }}
+
+                // this disables the modal for prev times
+                onClick={disabled ? () => {} : onClick}
+                
+                disableRipple={disabled}
+                {...restProps}
+              ></Button>
+            );
+          }
         }}
         hourFormat="24"
         navigation={false}
