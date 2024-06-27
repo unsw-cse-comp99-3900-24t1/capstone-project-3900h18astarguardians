@@ -301,7 +301,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             name: "room_id",
             type: "select",
             default: rooms[0]._id,
-            options: rooms.map((res) => {
+            options: displayedRooms.map((res) => {
               return {
                 id: res._id,
                 text: `${res.name}`,

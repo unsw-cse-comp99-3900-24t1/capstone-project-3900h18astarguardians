@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { request } from "../utils/axios";
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useGlobalContext } from "../utils/context";
 
@@ -22,6 +22,7 @@ const MyBookings  = () => {
   // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -48,6 +49,7 @@ const MyBookings  = () => {
   // should be handled inside the Dashboard, instead of these components
   const deleteBooking = async (event_id: string) => {
     try {
+      setIsLoading(true);
       const {
         data: { success },
       } = await request.delete(`/bookings/${event_id}`);
@@ -58,8 +60,10 @@ const MyBookings  = () => {
     } catch(error) {
       console.error("Failed to delete bookings", error);
       displayError(`Failed to delete bookings`);
+      setIsLoading(false);
     } finally {
       getBookings();
+      setIsLoading(false);
     }
   }
 
@@ -100,6 +104,7 @@ const MyBookings  = () => {
       }
       // let date = data.book
       setBookings(newBookings);
+      setIsLoading(false);
     } catch (e) {
       console.log(e);
     }
@@ -112,11 +117,12 @@ const MyBookings  = () => {
   }, []);
   
   return <>
-    {bookings.length === 0 &&
+    {!isLoading && bookings.length === 0 &&
       <h1>You have no bookings</h1>
     }
+    {isLoading && <h1>Loading your bookings ... <CircularProgress /></h1>}
     {
-      bookings.map((item, index) => (
+      !isLoading && bookings.map((item, index) => (
         <Accordion key={index}>
           <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
