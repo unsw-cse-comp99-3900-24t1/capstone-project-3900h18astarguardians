@@ -215,6 +215,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       } catch (error) {
         if (axios.isAxiosError(error)) {
           console.error('Error message:', error.message);
+          const msg = error.response!.data.msg;
+          displayError(msg);
+
         } else {
           console.error('Unexpected error:', error);
         }
