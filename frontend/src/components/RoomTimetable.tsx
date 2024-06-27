@@ -59,10 +59,6 @@ interface User {
 }
 
 
-
-
-
-
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -75,17 +71,13 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const { displaySuccess, displayError, token } =
     useGlobalContext();
 
-  const nextPage = () => {
-    setCurrentIndex((prevIndex) => Math.min(prevIndex + roomsDisplay, rooms.length - roomsDisplay));
-  };
-
-  const prevPage = () => {
-    setCurrentIndex((prevIndex) => Math.max(prevIndex - roomsDisplay, 0));
-  };
-
   useEffect(() => {
     fetchRoomsAndEvents();
   }, [update, selectedDate, currLevel]);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [currLevel]);
 
   const fetchRoomsAndEvents = async () => {
     try {
@@ -233,6 +225,18 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const CurrLevelRooms = rooms.filter(room => room.level == currLevel);
   const displayedRooms = CurrLevelRooms.slice(currentIndex, currentIndex + roomsDisplay);
 
+  const nextPage = () => {
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = prevIndex + roomsDisplay;
+      return Math.min(nextIndex, CurrLevelRooms.length - roomsDisplay);
+    });
+  };
+
+  const prevPage = () => {
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - roomsDisplay, 0));
+  };
+
+  console.log(CurrLevelRooms);
   // Render a loading message while data is being fetched
   if (isLoading) {
     return <p>Loading...</p>;
@@ -243,7 +247,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     <Button onClick={prevPage} disabled={currentIndex === 0}>
         Back
     </Button>
-    <Button onClick={nextPage} disabled={currentIndex >= rooms.length - roomsDisplay}>
+    <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= CurrLevelRooms.length}>
       Next
     </Button>
     <div className="scrollable-scheduler">
