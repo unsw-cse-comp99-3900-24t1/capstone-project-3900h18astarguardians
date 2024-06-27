@@ -27,6 +27,29 @@ const Dashboard = () => {
     });
   };
 
+  // Function to check if selectedDate is today
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+
+  const isNextWeekSunday = (date: Date) => {
+    const today = new Date();
+    const nextSunday = new Date();
+    // Calculate days to next Sunday (0 is Sunday, 1 is Monday, ..., 6 is Saturday)
+    // If today is Sunday, set daysUntilNextSunday to 7 to ensure we're looking at next week's Sunday
+    const daysUntilNextSunday = today.getDay() === 0 ? 7 : 7 - today.getDay();
+    // Set nextSunday to the next week's Sunday by adding daysUntilNextSunday + 7 to ensure it's next week
+    nextSunday.setDate(today.getDate() + daysUntilNextSunday + 7);
+    
+    // Check if the provided date is the same as next week's Sunday
+    return date.getDate() === nextSunday.getDate() &&
+           date.getMonth() === nextSunday.getMonth() &&
+           date.getFullYear() === nextSunday.getFullYear();
+  };
+
   return (
     <>
       <div className="scheduler-container">
@@ -46,10 +69,10 @@ const Dashboard = () => {
           <Box>
             {`${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`}
           </Box>
-          <Button variant="outlined" onClick={handleDateChangeBackwards}>
+          <Button variant="outlined" onClick={handleDateChangeBackwards} disabled={isToday(selectedDate)}>
             &lt;
           </Button>
-          <Button variant="outlined" onClick={handleDateChangeForward}>
+          <Button variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
             &gt;
           </Button>
         </Box>
