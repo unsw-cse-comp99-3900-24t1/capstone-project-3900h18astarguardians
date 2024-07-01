@@ -8,6 +8,7 @@ import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import sendEmailFn  from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
+import exportIcs from '../utils/exportIcs'
 
 // Define interfaces
 interface Room {
@@ -184,6 +185,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         });
         if(response?.data?.booking._id) {
           sendEmailFn(response?.data?.booking._id, true)
+          exportIcs();
           //sendEmailFn(response?.data?.booking._id, false)
         }
         events.push({
