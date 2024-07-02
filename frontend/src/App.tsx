@@ -105,7 +105,7 @@ const App = () => {
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
-            <Route path="contact-us" element={<Contact />}/>
+            <Route path="contact" element={<Contact />}/>
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>

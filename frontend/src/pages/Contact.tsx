@@ -17,12 +17,12 @@ const Contact = () => {
     useGlobalContext();
 
   const navigate = useNavigate();
+  // Need to properly implement this
   const checkLoggedIn = async () => {
     try {
       await request.get("/users/showMe");
-      displaySuccess("Logged In");
-      navigate("/dashboard");
     } catch (e) {
+      navigate("/login");
       console.log(e);
     }
   };
@@ -32,24 +32,23 @@ const Contact = () => {
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const data = new FormData(e.currentTarget);
-      const {
-        data: { user },
-      } = await request.post("/auth/login", {
-        email: data.get("email"),
-        password: data.get("password"),
-      });
-      handleToken(user);
-      displaySuccess("Logged In");
-      navigate("/dashboard");
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const msg = err.response!.data.msg;
-        displayError(msg);
-      }
-    }
+    // e.preventDefault();
+    // try {
+    //   const data = new FormData(e.currentTarget);
+    //   const {
+    //     data: { user },
+    //   } = await request.post("/auth/login", {
+    //     email: data.get("email"),
+    //     password: data.get("password"),
+    //   });
+    //   handleToken(user);
+    // } catch (err) {
+    //   if (err instanceof AxiosError) {
+    //     const msg = err.response!.data.msg;
+    //     displayError(msg);
+    //     navigate("/login")
+    //   }
+    // }
   };
   return (
     <Container component="main" maxWidth="xs">
@@ -66,7 +65,7 @@ const Contact = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Login
+          Contact us
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
