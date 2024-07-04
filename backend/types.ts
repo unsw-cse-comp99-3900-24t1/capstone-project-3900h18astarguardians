@@ -49,6 +49,7 @@ interface mongooseBookingI {
   isOverrided: boolean;
   isRequest: boolean;
   isCheckedIn: boolean;
+  isApproved: boolean;
 }
 interface mongooseBookingMethods {}
 interface mongooseProductI {
