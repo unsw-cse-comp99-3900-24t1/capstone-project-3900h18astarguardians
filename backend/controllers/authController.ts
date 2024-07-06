@@ -18,7 +18,7 @@ const login = async (
   if (!user) throw new UnauthenticatedError("email was not found");
 
   const tokenUser = createTokenUser(user);
-
+  console.log(tokenUser);
   attachCookiesToResponse(res, tokenUser);
 
   res.status(StatusCodes.OK).json({ user: tokenUser });

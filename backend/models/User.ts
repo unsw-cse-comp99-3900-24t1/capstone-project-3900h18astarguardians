@@ -54,6 +54,14 @@ const userSchema = new Schema<mongooseUserI, UserModel, mongooseUserMethodsI>({
     enum: ["cse_staff", "non_cse_staff", "hdr_student", "admin"],
     required: true,
   },
+  hasConfirmationEmail: {
+    type: Boolean,
+    default: true,
+  },
+  hasNotificationEmail: {
+    type: Boolean,
+    default: true,
+  },
 });
 // userSchema.methods.comparePassword = function (candidatePassword: string) {
 //   return compare(candidatePassword, this.password);

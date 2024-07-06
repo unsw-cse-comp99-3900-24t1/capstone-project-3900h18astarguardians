@@ -11,6 +11,8 @@ interface mongooseUserI {
   school: string;
   title: string | null;
   role: string | null;
+  hasNotificationEmail: boolean;
+  hasConfirmationEmail: boolean;
 }
 interface userDB_I extends mongooseUserI {
   _id: Types.ObjectId;
@@ -29,6 +31,8 @@ interface tokenUserI {
   email: string;
   name: string;
   userId: string;
+  hasNotificationEmail: boolean;
+  hasConfirmationEmail: boolean;
 }
 interface mongooseUserMethodsI {
   comparePassword: (candidatePassword: string) => Promise<boolean>;
