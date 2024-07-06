@@ -16,6 +16,7 @@ import { sendConfirmationEmail } from "../utils/sendConfirmationEmail";
 import { sendNotificationEmail } from "../utils/sendNotificationEmail";
 import { sendFeedbackEmail } from "../utils/sendFeedbackEmail";
 import { notifyAdminEmail } from "../utils/notifyAdminEmail";
+import { sendOverrideEmail } from "../utils/sendOverrideEmail";
 
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
@@ -166,7 +167,7 @@ const checkInBooking = async (
   res.status(StatusCodes.OK).json({ updatedBooking });
 };
 const overrideBooking = async (
-  { params: { id: bookingId }, user: { type } }: Request,
+  { params: { id: bookingId } }: Request,
   res: Response
 ) => {
   const booking = await Booking.findById(bookingId);
@@ -186,6 +187,9 @@ const overrideBooking = async (
       runValidators: true,
     }
   ))!;
+  // notify the person who made the booking that its been overrided by an admin
+  const personWhoBooked = (await User.findById(updatedBooking.user))!;
+  await sendOverrideEmail(personWhoBooked.email, booking._id.toString());
   res.status(StatusCodes.OK).json({ updatedBooking });
 };
 const getAllBookings = async (
