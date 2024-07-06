@@ -3,6 +3,17 @@
   width: 100%;
 }
 
+/* Assuming .css-1gyej37:not(:first-child) selects the same elements as `gridIndex !== 0` */
+.css-1gyej37:not(:first-child) {
+  grid-template-columns: 4% repeat(1, 1fr);
+}
+
+.css-1gyej37:not(:first-child) .rs__cell.rs__time {
+  /* Hides the text content */
+  color: transparent;
+  font-size: 0;
+}
+
 /* 'day' element below the 'name' in the room column */
 .css-1d1h06e .rs__cell:not(.rs__time) {
   display: none;

@@ -8,6 +8,7 @@ import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import sendEmailFn  from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
+import FilterModal from './FilterModal';
 
 // Define interfaces
 interface Room {
@@ -70,7 +71,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } =
     useGlobalContext();
-
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   useEffect(() => {
     fetchRoomsAndEvents();
   }, [update, selectedDate, currLevel]);
@@ -79,13 +80,30 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
   }, [currLevel]);
 
+  // fetch data from the server
+  const fetchRooms = async () => {
+    const response = await request.get<{ rooms: Room[] }>("/rooms");
+    return response.data.rooms;
+  };
+
+  const fetchEvents = async () => {
+    const response = await request.get<{ bookings: Event[] }>("/bookings");
+    return response.data.bookings;
+  };
+
+  const fetchUsers = async () => {
+    const response = await request.get<{ users: User[] }>("/users");
+    return response.data.users;
+  };
+
   const fetchRoomsAndEvents = async () => {
     try {
-      setIsLoading(true); // Set loading state to true when fetching starts
-      const roomsResponse = await request.get<{ rooms: Room[] }>("/rooms");
-      const eventsResponse = await request.get<{ bookings: Event[] }>("/bookings");
+      setIsLoading(true);
+      const rooms = await fetchRooms();
+      const events = await fetchEvents();
+      const users = await fetchUsers();
 
-      const coloredRooms = roomsResponse.data.rooms.map((room: Room) => ({
+      const coloredRooms = rooms.map(room => ({
         ...room,
         color: getColorForRoomType(room.type),
         title: room.name,
@@ -94,7 +112,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
-      setEvents(eventsResponse.data.bookings.map((event: Event) => ({
+      setEvents(events.map(event => ({
         ...event,
         start: new Date(event.start),
         end: new Date(event.end),
@@ -106,22 +124,17 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         draggable: false,
       })));
 
-      const usersResponse = await request.get("/users");
-      let newUsers: User[] = usersResponse.data.users;
-      // put currUser to front
       const currUserType = token?.type;
-      if (currUserType === "admin") {
-        setIsAdmin(true);
-      }
+      setIsAdmin(currUserType === "admin");
 
-      setUsers(newUsers.filter(user => 
+      setUsers(users.filter(user => 
         user.type === "cse_staff" || user._id === token?.userId
       ));
 
     } catch (error) {
       console.error("Failed to fetch data", error);
     } finally {
-      setIsLoading(false); // Set loading state to false when fetching ends
+      setIsLoading(false);
     }
   };
 
@@ -148,27 +161,22 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setIsLoading(false)
   }
 
-  useEffect(() => {
-    if (!isLoading) {
-      const schedulerElement = document.querySelector('.scrollable-scheduler') as HTMLElement;
-      if (schedulerElement) {
-        // get all the room columns (or small grids) that are not the first one
-        const smallerGrids = schedulerElement.querySelectorAll('.css-1gyej37');
-        smallerGrids.forEach((grid, gridIndex) => {
-          // apply this to all but not the first smaller grid
-          if (gridIndex !== 0) {
-            const timeCells = grid.querySelectorAll('.rs__cell.rs__time');
-            timeCells.forEach(cell => {
-              // Clear the text content of the cell
-              cell.textContent = '';
-            });
-            // Assert grid as HTMLElement to access the style property
-            (grid as HTMLElement).style.gridTemplateColumns = '4% repeat(1, 1fr)';
-          }
-        });
-      }
-    }
-  }, [isLoading, currentIndex]); // Re-run this effect when isLoading changes
+  // useEffect(() => {
+  //   const schedulerElement = document.querySelector('.scrollable-scheduler') as HTMLElement;
+  //   if (schedulerElement) {
+  //     const smallerGrids = schedulerElement.querySelectorAll('.css-1gyej37');
+  //     smallerGrids.forEach((grid, gridIndex) => {
+  //       if (gridIndex !== 0) {
+  //         const timeCells = grid.querySelectorAll('.rs__cell.rs__time');
+  //         timeCells.forEach(cell => {
+  //           // Clear the text content of the cell
+  //           cell.textContent = '';
+  //         });
+  //         (grid as HTMLElement).style.gridTemplateColumns = '4% repeat(1, 1fr)';
+  //       }
+  //     });
+  //   }
+  // }, [isLoading, currentIndex]);
 
   const onConfirm = (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
     // make a booking request
@@ -242,8 +250,18 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     return <p>Loading...</p>;
   }
 
+  const handleFilter = (filter: string) => {
+    console.log(filter);
+  }
   // Render the Scheduler component when data has been loaded
   return <>
+  <button onClick={() => setIsFilterModalOpen(true)}>Filter Events</button>
+
+    {/* FilterModal component */}
+    <FilterModal
+      open={isFilterModalOpen}
+      handleClose={() => setIsFilterModalOpen(false)}
+      handleFilter={handleFilter}/>
     <Button onClick={prevPage} disabled={currentIndex === 0}>
         Back
     </Button>
