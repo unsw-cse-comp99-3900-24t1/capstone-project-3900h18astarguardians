@@ -17,9 +17,4 @@ export const mostCommonUsersQuery = (start: string, end: string) =>
       _id: "$_id",
       number_of_bookings: { $sum: 1 },
       doc: { $first: "$$ROOT" },
-    })
-    .replaceRoot({
-      newRoot: {
-        $mergeObjects: ["$doc", { number_of_bookings: "$number_of_bookings" }],
-      },
     });

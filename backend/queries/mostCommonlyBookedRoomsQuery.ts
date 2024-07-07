@@ -17,9 +17,4 @@ export const mostCommonlyBookedRoomsQuery = (start: string, end: string) =>
       _id: "$_id",
       room: { $first: "$$ROOT" },
       count: { $sum: 1 },
-    })
-    .replaceRoot({
-      newRoot: {
-        $mergeObjects: ["$room", { count: "$count" }],
-      },
     });

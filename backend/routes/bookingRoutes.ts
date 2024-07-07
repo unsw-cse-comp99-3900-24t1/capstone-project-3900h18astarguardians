@@ -22,7 +22,7 @@ const router = Router();
 
 router.route("/").get(getAllBookings).post(createBooking);
 router.route("/showAllMyBookings").get(getCurrentUserBookings);
-router.route("/usageReport").get(getUsageReport);
+router.route("/usageReport").post(getUsageReport);
 
 router.route("/sendFeedback").post(sendFeedback);
 router
