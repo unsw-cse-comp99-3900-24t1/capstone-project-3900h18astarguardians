@@ -17,6 +17,9 @@ import { sendNotificationEmail } from "../utils/sendNotificationEmail";
 import { sendFeedbackEmail } from "../utils/sendFeedbackEmail";
 import { notifyAdminEmail } from "../utils/notifyAdminEmail";
 import { sendOverrideEmail } from "../utils/sendOverrideEmail";
+import { mostCommonUsersQuery } from "../queries/mostCommonUsersQuery";
+import { bookingsNotCheckedInQuery } from "../queries/bookingsNotCheckedInQuery";
+import { mostCommonlyBookedRoomsQuery } from "../queries/mostCommonlyBookedRoomsQuery";
 
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
@@ -309,8 +312,27 @@ const sendFeedback = async (
     .status(StatusCodes.OK)
     .json({ msg: `feedback sent to admin successfully!` });
 };
+// everything is between two dates to which it applies
+const getUsageReport = async (
+  { query: { start, end } }: { query: { start: string; end: string } },
+  res: Response
+) => {
+  // list of bookings that havent been checked in
+  const notCheckedIn = await bookingsNotCheckedInQuery(start, end);
+  // most commonly booked rooms
+  const mostCommonlyBookedRooms = await mostCommonlyBookedRoomsQuery(
+    start,
+    end
+  );
 
+  //most common users
+  const mostCommonUsers = await mostCommonUsersQuery(start, end);
+  res
+    .status(StatusCodes.OK)
+    .json({ mostCommonlyBookedRooms, notCheckedIn, mostCommonUsers });
+};
 export {
+  getUsageReport,
   createBooking,
   getAllBookings,
   getSingleBooking,

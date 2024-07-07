@@ -39,7 +39,7 @@ const getAllRooms = async (
   if (availableBetween) {
     const [start, end] = (availableBetween as string).split(",");
 
-    result = availableBetweenQuery(new Date(start), new Date(end));
+    result = availableBetweenQuery(start, end);
   }
   if (level) queryObject.level = Number(level);
   if (sort) sort = (sort as string).split(",").join(" ");

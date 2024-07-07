@@ -9,6 +9,7 @@ import {
   checkInBooking,
   approveBookingRequest,
   denyBookingRequest,
+  getUsageReport,
 } from "../controllers/bookingController";
 import { getSingleProductReviews } from "../controllers/reviewController";
 import {
@@ -21,6 +22,7 @@ const router = Router();
 
 router.route("/").get(getAllBookings).post(createBooking);
 router.route("/showAllMyBookings").get(getCurrentUserBookings);
+router.route("/usageReport").get(getUsageReport);
 
 router.route("/sendFeedback").post(sendFeedback);
 router

@@ -1,6 +1,6 @@
 import { Room } from "../models/Room";
 
-export const availableBetweenQuery = (start: Date, end: Date) =>
+export const availableBetweenQuery = (start: string, end: string) =>
   Room.aggregate()
     .lookup({
       from: "bookings",
@@ -12,8 +12,8 @@ export const availableBetweenQuery = (start: Date, end: Date) =>
       bookings: {
         $not: {
           $elemMatch: {
-            start: { $lt: end },
-            end: { $gt: start },
+            start: { $lt: new Date(end) },
+            end: { $gt: new Date(start) },
           },
         },
       },
