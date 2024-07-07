@@ -3,8 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Room } from "../models/Room";
 import { BadRequestError } from "../errors";
 import { mongooseRoomI, tokenUserI } from "../types";
-import { stringify } from "querystring";
-
+import { availableBetweenQuery } from "../queries/availableBetweenQuery";
 const ROOM_TYPES = ["meeting room", "normal", "hot desk", "staff room"];
 export const userToRoomTypesMap = {
   admin: ROOM_TYPES,
@@ -20,9 +19,9 @@ const createRoom = async (
   const room = await Room.create({ ...body });
   res.status(StatusCodes.CREATED).json({ room });
 };
-
+// avaiableBetween query param seems to work???
 const getAllRooms = async (
-  { user: { type }, query: { level, sort } }: Request,
+  { user: { type }, query: { level, sort, availableBetween } }: Request,
   res: Response
 ) => {
   interface queryObjectType {
@@ -36,10 +35,22 @@ const getAllRooms = async (
       })),
     ],
   };
+  let result;
+  if (availableBetween) {
+    const [start, end] = (availableBetween as string).split(",");
+
+    result = availableBetweenQuery(new Date(start), new Date(end));
+  }
   if (level) queryObject.level = Number(level);
   if (sort) sort = (sort as string).split(",").join(" ");
-  let result = await Room.find(queryObject).sort(sort || "name");
 
+  if (result) result = result.match(queryObject).sort(sort || "name");
+  else {
+    result = Room.find(queryObject).sort(sort || "name");
+  }
+
+  // do sort and query param operations after aggregarion pipeline
+  result = await result;
   res.status(StatusCodes.OK).json({ count: result.length, rooms: result });
 };
 const getSingleRoom = async (
