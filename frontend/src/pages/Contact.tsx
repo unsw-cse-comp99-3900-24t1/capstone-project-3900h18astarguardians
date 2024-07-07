@@ -32,7 +32,7 @@ const Contact = () => {
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    // e.preventDefault();
+    e.preventDefault();
     // try {
     //   const data = new FormData(e.currentTarget);
     //   const {
@@ -67,16 +67,17 @@ const Contact = () => {
         <Typography component="h1" variant="h5">
           Contact us
         </Typography>
+        <Typography component="h1" variant="body1">
+          Leave a message for the admins on any thoughts or feedback, or any help you might need!
+        </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
+                placeholder="Please provide any feedback..."
+                multiline
+                rows={5}
+                maxRows={Infinity}
               />
             </Grid>
           </Grid>
@@ -86,7 +87,7 @@ const Contact = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Login
+            Submit
           </Button>
           <Grid container justifyContent="space-between">
             {/* Forgot password section if ever we need it
