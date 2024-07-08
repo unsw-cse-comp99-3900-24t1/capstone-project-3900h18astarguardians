@@ -1,11 +1,16 @@
 import * as ics from 'ics'
 
+interface room {
+  name: string;
+  size: string;
+  _id: string;
+}
 interface event {
   start: string;
   end: string;
   title: string;
   Description: string;
-  room_name: string;
+  room: room;
 }
 
 
@@ -60,7 +65,7 @@ const exportIcs = (events: event[]) => {
       end: strEnd,
       title,
       Description: description,
-      room_name: location
+      room: { name: location },
     } = item
     return {
       start: dateDealFn(`${strStart}`),

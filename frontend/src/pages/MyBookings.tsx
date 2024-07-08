@@ -4,9 +4,8 @@ import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useGlobalContext } from "../utils/context";
-
-  
-
+import exportIcs from '../utils/exportIcs'
+import Box from "@mui/material/Box";
 
 type Booking = {
   id: string;
@@ -16,11 +15,24 @@ type Booking = {
   room: string;
   description: string;
 };
+type OldBooking = {
+  _id: string;
+  start: string;
+  end: string;
+  room: string;
+  description: string;
+};
+
+const AllFileBoxStyle = {
+  ['text-align']: 'center',
+  padding: '50px 0'
+}
 
 const MyBookings  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
   // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [oldBookings, setOldBookings] = useState<OldBooking[]>([]);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,6 +56,18 @@ const MyBookings  = () => {
       console.log(e);
     }
   };
+
+  const handleExportIcs = (event: Booking, oldBookings: OldBooking[]) => {
+    const bookings = oldBookings.find(item => item._id === event.id)
+    console.log('item', event, oldBookings, bookings)
+    exportIcs([bookings]);
+    displaySuccess('success import ics file')
+  }
+
+  const handleAllExportIcs = (oldBookings: OldBooking[]) => {
+    exportIcs(oldBookings);
+    displaySuccess('success import ics file')
+  }
 
   // NOTE: i think this function along with the same function in RoomTimetable
   // should be handled inside the Dashboard, instead of these components
@@ -77,7 +101,9 @@ const MyBookings  = () => {
       let newBookings: Booking[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
-      console.log(data);
+      console.log('bookingsData', data);
+
+      setOldBookings(data.filter((item) => new Date(item.start) > today));
 
       for (let i = 0; i < data.length; i++) {
         // set bookings
@@ -142,6 +168,9 @@ const MyBookings  = () => {
           <Button variant="outlined" color="error" onClick={handleClickOpen}>
             Cancel Booking
           </Button>
+          <Button variant="outlined" color="primary" onClick={()=> handleExportIcs(item, oldBookings)}>
+            Export ICS File
+          </Button>
           <Dialog
         open={open}
         onClose={handleClose}
@@ -171,8 +200,15 @@ const MyBookings  = () => {
         </Accordion>
       ))
     }
+    {!isLoading && bookings.length !== 0 &&
+    <Box sx={AllFileBoxStyle}>
+      <Button variant="outlined" color="primary" onClick={()=> handleAllExportIcs(oldBookings)}>
+        Export ALL ICS File
+      </Button>
+    </Box>
+    }
     {/* <Accordion >
-      <AccordionSummary >
+      <AccordionSummary > 
         Title
       </AccordionSummary>
       <AccordionDetails >
