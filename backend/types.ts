@@ -11,6 +11,11 @@ interface mongooseUserI {
   school: string;
   title: string | null;
   role: string | null;
+  hasNotificationEmail: boolean;
+  hasConfirmationEmail: boolean;
+  password: string;
+  verificationToken: string;
+  isVerified: boolean;
 }
 interface userDB_I extends mongooseUserI {
   _id: Types.ObjectId;
@@ -29,6 +34,8 @@ interface tokenUserI {
   email: string;
   name: string;
   userId: string;
+  hasNotificationEmail: boolean;
+  hasConfirmationEmail: boolean;
 }
 interface mongooseUserMethodsI {
   comparePassword: (candidatePassword: string) => Promise<boolean>;
@@ -49,6 +56,7 @@ interface mongooseBookingI {
   isOverrided: boolean;
   isRequest: boolean;
   isCheckedIn: boolean;
+  isApproved: boolean;
 }
 interface mongooseBookingMethods {}
 interface mongooseProductI {

@@ -51,6 +51,10 @@ const bookingSchema = new Schema<
     type: Boolean,
     default: false,
   },
+  isApproved: {
+    type: Boolean,
+    default: null,
+  },
 });
 // bookingSchema.virtual("end").get(function () {
 //   return moment(this.start as unknown as Date).add(this.duration, "hours");
