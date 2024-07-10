@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Recovery from "./pages/Recovery";
 import OTPInput from "./pages/OTPInput";
 import Reset from "./pages/Reset";
+import Contact from "./pages/Contact";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
@@ -104,6 +105,7 @@ const App = () => {
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
+            <Route path="contact" element={<Contact />}/>
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>
