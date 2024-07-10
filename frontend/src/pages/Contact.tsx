@@ -33,22 +33,22 @@ const Contact = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // try {
-    //   const data = new FormData(e.currentTarget);
-    //   const {
-    //     data: { user },
-    //   } = await request.post("/auth/login", {
-    //     email: data.get("email"),
-    //     password: data.get("password"),
-    //   });
-    //   handleToken(user);
-    // } catch (err) {
-    //   if (err instanceof AxiosError) {
-    //     const msg = err.response!.data.msg;
-    //     displayError(msg);
-    //     navigate("/login")
-    //   }
-    // }
+    try {
+      const data = new FormData(e.currentTarget);
+      const {
+        data: { user },
+      } = await request.post("/auth/login", {
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+      handleToken(user);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const msg = err.response!.data.msg;
+        displayError(msg);
+        navigate("/login")
+      }
+    }
   };
   return (
     <Container component="main" maxWidth="xs">
