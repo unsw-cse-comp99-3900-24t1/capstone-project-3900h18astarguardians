@@ -19,22 +19,20 @@ type Booking = {
 
 const MyBookings  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
-  // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState<string>('');
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpen = (id: string) => {
+    setOpenDialog(id);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenDialog('');
   };
 
   const handleConfirm = (id: string) => {
     deleteBooking(id);
-    setOpen(false);
   };
 
   const checkLoggedIn = async () => {
@@ -53,7 +51,6 @@ const MyBookings  = () => {
       const {
         data: { success },
       } = await request.delete(`/bookings/${event_id}`);
-      console.log('deleteBookingsResponse', success)
       if(success) {
         displaySuccess("Successfully delete bookings");
       }
@@ -71,13 +68,9 @@ const MyBookings  = () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
       let data = resp.data.bookings;
-      console.log(data);
-      // console.log(data);
-      // let data = resp.data.bookings;
       let newBookings: Booking[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
-      console.log(data);
 
       for (let i = 0; i < data.length; i++) {
         // set bookings
@@ -115,6 +108,7 @@ const MyBookings  = () => {
     getBookings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   
   return <>
     {!isLoading && bookings.length === 0 &&
@@ -139,11 +133,11 @@ const MyBookings  = () => {
             <strong>Checked In: False</strong>
           </AccordionDetails>
           <AccordionActions>
-          <Button variant="outlined" color="error" onClick={handleClickOpen}>
+          <Button variant="outlined" color="error" onClick={() => handleClickOpen(item.id)}>
             Cancel Booking
           </Button>
           <Dialog
-        open={open}
+        open={openDialog === item.id}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
