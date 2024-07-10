@@ -47,7 +47,8 @@ const MyBookings  = () => {
   // should be handled inside the Dashboard, instead of these components
   const deleteBooking = async (event_id: string) => {
     try {
-      setIsLoading(true);
+      setBookings(bookings.filter(booking => booking.id !== event_id));
+      // setIsLoading(true);
       const {
         data: { success },
       } = await request.delete(`/bookings/${event_id}`);
@@ -72,7 +73,7 @@ const MyBookings  = () => {
       let today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      for (let i = 0; i < data.length; i++) {
+      for (let i = data.length - 1; i >= 0; i--) {
         // set bookings
         let startTime = new Date(data[i].start);
         let endTime = new Date(data[i].end);
@@ -93,7 +94,7 @@ const MyBookings  = () => {
           description: 'description not implemented',
         }
 
-        newBookings.push(b)
+        newBookings.push(b);
       }
       // let date = data.book
       setBookings(newBookings);
