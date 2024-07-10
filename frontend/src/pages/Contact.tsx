@@ -13,7 +13,7 @@ import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 const Contact = () => {
-  const { displayError, displaySuccess, handleToken, token } =
+  const { displayError, displaySuccess, email } =
     useGlobalContext();
 
   const navigate = useNavigate();
@@ -35,18 +35,20 @@ const Contact = () => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
+      const feedback = data.get("feedback");
+      console.log(feedback);
       const {
-        data: { user },
-      } = await request.post("/auth/login", {
-        email: data.get("email"),
-        password: data.get("password"),
+        data: { res },
+      } = await request.post("/bookings/sendFeedback", {
+        feedback
       });
-      handleToken(user);
+      displaySuccess("Sent!");
+      navigate("/dashboard");
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;
         displayError(msg);
-        navigate("/login")
+        navigate("/dashboard");
       }
     }
   };
@@ -78,6 +80,9 @@ const Contact = () => {
                 multiline
                 rows={5}
                 maxRows={Infinity}
+                id="feedback"
+                name="feedback"
+                autoComplete="feedback"
               />
             </Grid>
           </Grid>
