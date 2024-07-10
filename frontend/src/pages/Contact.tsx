@@ -12,17 +12,17 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
-const Login = () => {
-  const { displayError, displaySuccess, handleToken, handleEmail, token } =
+const Contact = () => {
+  const { displayError, displaySuccess, email } =
     useGlobalContext();
 
   const navigate = useNavigate();
+  // Need to properly implement this
   const checkLoggedIn = async () => {
     try {
       await request.get("/users/showMe");
-      displaySuccess("Logged In");
-      navigate("/dashboard");
     } catch (e) {
+      navigate("/login");
       console.log(e);
     }
   };
@@ -35,21 +35,20 @@ const Login = () => {
     e.preventDefault();
     try {
       const data = new FormData(e.currentTarget);
+      const feedback = data.get("feedback");
+      console.log(feedback);
       const {
-        data: { user },
-      } = await request.post("/auth/login", {
-        email: data.get("email"),
-        password: data.get("password"),
+        data: { res },
+      } = await request.post("/bookings/sendFeedback", {
+        feedback
       });
-      handleToken(user);
-      //@ts-ignore
-      handleEmail(data.get("email"));
-      displaySuccess("Logged In");
+      displaySuccess("Sent!");
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;
         displayError(msg);
+        navigate("/dashboard");
       }
     }
   };
@@ -68,18 +67,22 @@ const Login = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Login
+          Contact us
+        </Typography>
+        <Typography component="h1" variant="body1">
+          Leave a message for the admins on any thoughts or feedback, or any help you might need!
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
+                placeholder="Please provide any feedback..."
+                multiline
+                rows={5}
+                maxRows={Infinity}
+                id="feedback"
+                name="feedback"
+                autoComplete="feedback"
               />
             </Grid>
           </Grid>
@@ -89,7 +92,7 @@ const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Login
+            Submit
           </Button>
           <Grid container justifyContent="space-between">
             {/* Forgot password section if ever we need it
@@ -103,4 +106,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Contact;

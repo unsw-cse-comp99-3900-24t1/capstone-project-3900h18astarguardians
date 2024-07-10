@@ -30,23 +30,22 @@ const AllFileBoxStyle = {
 
 const MyBookings  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
-  // fetch data
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [oldBookings, setOldBookings] = useState<OldBooking[]>([]);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState<string>('');
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpen = (id: string) => {
+    setOpenDialog(id);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenDialog('');
   };
 
   const handleConfirm = (id: string) => {
     deleteBooking(id);
-    setOpen(false);
   };
 
   const checkLoggedIn = async () => {
@@ -73,11 +72,11 @@ const MyBookings  = () => {
   // should be handled inside the Dashboard, instead of these components
   const deleteBooking = async (event_id: string) => {
     try {
-      setIsLoading(true);
+      setBookings(bookings.filter(booking => booking.id !== event_id));
+      // setIsLoading(true);
       const {
         data: { success },
       } = await request.delete(`/bookings/${event_id}`);
-      console.log('deleteBookingsResponse', success)
       if(success) {
         displaySuccess("Successfully delete bookings");
       }
@@ -95,9 +94,6 @@ const MyBookings  = () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
       let data = resp.data.bookings;
-      console.log(data);
-      // console.log(data);
-      // let data = resp.data.bookings;
       let newBookings: Booking[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -105,7 +101,7 @@ const MyBookings  = () => {
 
       setOldBookings(data.filter((item) => new Date(item.start) > today));
 
-      for (let i = 0; i < data.length; i++) {
+      for (let i = data.length - 1; i >= 0; i--) {
         // set bookings
         let startTime = new Date(data[i].start);
         let endTime = new Date(data[i].end);
@@ -126,7 +122,7 @@ const MyBookings  = () => {
           description: 'description not implemented',
         }
 
-        newBookings.push(b)
+        newBookings.push(b);
       }
       // let date = data.book
       setBookings(newBookings);
@@ -141,6 +137,7 @@ const MyBookings  = () => {
     getBookings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   
   return <>
     {!isLoading && bookings.length === 0 &&
@@ -165,14 +162,14 @@ const MyBookings  = () => {
             <strong>Checked In: False</strong>
           </AccordionDetails>
           <AccordionActions>
-          <Button variant="outlined" color="error" onClick={handleClickOpen}>
+          <Button variant="outlined" color="error" onClick={() => handleClickOpen(item.id)}>
             Cancel Booking
           </Button>
           <Button variant="outlined" color="primary" onClick={()=> handleExportIcs(item, oldBookings)}>
             Export ICS File
           </Button>
           <Dialog
-        open={open}
+        open={openDialog === item.id}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

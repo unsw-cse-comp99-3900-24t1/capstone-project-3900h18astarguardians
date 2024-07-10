@@ -20,7 +20,7 @@ import NotificationSettingsModal from '../components/NotificationSettingsModal'
 
 const pages = ["login"];
 const settings = ["dashboard", "profile", "notification setting"];
-const logged_in_pages = ["MyBookings"]
+const logged_in_pages = ["MyBookings", "contact"]
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
