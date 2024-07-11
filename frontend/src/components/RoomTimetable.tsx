@@ -20,12 +20,13 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
+  const [clickedRoom, setClickedRoom] = useState<Room>();
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
 
   const initializeFilteredRooms = useCallback(() => {
-    const CurrLevelRooms = rooms.filter(room => room.level == currLevel);
+    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
     setFilteredRooms(CurrLevelRooms);
   }, [rooms, currLevel]);
 
@@ -39,7 +40,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       const [roomsResponse, eventsResponse, usersResponse] = await Promise.all([
         request.get<{ rooms: Room[] }>("/rooms"),
         request.get<{ bookings: Event[] }>("/bookings"),
-        request.get("/users")
+        request.get<{ users: User[] }>("/users")
       ]);
 
       const coloredRooms = roomsResponse.data.rooms.map(room => ({
@@ -127,10 +128,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     }
   }, [isLoading, currentIndex]);
 
-  const onConfirm = async (event: ProcessedEvent, action: EventActions): Promise<ProcessedEvent> => {
+  const onConfirm = async (event: ProcessedEvent, _action: EventActions): Promise<ProcessedEvent> => {
     try {
       const response = await request.post("/bookings", {
-        "room": event.room_id,
+        "room": clickedRoom?._id,
         "start": event.start.toString(),
         "duration": Math.abs(event.end.getTime() - event.start.getTime()) / 3600000,
         ...(isAdmin && event.User !== token?.userId ? { "user": event.User } : {})
@@ -182,13 +183,24 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setFilterModalOpen(false);
   };
 
+
   const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacity: number }) => {
     const filtered = rooms.filter(room =>
-      room.size >= filters.capacity && room.level == currLevel
+      room.size >= filters.capacity && room.level === currLevel
     );
     setFilteredRooms(filtered);
     setCurrentIndex(0);
     handleFilterModalClose();
+  };
+
+  
+  
+  // handleCellClick is called when a cell is clicked to get the selected room details
+  const handleCellClick = (_start: Date, _end: Date, _resourceKey?: string, resourceVal?: string | number) => {
+    console.log("Clicked room resource value:", resourceVal);
+    const room = rooms.find(room => room._id === resourceVal);
+    console.log("Setting clicked room to:", room);
+    setClickedRoom(room);
   };
 
   return (
@@ -204,6 +216,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
       <div className="scrollable-scheduler">
         <Scheduler
+          onCellClick={handleCellClick}
           key={currentIndex}
           view="day"
           day={{
@@ -249,14 +262,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               config: { label: "Details", multiline: true, rows: 4 }
             },
             {
-              name: "room_id",
-              type: "select",
-              options: filteredRooms.slice(currentIndex, currentIndex + roomsDisplay).map(res => ({
-                id: res._id,
-                text: `${res.name}`,
-                value: res._id
-              })),
-              config: { label: "Room", required: true }
+              name: "room",
+              type: "input",
+              default: clickedRoom?.name,
+              config: { label: "Room", required: true, disabled: true }
             },
             {
               name: "User",
