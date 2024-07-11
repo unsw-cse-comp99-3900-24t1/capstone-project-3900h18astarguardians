@@ -31,8 +31,8 @@ const Dashboard = () => {
   const isToday = (date: Date) => {
     const today = new Date();
     return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear();
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
   };
 
   const isNextWeekSunday = (date: Date) => {
@@ -43,11 +43,11 @@ const Dashboard = () => {
     const daysUntilNextSunday = today.getDay() === 0 ? 7 : 7 - today.getDay();
     // Set nextSunday to the next week's Sunday by adding daysUntilNextSunday + 7 to ensure it's next week
     nextSunday.setDate(today.getDate() + daysUntilNextSunday + 7);
-    
+
     // Check if the provided date is the same as next week's Sunday
     return date.getDate() === nextSunday.getDate() &&
-           date.getMonth() === nextSunday.getMonth() &&
-           date.getFullYear() === nextSunday.getFullYear();
+      date.getMonth() === nextSunday.getMonth() &&
+      date.getFullYear() === nextSunday.getFullYear();
   };
 
   return (
@@ -76,7 +76,7 @@ const Dashboard = () => {
             &gt;
           </Button>
         </Box>
-        <RoomTimetable selectedDate={selectedDate} currLevel={currLevel}/>
+        <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} />
       </div>
     </>
   );
