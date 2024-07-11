@@ -1,5 +1,5 @@
 import { Scheduler } from "@aldabil/react-scheduler";
-import { useEffect, useState, memo, useCallback } from "react";
+import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
@@ -20,7 +20,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
-  const [clickedRoom, setClickedRoom] = useState<Room>();
+  const [clickedRoom, setClickedRoom] = useState<Room | undefined>();
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
@@ -128,10 +128,15 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     }
   }, [isLoading, currentIndex]);
 
+  const clickedRoomRef = useRef(clickedRoom);
+  useEffect(() => {
+    clickedRoomRef.current = clickedRoom;
+  }, [clickedRoom]);
+
   const onConfirm = async (event: ProcessedEvent, _action: EventActions): Promise<ProcessedEvent> => {
     try {
       const response = await request.post("/bookings", {
-        "room": clickedRoom?._id,
+        "room": clickedRoomRef.current?._id,
         "start": event.start.toString(),
         "duration": Math.abs(event.end.getTime() - event.start.getTime()) / 3600000,
         ...(isAdmin && event.User !== token?.userId ? { "user": event.User } : {})
@@ -193,13 +198,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     handleFilterModalClose();
   };
 
-  
-  
   // handleCellClick is called when a cell is clicked to get the selected room details
   const handleCellClick = (_start: Date, _end: Date, _resourceKey?: string, resourceVal?: string | number) => {
-    console.log("Clicked room resource value:", resourceVal);
     const room = rooms.find(room => room._id === resourceVal);
-    console.log("Setting clicked room to:", room);
     setClickedRoom(room);
   };
 
@@ -260,12 +261,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               type: "input",
               default: "Default Value...",
               config: { label: "Details", multiline: true, rows: 4 }
-            },
-            {
-              name: "room",
-              type: "input",
-              default: clickedRoom?.name,
-              config: { label: "Room", required: true, disabled: true }
             },
             {
               name: "User",
