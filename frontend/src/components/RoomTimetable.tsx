@@ -16,6 +16,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [events, setEvents] = useState<Event[]>([]);
   const [update, setUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTableReady, setIsTableReady] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -28,13 +29,17 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const initializeFilteredRooms = useCallback(() => {
     const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
     setFilteredRooms(CurrLevelRooms);
+    setIsLoading(false);
   }, [rooms, currLevel]);
 
   useEffect(() => {
-    initializeFilteredRooms();
+    if (rooms.length > 0) {
+      initializeFilteredRooms();
+    }
   }, [rooms, currLevel, initializeFilteredRooms]);
 
   const fetchRoomsAndEvents = useCallback(async () => {
+    setIsTableReady(false)
     try {
       setIsLoading(true);
       const [roomsResponse, eventsResponse, usersResponse] = await Promise.all([
@@ -75,7 +80,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     } catch (error) {
       console.error("Failed to fetch data", error);
     } finally {
-      setIsLoading(false);
+
     }
   }, [token]);
 
@@ -111,7 +116,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && filteredRooms.length > 0) {
       const schedulerElement = document.querySelector('.scrollable-scheduler') as HTMLElement;
       if (schedulerElement) {
         const smallerGrids = schedulerElement.querySelectorAll('.css-1gyej37');
@@ -125,6 +130,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
           }
         });
       }
+      setIsTableReady(true);
     }
   }, [isLoading, currentIndex]);
 
@@ -195,8 +201,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     handleFilterModalClose();
   };
 
-  
-  
+
+
   // handleCellClick is called when a cell is clicked to get the selected room details
   const handleCellClick = (_start: Date, _end: Date, _resourceKey?: string, resourceVal?: string | number) => {
     console.log("Clicked room resource value:", resourceVal);
@@ -217,79 +223,82 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       />
       <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
       <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
-      <div className="scrollable-scheduler">
-        <Scheduler
-          onCellClick={handleCellClick}
-          key={currentIndex}
-          view="day"
-          day={{
-            startHour: 0,
-            endHour: 24,
-            step: 60,
-            cellRenderer: ({ height, start, onClick, ...props }) => {
-              const currTime = new Date();
-              currTime.setMinutes(0);
-              currTime.setHours(currTime.getHours() - 1);
-              const disabled = start < currTime;
-              const restProps = disabled ? {} : props;
-              return (
-                <Button
-                  style={{
-                    height: "100%",
-                    background: disabled ? "#eee" : "transparent",
-                    cursor: disabled ? "not-allowed" : "pointer"
-                  }}
-                  onClick={disabled ? () => { } : onClick}
-                  disableRipple={disabled}
-                  {...restProps}
-                ></Button>
-              );
-            }
-          }}
-          hourFormat="24"
-          navigation={false}
-          disableViewer={false}
-          selectedDate={selectedDate}
-          disableViewNavigator={true}
-          resourceViewMode={"default"}
-          resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
-          draggable={false}
-          onDelete={deleteBookings}
-          events={events}
-          onConfirm={onConfirm}
-          fields={[
-            {
-              name: "Description",
-              type: "input",
-              default: "Default Value...",
-              config: { label: "Details", multiline: true, rows: 4 }
-            },
-            {
-              name: "room",
-              type: "input",
-              default: clickedRoom?.name,
-              config: { label: "Room", required: true, disabled: true }
-            },
-            {
-              name: "User",
-              type: "select",
-              default: token?.userId,
-              options: users.map(user => ({
-                id: user._id,
-                text: `${user.name} (${user.zid})`,
-                value: user._id
-              })),
-              config: { label: "User", required: true, disabled: !isAdmin }
-            }
-          ]}
-          resourceFields={{
-            idField: "admin_id",
-            textField: "title",
-            avatarField: "title",
-            colorField: "color"
-          }}
-        />
-      </div>
+      {filteredRooms.length > 0 && (
+        <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
+          <Scheduler
+            onCellClick={handleCellClick}
+            key={currentIndex}
+            view="day"
+            day={{
+              startHour: 0,
+              endHour: 24,
+              step: 60,
+              cellRenderer: ({ height, start, onClick, ...props }) => {
+                const currTime = new Date();
+                currTime.setMinutes(0);
+                currTime.setHours(currTime.getHours() - 1);
+                const disabled = start < currTime;
+                const restProps = disabled ? {} : props;
+                return (
+                  <Button
+                    style={{
+                      height: "100%",
+                      background: disabled ? "#eee" : "transparent",
+                      cursor: disabled ? "not-allowed" : "pointer"
+                    }}
+                    onClick={disabled ? () => { } : onClick}
+                    disableRipple={disabled}
+                    {...restProps}
+                  ></Button>
+                );
+              }
+            }}
+            hourFormat="24"
+            navigation={false}
+            disableViewer={false}
+            selectedDate={selectedDate}
+            disableViewNavigator={true}
+            resourceViewMode={"default"}
+            resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
+            draggable={false}
+            onDelete={deleteBookings}
+            events={events}
+            onConfirm={onConfirm}
+            fields={[
+              {
+                name: "Description",
+                type: "input",
+                default: "Default Value...",
+                config: { label: "Details", multiline: true, rows: 4 }
+              },
+              {
+                name: "room",
+                type: "input",
+                default: clickedRoom?.name,
+                config: { label: "Room", required: true, disabled: true }
+              },
+              {
+                name: "User",
+                type: "select",
+                default: token?.userId,
+                options: users.map(user => ({
+                  id: user._id,
+                  text: `${user.name} (${user.zid})`,
+                  value: user._id
+                })),
+                config: { label: "User", required: true, disabled: !isAdmin }
+              }
+            ]}
+            resourceFields={{
+              idField: "admin_id",
+              textField: "title",
+              avatarField: "title",
+              colorField: "color"
+            }}
+          />
+        </div>
+      )}
+
     </>
   );
 });
