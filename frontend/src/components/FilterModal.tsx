@@ -17,6 +17,7 @@ import {
   Divider
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InputAdornment from '@mui/material/InputAdornment';
 
 interface FilterModalProps {
   open: boolean;
@@ -29,11 +30,14 @@ interface FilterModalProps {
 const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConfirm, options, types }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [capacityMin, setCapacityMin] = useState<number | "">();
-  const [capacityMax, setCapacityMax] = useState<number | "">();
+  const [capacityMin, setCapacityMin] = useState<number | "">("");
+  const [capacityMax, setCapacityMax] = useState<number | "">("");
   const [equipmentExpanded, setEquipmentExpanded] = useState<boolean>(false);
   const [typeExpanded, setTypeExpanded] = useState<boolean>(false);
   const [modalStyle, setModalStyle] = useState({});
+
+  const clearCapacityMin = () => setCapacityMin("");
+  const clearCapacityMax = () => setCapacityMax("");
 
   useEffect(() => {
     const newStyle = {
@@ -85,7 +89,13 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
   ) => {
     setter(Number(event.target.value) || "");
   };
-
+  const preventInvalidInput = (event: React.KeyboardEvent) => {
+    const validKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'];
+    if (validKeys.includes(event.key) || (event.key >= '0' && event.key <= '9')) {
+      return; // Allow normal processing of these keys
+    }
+    event.preventDefault(); // Prevent other keys
+  };
   return (
     <Modal
       open={open}
@@ -148,6 +158,17 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             value={capacityMin}
             onChange={(e) => handleCapacityChange(e, setCapacityMin)}
             sx={{ mb: 2 }}
+            inputProps={{ min: 0 }}
+            onKeyDown={preventInvalidInput}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={clearCapacityMin} edge="end">
+                    <CloseIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <TextField
             label="Capacity Max"
@@ -159,6 +180,17 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             value={capacityMax}
             onChange={(e) => handleCapacityChange(e, setCapacityMax)}
             sx={{ mb: 2 }}
+            inputProps={{ min: 0 }}
+            onKeyDown={preventInvalidInput}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={clearCapacityMax} edge="end">
+                    <CloseIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
         </FormControl>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
