@@ -184,9 +184,11 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
 
-  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacity: number }) => {
+  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacityMin: number, capacityMax: number }) => {
     const filtered = rooms.filter(room =>
-      room.size >= filters.capacity && room.level === currLevel
+      room.level === currLevel &&
+      room.size >= filters.capacityMin &&
+      room.size <= filters.capacityMax
     );
     setFilteredRooms(filtered);
     setCurrentIndex(0);
@@ -210,7 +212,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         open={filterModalOpen}
         handleClose={handleFilterModalClose}
         handleConfirm={handleFilterModalConfirm}
-        options={['Option 1', 'Option 2', 'Option 3']} // Replace with actual options
+        options={['printer', 'projector', 'other']}
+        types={['staff room', 'meeting room', 'hot desk', 'normal']}
       />
       <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
       <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
