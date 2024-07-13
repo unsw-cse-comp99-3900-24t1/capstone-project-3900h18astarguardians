@@ -13,6 +13,7 @@ import Reset from "./pages/Reset";
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
 import MyBookings from "./pages/MyBookings";
+import Reports from "./pages/Reports";
 
 export type tokenUserI = {
   type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
@@ -89,6 +90,8 @@ const App = () => {
     email,
   };
 
+  console.log(token?.type);
+
   return (
     <>
       <BrowserRouter>
@@ -103,6 +106,7 @@ const App = () => {
             <Route path="recovery" element={<Recovery />} />
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
           </Routes>
         </MyGlobalContext.Provider>
