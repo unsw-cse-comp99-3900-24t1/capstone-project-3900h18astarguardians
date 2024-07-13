@@ -8,6 +8,7 @@ import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import sendEmailFn  from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
+// import exportIcs from '../utils/exportIcs'
 
 // Define interfaces
 interface Room {
@@ -174,6 +175,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     // make a booking request
 
     const makePostRequest = async () => {
+      console.log('event.ics', event.ics)
       try {
         const response = await request.post("/bookings", {
           "room": event.room_id,
@@ -184,6 +186,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         });
         if(response?.data?.booking._id) {
           sendEmailFn(response?.data?.booking._id, true)
+          // if(event.ics === 'export') {
+          //   event.room_name = displayedRooms?.find(item => item._id === event.room_id)?.name
+          //   exportIcs([event]);
+          // }
           //sendEmailFn(response?.data?.booking._id, false)
         }
         events.push({
@@ -325,7 +331,22 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               };
             }),
             config: { label: "User", required: true, disabled: !isAdmin }
-          }
+          }, 
+          // {
+          //   name: "ics",
+          //   type: "select",
+          //   default: "not export",
+          //   options: [{
+          //     id: 1001,
+          //     text: 'export',
+          //     value: 'export'
+          //   },{
+          //     id: 1002,
+          //     text: 'not export',
+          //     value: 'not export'
+          //   }],
+          //   config: { label: "export ics file", multiline: true, rows: 4 }
+          // },
         ]}
         resourceFields={{
           idField: "admin_id",

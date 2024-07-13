@@ -1,13 +1,10 @@
-import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
+import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { useGlobalContext } from "../utils/context";
 
 const style = {
   position: "absolute",
@@ -23,15 +20,11 @@ const style = {
   p: 4,
 };
 
-const TextModal = ({ handleConfirm, open, label, btnName, handleClose }) => {
-  const [value, setValue] = React.useState('mail');
-
-  const { displaySuccess, displayError } =
-    useGlobalContext();
-
+const TextModal = ({ state, setState, open, handleClose, handleConfirm }) => {
   const handleChange = (event) => {
-      setValue(event.target.value);
+    setState({ ...state, [event.target.name]: event.target.checked });
   };
+
   return (
     <div>
       <Modal
@@ -42,22 +35,36 @@ const TextModal = ({ handleConfirm, open, label, btnName, handleClose }) => {
       >
         <Box sx={style}>
           <FormControl component="fieldset">
-          <FormLabel component="legend">Notification Setting</FormLabel>
-          <br />
-          <RadioGroup aria-label="Notification" name="Notification1" value={value} onChange={handleChange}>
-            <FormControlLabel value="mail" control={<Radio />} label="E-mail" />
-            <FormControlLabel value="SMS" control={<Radio />} label="SMS" />
-            <FormControlLabel value="app" control={<Radio />} label="app" />
-          </RadioGroup>
+            <FormLabel component="legend">Notification Setting</FormLabel>
+            <br />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.hasConfirmationEmail}
+                  onChange={handleChange}
+                  name="hasConfirmationEmail"
+                  color="primary"
+                />
+              }
+              label="Receive Confirmation Email"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.hasNotificationEmail}
+                  onChange={handleChange}
+                  name="hasNotificationEmail"
+                  color="primary"
+                />
+              }
+              label="Receive Notification Email"
+            />
           </FormControl>
           <br />
           <br />
           <Button
             variant="contained"
-            onClick={() => {
-              handleClose();
-              displaySuccess('Change Notification Setting Success!')
-            }}
+            onClick={handleConfirm}
           >
             CONFIRM
           </Button>

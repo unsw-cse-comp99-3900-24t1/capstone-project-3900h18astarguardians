@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,12 +20,16 @@ import NotificationSettingsModal from '../components/NotificationSettingsModal'
 
 const pages = ["login"];
 const settings = ["dashboard", "profile", "notification setting"];
-const logged_in_pages = ["MyBookings"]
+const logged_in_pages = ["MyBookings", "contact"]
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
   const [anchorElUser, setAnchorElUser] = useState<HTMLElement | null>(null);
   const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false);
+  const [emailState, setEmailState] = useState({
+    hasConfirmationEmail: true,
+    hasNotificationEmail: true,
+  });
 
   // fn's for opening and closing
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) =>
@@ -43,6 +47,45 @@ const ResponsiveAppBar = () => {
 
   const { token, removeToken, displaySuccess, displayError } =
     useGlobalContext();
+
+  useEffect(() => {
+    getUserInfo()
+  }, [])
+  const getUserInfo = async () => {
+    try {
+      const userInfoData = await request.get("/users/showMe");
+      const {
+        hasConfirmationEmail,
+        hasNotificationEmail,
+      } = userInfoData.data.user;
+      setEmailState({
+        hasConfirmationEmail,
+        hasNotificationEmail,
+      })
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const msg = err.response!.data.error;
+        displayError(msg);
+      }
+    }
+  }
+  const handleNotificationConfirm = async () => {
+    try {
+      const changeResponse = await request.patch('/users/updateUser', {
+        ...emailState
+      })
+      console.log('response', changeResponse)
+      handleCloseNotificationSettingsModal();
+      if (changeResponse.status === 200) {
+        displaySuccess('Success change notification preferences')
+      }
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const msg = err.response!.data.error;
+        displayError(msg);
+      }
+    }
+  }
 
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -191,7 +234,7 @@ const ResponsiveAppBar = () => {
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="profile picture"
-                    src="../../public/default-profile-pic"
+                    // src="../../public/default-profile-pic"
                   />
                 </IconButton>
               </Tooltip>
@@ -240,8 +283,11 @@ const ResponsiveAppBar = () => {
             </Menu>
           </Box>
           <NotificationSettingsModal
-          open={notificationSettingsOpen}
-          handleClose={handleCloseNotificationSettingsModal}
+            state={emailState}
+            setState={setEmailState}
+            open={notificationSettingsOpen}
+            handleClose={handleCloseNotificationSettingsModal}
+            handleConfirm={handleNotificationConfirm}
           />
         </Toolbar>
       </Container>
