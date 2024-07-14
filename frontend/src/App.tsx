@@ -35,6 +35,9 @@ const App = () => {
   const [email, setEmail] = useState(
     localStorage.getItem("email") && JSON.parse(localStorage.getItem("email")!)
   );
+  const [admin, setAdmin] = useState(
+    localStorage.getItem("admin") && JSON.parse(localStorage.getItem("admin")!)
+  );
 
   const displayError = (msg: string) =>
     enqueueSnackbar(msg, { variant: "error" });
@@ -75,10 +78,19 @@ const App = () => {
     localStorage.removeItem("email");
   };
 
+  const handleAdmin = () => {
+    setAdmin(true);
+    localStorage.setItem("admin", JSON.stringify(true));
+  };
+  const removeAdmin = () => {
+    setAdmin(false);
+    localStorage.setItem("admin", JSON.stringify(false));
+  }
+
   const globalVars = {
     displayError,
     displaySuccess,
-    displayWarning,
+    displayWarning, 
     displayInfo,
     handleToken,
     removeToken,
@@ -89,6 +101,9 @@ const App = () => {
     handleEmail,
     removeEmail,
     email,
+    handleAdmin,
+    removeAdmin,
+    admin
   };
 
   return (
