@@ -6,6 +6,7 @@ interface room {
   _id: string;
 }
 interface event {
+  _id: string;
   start: string;
   end: string;
   title: string;
