@@ -22,7 +22,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 interface FilterModalProps {
   open: boolean;
   handleClose: () => void;
-  handleConfirm: (filters: { selectedOptions: string[], selectedTypes: string[], capacityMin: number, capacityMax: number }) => void;
+  handleConfirm: (filters: { selectedOptions: string[], selectedTypes: string[], capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => void;
   options: string[];
   types: string[];
 }
@@ -32,8 +32,12 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [capacityMin, setCapacityMin] = useState<number | "">("");
   const [capacityMax, setCapacityMax] = useState<number | "">("");
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
   const [equipmentExpanded, setEquipmentExpanded] = useState<boolean>(false);
   const [typeExpanded, setTypeExpanded] = useState<boolean>(false);
+  const [capacityExpanded, setCapacityExpanded] = useState<boolean>(false);
+  const [timeExpanded, setTimeExpanded] = useState<boolean>(false);
   const [modalStyle, setModalStyle] = useState({});
 
   const clearCapacityMin = () => setCapacityMin("");
@@ -45,7 +49,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: { xs: '90%', sm: '80%', md: '60%', lg: '40%' },
+      width: { xs: '90%', sm: '80%', md: '60%', lg: '20%' },
       maxHeight: '80vh', // Using viewport height to ensure it's relative to screen size
       bgcolor: 'background.paper',
       borderRadius: '12px',
@@ -64,9 +68,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
     setSelectedTypes([]);
     setCapacityMin("");
     setCapacityMax("");
+    setStartTime("");
+    setEndTime("");
     setEquipmentExpanded(false);
     setTypeExpanded(false);
+    setCapacityExpanded(false);
+    setTimeExpanded(false);
   };
+
   const handleToggleOption = (value: string) => toggleSelection(value, selectedOptions, setSelectedOptions);
   const handleToggleType = (value: string) => toggleSelection(value, selectedTypes, setSelectedTypes);
 
@@ -146,6 +155,35 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             </FormGroup>
           </AccordionDetails>
         </Accordion>
+        <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
+            <Typography>Time Span</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormControl fullWidth>
+              <TextField
+                label="Start Time"
+                type="time"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="End Time"
+                type="time"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+            </FormControl>
+          </AccordionDetails>
+        </Accordion>
         <Divider sx={{ my: 2 }} />
         <FormControl fullWidth>
           <TextField
@@ -204,7 +242,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
           <Button
             variant="contained"
             onClick={() => {
-              handleConfirm({ selectedOptions, selectedTypes, capacityMin: Number(capacityMin), capacityMax: Number(capacityMax) });
+              handleConfirm({
+                selectedOptions,
+                selectedTypes,
+                capacityMin: Number(capacityMin),
+                capacityMax: Number(capacityMax),
+                startTime,
+                endTime
+              });
               handleClose();
             }}
             sx={{ mt: 2 }}

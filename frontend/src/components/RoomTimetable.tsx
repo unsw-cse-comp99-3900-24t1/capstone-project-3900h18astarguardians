@@ -272,12 +272,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
                 config: { label: "Details", multiline: true, rows: 4 }
               },
               {
-                name: "room",
-                type: "input",
-                default: clickedRoom?.name,
-                config: { label: "Room", required: true, disabled: true }
-              },
-              {
                 name: "User",
                 type: "select",
                 default: token?.userId,
