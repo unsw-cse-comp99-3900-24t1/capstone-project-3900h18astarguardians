@@ -262,21 +262,25 @@ paths:
         - Booking
       summary: Get Usage Report
       operationId: GetUsageReport
-      parameters: []
-      requestBody:
-        description: ""
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                start:
-                  type: string
-                  example: 2024-07-06T14:00:00.373Z
-                end:
-                  type: string
-                  example: 2024-07-23T14:00:00.373Z
-        required: true
+      parameters:
+        - name: start
+          in: query
+          description: "start date"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2021-08-25T11:34:21.373Z
+        - name: end
+          in: query
+          description: "end date"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2029-08-25T12:34:21.373Z
       responses:
         "200":
           description: ""
@@ -325,7 +329,35 @@ paths:
         - Booking
       summary: Get All Bookings
       operationId: GetAllBookings
-      parameters: []
+      parameters:
+        - name: start
+          in: query
+          description: "start date"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2021-08-25T11:34:21.373Z
+        - name: end
+          in: query
+          description: "end date"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 2029-08-25T12:34:21.373Z
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: String to specify sorting of attributes
+
+          examples:
+            duration:
+              value: duration
+              summary: sort by duration
       responses:
         "200":
           description: ""
