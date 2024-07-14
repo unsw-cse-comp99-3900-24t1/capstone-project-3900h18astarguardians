@@ -32,11 +32,42 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setIsLoading(false);
   }, [rooms, currLevel]);
 
+  const handleFilterModalClose = () => {
+    setFilterModalOpen(false);
+  };
+
+  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacityMin: number, capacityMax: number }) => {
+    const filtered = rooms.filter(room =>
+      room.level === currLevel &&
+      room.size >= filters.capacityMin &&
+      room.size <= filters.capacityMax
+    );
+    setFilteredRooms(filtered);
+    setCurrentIndex(0);
+    setIsLoading(true);
+    setIsTableReady(false);
+    handleFilterModalClose();
+  };
+
+  const handleResetButton = () => {
+    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
+    setFilteredRooms(CurrLevelRooms);
+    setCurrentIndex(0);
+    setIsLoading(true);
+    setIsTableReady(false);
+  };
+
   useEffect(() => {
     if (rooms.length > 0) {
       initializeFilteredRooms();
     }
   }, [rooms, currLevel, initializeFilteredRooms]);
+
+  useEffect(() => {
+    console.log("Filtered rooms updated", filteredRooms);
+    setIsLoading(false);
+  }, [filteredRooms]);
+  
 
   const fetchRoomsAndEvents = useCallback(async () => {
     setIsTableReady(false)
@@ -187,24 +218,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <div className="lds-facebook"><div></div><div></div><div></div></div>;
   }
 
-  const handleFilterModalClose = () => {
-    setFilterModalOpen(false);
-  };
-
-
-  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacityMin: number, capacityMax: number }) => {
-    const filtered = rooms.filter(room =>
-      room.level === currLevel &&
-      room.size >= filters.capacityMin &&
-      room.size <= filters.capacityMax
-    );
-    setFilteredRooms(filtered);
-    setCurrentIndex(0);
-    handleFilterModalClose();
-  };
   // handleCellClick is called when a cell is clicked to get the selected room details
   const handleCellClick = (_start: Date, _end: Date, _resourceKey?: string, resourceVal?: string | number) => {
     const room = rooms.find(room => room._id === resourceVal);
@@ -214,6 +230,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
+      <Button onClick={handleResetButton}>Reset Filter</Button>
       <FilterModal
         open={filterModalOpen}
         handleClose={handleFilterModalClose}
@@ -291,6 +308,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             }}
           />
         </div>
+      )}
+      {filteredRooms.length == 0 && (
+        <h3>No rooms available</h3>
       )}
     </>
   );

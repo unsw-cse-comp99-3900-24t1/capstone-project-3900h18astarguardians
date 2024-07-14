@@ -1,47 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControl,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  TextField,
-  Typography,
-  Divider
+  Box, Button, Modal, IconButton, Accordion, AccordionSummary, AccordionDetails,
+  FormControl, FormGroup, FormControlLabel, Checkbox, TextField, Typography, Divider,
+  RadioGroup, Radio, InputAdornment
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import InputAdornment from '@mui/material/InputAdornment';
 
 interface FilterModalProps {
   open: boolean;
   handleClose: () => void;
-  handleConfirm: (filters: { selectedOptions: string[], selectedTypes: string[], capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => void;
+  handleConfirm: (filters: {
+    selectedOptions: string[];
+    selectedType: string;
+    capacityMin: number;
+    capacityMax: number;
+    startTime: string;
+    endTime: string;
+  }) => void;
   options: string[];
   types: string[];
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConfirm, options, types }) => {
+const FilterModal: React.FC<FilterModalProps> = ({
+  open, handleClose, handleConfirm, options, types}) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string>('');
   const [capacityMin, setCapacityMin] = useState<number | "">("");
   const [capacityMax, setCapacityMax] = useState<number | "">("");
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
   const [equipmentExpanded, setEquipmentExpanded] = useState<boolean>(false);
   const [typeExpanded, setTypeExpanded] = useState<boolean>(false);
-  const [capacityExpanded, setCapacityExpanded] = useState<boolean>(false);
   const [timeExpanded, setTimeExpanded] = useState<boolean>(false);
   const [modalStyle, setModalStyle] = useState({});
-
-  const clearCapacityMin = () => setCapacityMin("");
-  const clearCapacityMax = () => setCapacityMax("");
 
   useEffect(() => {
     const newStyle = {
@@ -50,7 +42,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: { xs: '90%', sm: '80%', md: '60%', lg: '20%' },
-      maxHeight: '80vh', // Using viewport height to ensure it's relative to screen size
+      maxHeight: '80vh',
       bgcolor: 'background.paper',
       borderRadius: '12px',
       border: 'none',
@@ -58,53 +50,44 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
       p: 4,
       display: 'flex',
       flexDirection: 'column',
-      overflowY: 'auto', // Ensuring content can scroll internally
+      overflowY: 'auto',
     };
     setModalStyle(newStyle);
   }, [equipmentExpanded, typeExpanded]);
 
   const clearFilters = () => {
     setSelectedOptions([]);
-    setSelectedTypes([]);
+    setSelectedType('');
     setCapacityMin("");
     setCapacityMax("");
     setStartTime("");
     setEndTime("");
     setEquipmentExpanded(false);
     setTypeExpanded(false);
-    setCapacityExpanded(false);
     setTimeExpanded(false);
   };
 
-  const handleToggleOption = (value: string) => toggleSelection(value, selectedOptions, setSelectedOptions);
-  const handleToggleType = (value: string) => toggleSelection(value, selectedTypes, setSelectedTypes);
-
-  const toggleSelection = (value: string, currentSelection: string[], setSelection: React.Dispatch<React.SetStateAction<string[]>>) => {
-    const currentIndex = currentSelection.indexOf(value);
-    const newChecked = [...currentSelection];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
+  const handleToggleOption = (option: string) => {
+    const index = selectedOptions.indexOf(option);
+    const newSelectedOptions = [...selectedOptions];
+    if (index === -1) {
+      newSelectedOptions.push(option);
     } else {
-      newChecked.splice(currentIndex, 1);
+      newSelectedOptions.splice(index, 1);
     }
-
-    setSelection(newChecked);
+    setSelectedOptions(newSelectedOptions);
   };
 
-  const handleCapacityChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, 
-    setter: React.Dispatch<React.SetStateAction<number | "">>
-  ) => {
+  const handleCapacityChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<number | "">>) => {
     setter(Number(event.target.value) || "");
   };
+
   const preventInvalidInput = (event: React.KeyboardEvent) => {
-    const validKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'];
-    if (validKeys.includes(event.key) || (event.key >= '0' && event.key <= '9')) {
-      return; // Allow normal processing of these keys
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'].includes(event.key)) {
+      event.preventDefault();
     }
-    event.preventDefault(); // Prevent other keys
   };
+
   return (
     <Modal
       open={open}
@@ -144,15 +127,19 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             <Typography>Type</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <FormGroup>
+            <RadioGroup
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
               {types.map((type) => (
                 <FormControlLabel
                   key={type}
-                  control={<Checkbox checked={selectedTypes.includes(type)} onChange={() => handleToggleType(type)} />}
+                  value={type}
+                  control={<Radio />}
                   label={type}
                 />
               ))}
-            </FormGroup>
+            </RadioGroup>
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
@@ -179,7 +166,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
                 }}
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                sx={{ mb: 2 }}
+                sx={{ mb : 2 }}
               />
             </FormControl>
           </AccordionDetails>
@@ -201,7 +188,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={clearCapacityMin} edge="end">
+                  <IconButton onClick={() => setCapacityMin('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
@@ -223,7 +210,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={clearCapacityMax} edge="end">
+                  <IconButton onClick={() => setCapacityMax('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
@@ -244,7 +231,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             onClick={() => {
               handleConfirm({
                 selectedOptions,
-                selectedTypes,
+                selectedType,
                 capacityMin: Number(capacityMin),
                 capacityMax: Number(capacityMax),
                 startTime,
@@ -255,7 +242,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, handleClose, handleConf
             sx={{ mt: 2 }}
           >
             Confirm
-        </Button>
+          </Button>
         </Box>
       </Box>
     </Modal>
