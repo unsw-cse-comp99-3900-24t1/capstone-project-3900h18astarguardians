@@ -8,6 +8,8 @@ import axios from "axios";
 import { useGlobalContext } from "../utils/context";
 import sendEmailFn  from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
+import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail"
+import overrideBooking from "../utils/Override";
 // import exportIcs from '../utils/exportIcs'
 
 // Define interfaces
@@ -29,6 +31,7 @@ interface Event {
   editable: boolean;
   deletable: boolean;
   draggable: boolean;
+  disabled: boolean;
   room: {
     name: string;
     size: number;
@@ -43,6 +46,32 @@ interface Event {
     _id: string;
   }
 }
+
+interface EventResponse {
+  event_id: string;
+  _id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  editable: boolean;
+  deletable: boolean;
+  draggable: boolean;
+  isOverrided: boolean;
+  room: {
+    name: string;
+    size: number;
+    type: string;
+    _id: string;
+  }
+  user: {
+    email: string;
+    name: string;
+    type: string;
+    zid: string;
+    _id: string;
+  }
+}
+
 interface RoomTimetableProps {
   selectedDate: Date;
   currLevel: number;
@@ -82,9 +111,11 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const fetchRoomsAndEvents = async () => {
     try {
+      // put currUser to front
+
       setIsLoading(true); // Set loading state to true when fetching starts
       const roomsResponse = await request.get<{ rooms: Room[] }>("/rooms");
-      const eventsResponse = await request.get<{ bookings: Event[] }>("/bookings");
+      const eventsResponse = await request.get<{ bookings: EventResponse[] }>("/bookings");
 
       const coloredRooms = roomsResponse.data.rooms.map((room: Room) => ({
         ...room,
@@ -95,24 +126,26 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
-      setEvents(eventsResponse.data.bookings.map((event: Event) => ({
+      setEvents(eventsResponse.data.bookings.map((event: EventResponse) => ({
         ...event,
         start: new Date(event.start),
         end: new Date(event.end),
         event_id: event._id,
         title: event.user.name,
         admin_id: event.room._id,
-        editable: false,
+        editable: token?.type === "admin",
+        disabled: event.isOverrided,
         deletable: true,
         draggable: false,
       })));
 
       const usersResponse = await request.get("/users");
       let newUsers: User[] = usersResponse.data.users;
-      // put currUser to front
+      
       const currUserType = token?.type;
       if (currUserType === "admin") {
         setIsAdmin(true);
+        console.log('setting admin');
       }
 
       setUsers(newUsers.filter(user => 
@@ -242,11 +275,19 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex((prevIndex) => Math.max(prevIndex - roomsDisplay, 0));
   };
 
-  console.log(CurrLevelRooms);
   // Render a loading message while data is being fetched
   if (isLoading) {
     return <p>Loading...</p>;
   }
+
+  // const adminProps = isAdmin ? { viewerExtraComponent: {(fields, event) => {
+  //   return (
+  //     <div>
+  //       <p>Useful to render custom fields...</p>
+  //       <p>Description: {event.description || "Nothing..."}</p>
+  //     </div>
+  //   );
+  // } : {}
 
   // Render the Scheduler component when data has been loaded
   return <>
@@ -300,6 +341,21 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         onDelete={deleteBookings}
         events={events}
         onConfirm={onConfirm}
+        viewerExtraComponent={(fields, event) => {
+          return (
+            <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+              // send email
+              // sendOverrideEmail(fields.)
+              
+              // override
+              // overrideBooking(event._id);
+
+              console.log(fields);
+              console.log(event.user);
+              // update events list
+            }}>Override</Button>
+          );
+        }}
         fields={[
           {
             name: "Description",
@@ -332,21 +388,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             }),
             config: { label: "User", required: true, disabled: !isAdmin }
           }, 
-          // {
-          //   name: "ics",
-          //   type: "select",
-          //   default: "not export",
-          //   options: [{
-          //     id: 1001,
-          //     text: 'export',
-          //     value: 'export'
-          //   },{
-          //     id: 1002,
-          //     text: 'not export',
-          //     value: 'not export'
-          //   }],
-          //   config: { label: "export ics file", multiline: true, rows: 4 }
-          // },
         ]}
         resourceFields={{
           idField: "admin_id",
