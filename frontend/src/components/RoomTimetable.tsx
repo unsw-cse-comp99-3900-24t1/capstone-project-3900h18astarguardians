@@ -11,6 +11,7 @@ import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
 
+
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
