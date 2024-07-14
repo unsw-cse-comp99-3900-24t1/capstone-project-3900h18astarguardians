@@ -242,7 +242,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex((prevIndex) => Math.max(prevIndex - roomsDisplay, 0));
   };
 
-  console.log(CurrLevelRooms);
   // Render a loading message while data is being fetched
   if (isLoading) {
     return <p>Loading...</p>;
