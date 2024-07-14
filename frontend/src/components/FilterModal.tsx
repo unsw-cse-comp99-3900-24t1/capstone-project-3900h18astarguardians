@@ -25,7 +25,7 @@ interface FilterModalProps {
 const FilterModal: React.FC<FilterModalProps> = ({
   open, handleClose, handleConfirm, options, types}) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [selectedType, setSelectedType] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>("");
   const [capacityMin, setCapacityMin] = useState<number | "">("");
   const [capacityMax, setCapacityMax] = useState<number | "">("");
   const [startTime, setStartTime] = useState<string>("");
@@ -57,7 +57,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   const clearFilters = () => {
     setSelectedOptions([]);
-    setSelectedType('');
+    setSelectedType("");
     setCapacityMin("");
     setCapacityMax("");
     setStartTime("");

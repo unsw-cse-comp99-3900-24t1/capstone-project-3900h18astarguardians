@@ -36,13 +36,18 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setFilterModalOpen(false);
   };
 
-  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; capacityMin: number, capacityMax: number }) => {
-    const filtered = rooms.filter(room =>
-      room.level === currLevel &&
-      room.size >= filters.capacityMin &&
-      room.size <= filters.capacityMax
-    );
-    setFilteredRooms(filtered);
+  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, capacityMin: number, capacityMax: number }) => {
+    let filteredRooms = rooms.filter(room => room.level === currLevel);
+    if (filters.selectedType) {
+      filteredRooms = filteredRooms.filter(room => room.type === filters.selectedType);
+    }
+    if (filters.capacityMin) {
+      filteredRooms = filteredRooms.filter(room => room.size >= filters.capacityMin);
+    }
+    if (filters.capacityMax) {
+      filteredRooms = filteredRooms.filter(room => room.size <= filters.capacityMax);
+    }
+    setFilteredRooms(filteredRooms);
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
