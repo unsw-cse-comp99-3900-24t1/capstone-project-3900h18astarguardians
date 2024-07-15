@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";
-import { Box, Button, Checkbox, FormControlLabel, Slider, Typography } from '@mui/material';
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, Checkbox, FormControlLabel, Slider, Typography } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { BarChart } from '@mui/x-charts/BarChart';
-
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import "../styles/Reports.css"
 const Reports  = () => {
 
   const [numRooms, setNumRooms] = React.useState(3);
@@ -72,19 +72,31 @@ const Reports  = () => {
         count: user.number_of_bookings,
       }
     })
-    .sort((a: { number_of_bookings: number }, b: { number_of_bookings: number }) => b.number_of_bookings - a.number_of_bookings)
+    .sort((a: { count: number }, b: { count: number }) => b.count - a.count)
   );
 
-  // const elementCounts: { [user: string]: number } = {};
-  // reportsData.notCheckedIn.forEach((element: any) => {
-  //   if (elementCounts[element.])
-  // });
+  setNonCheckedInUsers(reportsData.notCheckedIn.map((booking: any) => {
+    const start = new Date(booking.start);
+    const end = new Date(booking.end);
+    const day = String(start.getDate()).padStart(2, '0');
+    const month = String(start.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = start.getFullYear();
+
+
+    return {
+      date: `${day}/${month}/${year}`,
+      start: `${start.getHours() % 12}${start.getHours() >= 12 ? 'pm' : 'am'}`,
+      end: `${end.getHours() % 12}${end.getHours() >= 12 ? 'pm' : 'am'}`,
+      room: booking.room.name,
+      name: booking.user.name,
+      email: booking.user.email,
+    }
+  }));
 
   }
 
 
-
-  return <>
+  return <div className="robotoFont">
    {!isAdmin && <h1>Only admins can see Usage reports!</h1>}
    {isAdmin &&
     <>
@@ -149,10 +161,37 @@ const Reports  = () => {
         aria-labelledby="input-item-number"
       />
     </Box>
-    
+    {nonCheckedInUsers.length > 0 && <h1>Non-Checked In Users</h1>}
+    {
+      nonCheckedInUsers.map((item: any, index) => (
+        // <>item.start</>
+        <Accordion key={index}>
+        <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="panel1-header"
+        >
+          <strong>Booking at {item.room} for {item.name}</strong>
+        </AccordionSummary>
+        <AccordionDetails>
+          <strong>Details:</strong> <br />
+          Date: {item.date} <br />
+          Start Time: {item.start}<br />
+          End Time: {item.end}<br />
+          Room: {item.room}<br />
+          <strong>Checked In: False</strong>
+        </AccordionDetails>
+        <AccordionActions>
+        <Button variant="outlined" color="error" onClick={() => console.log(item)}>
+          Send Warning Email
+        </Button>
+      </AccordionActions>
+      </Accordion>
+      ))
+    }  
     </>
-   }
-  </>
+  }
+  </div>
 };
 
 export default Reports;
