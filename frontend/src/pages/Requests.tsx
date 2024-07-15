@@ -1,11 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useGlobalContext } from "../utils/context";
-import exportIcs from '../utils/exportIcs'
-import Box from "@mui/material/Box";
 
 type Request = {
   id: string;
@@ -16,10 +13,6 @@ type Request = {
   description: string;
   user: string;
 };
-const AllFileBoxStyle = {
-  ['text-align']: 'center',
-  padding: '50px 0'
-}
 
 const Requests  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
@@ -53,7 +46,7 @@ const Requests  = () => {
 
   const denyRequest = async (event_id: string) => {
     try {
-      setRequests(requests.filter(requests => request.id !== event_id));
+      setRequests(requests.filter(request => request.id !== event_id));
       setIsLoading(true);
       const {
         data: { success },
@@ -73,7 +66,7 @@ const Requests  = () => {
 
   const approveRequest = async (event_id: string) => {
     try {
-      setRequests(requests.filter(requests => request.id !== event_id));
+      setRequests(requests.filter(request => request.id !== event_id));
       setIsLoading(true);
       const {
         data: { success },
