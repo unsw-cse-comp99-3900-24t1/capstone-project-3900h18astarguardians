@@ -7,32 +7,23 @@ import { useGlobalContext } from "../utils/context";
 import exportIcs from '../utils/exportIcs'
 import Box from "@mui/material/Box";
 
-type Booking = {
+type Request = {
   id: string;
   date: string;
   start_time: string;
   end_time: string;
   room: string;
   description: string;
+  user: string;
 };
-type OldBooking = {
-  _id: string;
-  start: string;
-  end: string;
-  room: string;
-  description: string;
-};
-
 const AllFileBoxStyle = {
   ['text-align']: 'center',
   padding: '50px 0'
 }
 
-const MyBookings  = () => {
+const Requests  = () => {
   const { displaySuccess, displayError } = useGlobalContext();
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [oldBookings, setOldBookings] = useState<OldBooking[]>([]);
-  const [open, setOpen] = useState(false);
+  const [requests, setRequests] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState<string>('');
 
@@ -44,9 +35,13 @@ const MyBookings  = () => {
     setOpenDialog('');
   };
 
-  const handleConfirm = (id: string) => {
-    deleteBooking(id);
+  const handleDeny = (id: string) => {
+    denyRequest(id);
   };
+
+  const handleApprove = (id: string) => {
+    approveRequest(id);
+  }
 
   const checkLoggedIn = async () => {
     try {
@@ -56,76 +51,79 @@ const MyBookings  = () => {
     }
   };
 
-  const handleExportIcs = (event: Booking, oldBookings: OldBooking[]) => {
-    const bookings = oldBookings.find(item => item._id === event.id)
-    console.log('item', event, oldBookings, bookings)
-    exportIcs([bookings]);
-    displaySuccess('success import ics file')
-  }
-
-  const handleAllExportIcs = (oldBookings: OldBooking[]) => {
-    exportIcs(oldBookings);
-    displaySuccess('success import ics file')
-  }
-
-  // NOTE: i think this function along with the same function in RoomTimetable
-  // should be handled inside the Dashboard, instead of these components
-  const deleteBooking = async (event_id: string) => {
+  const denyRequest = async (event_id: string) => {
     try {
-      setBookings(bookings.filter(booking => booking.id !== event_id));
-      // setIsLoading(true);
+      setRequests(requests.filter(requests => request.id !== event_id));
+      setIsLoading(true);
       const {
         data: { success },
-      } = await request.delete(`/bookings/${event_id}`);
+      } = await request.patch(`/bookings/${event_id}/denyRequest`);
       if(success) {
-        displaySuccess("Successfully delete bookings");
+        displaySuccess("Successfully deleted request");
       }
     } catch(error) {
-      console.error("Failed to delete bookings", error);
-      displayError(`Failed to delete bookings`);
+      console.error("Failed to delete request", error);
+      displayError(`Failed to delete request`);
       setIsLoading(false);
     } finally {
-      getBookings();
+      getRequests();
       setIsLoading(false);
     }
   }
 
-  const getBookings = async () => {
+  const approveRequest = async (event_id: string) => {
     try {
-      const resp = await request.get("/bookings/showAllMyBookings");
+      setRequests(requests.filter(requests => request.id !== event_id));
+      setIsLoading(true);
+      const {
+        data: { success },
+      } = await request.patch(`/bookings/${event_id}/approveRequest`);
+      if(success) {
+        displaySuccess("Successfully approved request");
+      }
+    } catch(error) {
+      console.error("Failed to approve request", error);
+      displayError(`Failed to approve request`);
+      setIsLoading(false);
+    } finally {
+      getRequests();
+      setIsLoading(false);
+    }
+  }
+
+  const getRequests = async () => {
+    try {
+      const resp = await request.get("/bookings");
       let data = resp.data.bookings;
-      let newBookings: Booking[] = [];
+      let genRequests: Request[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
-      console.log('bookingsData', data);
 
-      setOldBookings(data.filter((item) => new Date(item.start) > today));
-
-      for (let i = data.length - 1; i >= 0; i--) {
+      for (let i = resp.data.count - 1; i >= 0; i--) {
         // set bookings
         let startTime = new Date(data[i].start);
         let endTime = new Date(data[i].end);
         let roomName = data[i].room.name;
         
-        // only view bookings from today onward
-        if (startTime <= today) {
+        // only view bookings from today onward and is a request
+        if (startTime <= today || !data[i].isRequest || data[i].isApproved != null) {
           continue;
         }
 
-        let description = 'desc not implemented';
-        let b: Booking = {
+        let r: Request = {
           id: `${data[i]._id}`,
           date: `${String(startTime.getDate()).padStart(2, '0')}/${String(startTime.getMonth() + 1).padStart(2, '0')}/${startTime.getFullYear()}`,
           start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
           end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
           room: roomName,
           description: 'description not implemented',
+          user: data[i].user.name,
         }
 
-        newBookings.push(b);
+        genRequests.push(r);
       }
       // let date = data.book
-      setBookings(newBookings);
+      setRequests(genRequests);
       setIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -134,39 +132,37 @@ const MyBookings  = () => {
 
   useEffect(() => {
     checkLoggedIn();
-    getBookings();
+    getRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   
   return <>
-    {!isLoading && bookings.length === 0 &&
-      <h1>You have no bookings</h1>
+    {!isLoading && requests.length === 0 &&
+      <h1>No requests at this time</h1>
     }
-    {isLoading && <h1>Loading your bookings ... <CircularProgress /></h1>}
+    {isLoading && <h1>Loading requests ... <CircularProgress /></h1>}
     {
-      !isLoading && bookings.map((item, index) => (
+      !isLoading && requests.map((item, index) => (
         <Accordion key={index}>
           <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"
           id="panel1-header"
           >
-            <strong>Booking for {item.start_time} : {item.date} at {item.room}</strong>
+            <strong>Request from {item.user} for {item.start_time} : {item.date} at {item.room}</strong>
           </AccordionSummary>
           <AccordionDetails>
             <strong>Details:</strong> <br /><br />
             Start Time: {item.start_time}<br />
             End Time: {item.end_time}<br />
             Room: {item.room}<br />
+            User: {item.user}<br />
             <strong>Checked In: False</strong>
           </AccordionDetails>
           <AccordionActions>
           <Button variant="outlined" color="error" onClick={() => handleClickOpen(item.id)}>
-            Cancel Booking
-          </Button>
-          <Button variant="outlined" color="primary" onClick={()=> handleExportIcs(item, oldBookings)}>
-            Export ICS File
+            Deny request
           </Button>
           <Dialog
         open={openDialog === item.id}
@@ -177,32 +173,22 @@ const MyBookings  = () => {
         <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to cancel this booking?
+            Are you sure you want to deny this request?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             No
           </Button>
-          <Button onClick={() => handleConfirm(item.id)} color="primary" autoFocus>
+          <Button onClick={() => handleDeny(item.id)} color="primary" autoFocus>
             Yes
           </Button>
-          {/* <Button onClick={handleConfirm(item.id)} color="primary" autoFocus>
-            Yes
-          </Button> */}
         </DialogActions>
       </Dialog>
-          <Button variant="contained" color="success" disabled={true} >Check In</Button>
+          <Button variant="contained" color="success" onClick={() => handleApprove(item.id)}>Approve Request</Button>
         </AccordionActions>
         </Accordion>
       ))
-    }
-    {!isLoading && bookings.length !== 0 &&
-    <Box sx={AllFileBoxStyle}>
-      <Button variant="outlined" color="primary" onClick={()=> handleAllExportIcs(oldBookings)}>
-        Export ALL ICS File
-      </Button>
-    </Box>
     }
     {/* <Accordion >
       <AccordionSummary > 
@@ -218,4 +204,4 @@ const MyBookings  = () => {
   </>
 };
 
-export default MyBookings;
+export default Requests;

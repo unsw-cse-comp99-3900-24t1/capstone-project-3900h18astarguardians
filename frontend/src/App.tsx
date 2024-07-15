@@ -122,7 +122,7 @@ const App = () => {
             <Route path="reset-password" element={<Reset />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
             <Route path="contact" element={<Contact />}/>
-            <Route path="requests" element={<Contact />}/>
+            <Route path="requests" element={<Requests />}/>
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>
