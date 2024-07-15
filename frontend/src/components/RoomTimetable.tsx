@@ -84,6 +84,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         request.get<{ bookings: Event[] }>("/bookings"),
         request.get<{ users: User[] }>("/users")
       ]);
+      const bookings = eventsResponse.data.bookings.filter(booking => booking.isRequest == false || booking.isApproved);
+
+      console.log(bookings);
 
       const coloredRooms = roomsResponse.data.rooms.map(room => ({
         ...room,
@@ -94,7 +97,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }));
 
       setRooms(coloredRooms);
-      setEvents(eventsResponse.data.bookings.map(event => ({
+      setEvents(bookings.map(event => ({
         ...event,
         start: new Date(event.start),
         end: new Date(event.end),
@@ -203,6 +206,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         room: event.room,
       });
       setUpdate(prevUpdate => !prevUpdate);
+      const currUserType = token?.type;
+      if (currUserType === "non_cse_staff") {
+        displaySuccess("Your request has been submitted. The admin will notify you by email upon approval or rejection.")
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);

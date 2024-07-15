@@ -17,6 +17,8 @@ export interface Event {
   editable: boolean;
   deletable: boolean;
   draggable: boolean;
+  isApproved: boolean;
+  isRequest: boolean;
   room: {
     name: string;
     size: number;
