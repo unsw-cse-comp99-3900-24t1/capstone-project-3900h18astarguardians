@@ -96,7 +96,7 @@ const Reports  = () => {
   }
 
 
-  return <div className="robotoFont">
+  return <div className="robotoFont page">
    {!isAdmin && <h1>Only admins can see Usage reports!</h1>}
    {isAdmin &&
     <>

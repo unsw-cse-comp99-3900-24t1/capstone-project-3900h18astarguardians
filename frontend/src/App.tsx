@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MyGlobalContext } from "./utils/context";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-
+import './global.css';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
