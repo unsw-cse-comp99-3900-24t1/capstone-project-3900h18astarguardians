@@ -292,7 +292,7 @@ paths:
                   notCheckedIn:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Room"
+                      $ref: "#/components/schemas/Booking"
                   mostCommonlyBookedRooms:
                     type: array
                     items:
