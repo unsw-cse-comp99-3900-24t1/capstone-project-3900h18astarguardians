@@ -10,6 +10,7 @@ import Recovery from "./pages/Recovery";
 import OTPInput from "./pages/OTPInput";
 import Reset from "./pages/Reset";
 import Contact from "./pages/Contact";
+import Requests from "./pages/Requests";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
@@ -34,6 +35,9 @@ const App = () => {
   );
   const [email, setEmail] = useState(
     localStorage.getItem("email") && JSON.parse(localStorage.getItem("email")!)
+  );
+  const [admin, setAdmin] = useState(
+    localStorage.getItem("admin") && JSON.parse(localStorage.getItem("admin")!)
   );
 
   const displayError = (msg: string) =>
@@ -75,10 +79,19 @@ const App = () => {
     localStorage.removeItem("email");
   };
 
+  const handleAdmin = () => {
+    setAdmin(true);
+    localStorage.setItem("admin", JSON.stringify(true));
+  };
+  const removeAdmin = () => {
+    setAdmin(false);
+    localStorage.setItem("admin", JSON.stringify(false));
+  }
+
   const globalVars = {
     displayError,
     displaySuccess,
-    displayWarning,
+    displayWarning, 
     displayInfo,
     handleToken,
     removeToken,
@@ -89,6 +102,9 @@ const App = () => {
     handleEmail,
     removeEmail,
     email,
+    handleAdmin,
+    removeAdmin,
+    admin
   };
 
   console.log(token?.type);
@@ -110,6 +126,7 @@ const App = () => {
             <Route path="reports" element={<Reports />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
             <Route path="contact" element={<Contact />}/>
+            <Route path="requests" element={<Requests />}/>
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>

@@ -13,7 +13,7 @@ import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 const Login = () => {
-  const { displayError, displaySuccess, handleToken, handleEmail, token } =
+  const { displayError, displaySuccess, handleToken, handleEmail, token, handleAdmin, removeAdmin } =
     useGlobalContext();
 
   const navigate = useNavigate();
@@ -44,6 +44,11 @@ const Login = () => {
       handleToken(user);
       //@ts-ignore
       handleEmail(data.get("email"));
+      if (user.type == "admin") {
+        handleAdmin();
+      } else {
+        removeAdmin();
+      }
       displaySuccess("Logged In");
       navigate("/dashboard");
     } catch (err) {

@@ -21,6 +21,7 @@ import NotificationSettingsModal from '../components/NotificationSettingsModal'
 const pages = ["login"];
 const settings = ["dashboard", "profile", "notification setting"];
 const logged_in_pages = ["MyBookings", "contact"]
+const admin_pages = ["requests"]
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
@@ -45,7 +46,7 @@ const ResponsiveAppBar = () => {
   }
   const handleCloseNotificationSettingsModal = () => setNotificationSettingsOpen(false)
 
-  const { token, removeToken, displaySuccess, displayError } =
+  const { token, removeToken, displaySuccess, displayError, admin, removeAdmin } =
     useGlobalContext();
 
   useEffect(() => {
@@ -92,6 +93,7 @@ const ResponsiveAppBar = () => {
     try {
       await request.get("/auth/logout");
       removeToken();
+      removeAdmin();
       navigate("/login");
       displaySuccess("Successfully Logged out");
     } catch (err) {
@@ -210,6 +212,25 @@ const ResponsiveAppBar = () => {
               ))}
             {token &&
               logged_in_pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{
+                    my: 1,
+                    display: "block",
+                    color: "white",
+                    outline: "2px solid white",
+                    mx: 1,
+                  }}
+                  variant="contained"
+                  component={RouterLink}
+                  to={`/${page}`}
+                >
+                  {page}
+                </Button>
+              ))}
+              {admin &&
+              admin_pages.map((page) => (
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
