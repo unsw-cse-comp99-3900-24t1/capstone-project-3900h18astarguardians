@@ -57,7 +57,7 @@ const MyBookings  = () => {
   };
 
   const handleExportIcs = (event: Booking, oldBookings: OldBooking[]) => {
-    const bookings = oldBookings.find(item => item._id === event.id)
+    const bookings = oldBookings.find(item => item._id === event.id)!
     console.log('item', event, oldBookings, bookings)
     exportIcs([bookings]);
     displaySuccess('success import ics file')

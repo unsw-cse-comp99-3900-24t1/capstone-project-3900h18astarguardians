@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MyGlobalContext } from "./utils/context";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-
+import './global.css';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
 import MyBookings from "./pages/MyBookings";
+import Reports from "./pages/Reports";
 
 export type tokenUserI = {
   type: "cse_staff" | "non_cse_staff" | "hdr_student" | "admin";
@@ -90,6 +91,8 @@ const App = () => {
     email,
   };
 
+  console.log(token?.type);
+
   return (
     <>
       <BrowserRouter>
@@ -104,6 +107,7 @@ const App = () => {
             <Route path="recovery" element={<Recovery />} />
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
             <Route path="contact" element={<Contact />}/>
           </Routes>
