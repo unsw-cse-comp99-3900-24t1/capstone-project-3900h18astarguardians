@@ -11,17 +11,6 @@ import { BarChart } from '@mui/x-charts/BarChart';
 
 const Reports  = () => {
 
-  const series = [
-    {
-      label: 'series 1',
-      data: [
-        2423, 2210, 764, 1879, 1478, 1373, 1891, 2171, 620, 1269, 724, 1707, 1188,
-        1879, 626, 1635, 2177, 516, 1793, 1598,
-      ],
-    }
-  ]
-
-
   const [numRooms, setNumRooms] = React.useState(3);
   const [numUsers, setNumUsers] = React.useState(3);
   const { token } = useGlobalContext();
@@ -29,10 +18,8 @@ const Reports  = () => {
   const [startDate, setStartDate] = React.useState<Dayjs | null>(dayjs().subtract(7, 'day'));
   const [endDate, setEndDate] = React.useState<Dayjs | null>(dayjs());
   const [mostCommonRooms, setMostCommonRooms] = useState([]);
-
   const [mostCommonUsers, setMostCommonUsers] = useState([]);
-
-
+  const [nonCheckedInUsers, setNonCheckedInUsers] = useState([]);
 
   const handleItemNbChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue !== 'number') {
@@ -87,6 +74,11 @@ const Reports  = () => {
     })
     .sort((a: { number_of_bookings: number }, b: { number_of_bookings: number }) => b.number_of_bookings - a.number_of_bookings)
   );
+
+  // const elementCounts: { [user: string]: number } = {};
+  // reportsData.notCheckedIn.forEach((element: any) => {
+  //   if (elementCounts[element.])
+  // });
 
   }
 
