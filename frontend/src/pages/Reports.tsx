@@ -96,7 +96,12 @@ const Reports  = () => {
   }
 
 
-  return <div className="robotoFont page">
+  return <Box sx={{
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%'
+  }}>
+    <div className="robotoFont page">
    {!isAdmin && <h1>Only admins can see Usage reports!</h1>}
    {isAdmin &&
     <>
@@ -192,6 +197,7 @@ const Reports  = () => {
     </>
   }
   </div>
+  </Box>
 };
 
 export default Reports;
