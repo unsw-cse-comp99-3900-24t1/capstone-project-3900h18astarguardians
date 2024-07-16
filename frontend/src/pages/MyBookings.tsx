@@ -68,6 +68,27 @@ const MyBookings  = () => {
     displaySuccess('success import ics file')
   }
 
+  const handleCheckin = (id: string) => {
+    checkIn(id);
+  }
+
+  const checkIn = async (id: string) => {
+    try {
+      const {
+        data: { updatedBooking },
+      } = await request.patch(`/bookings/${id}/checkIn`);
+      if (updatedBooking.isCheckedIn) {
+        displaySuccess("Checked in");
+      }
+    } catch(error) {
+      console.error("Failed to check in", error);
+      displayError('Failed to check in');
+      setIsLoading(false);
+    } finally {
+      getBookings();
+      setIsLoading(false);
+    }
+  }
   // NOTE: i think this function along with the same function in RoomTimetable
   // should be handled inside the Dashboard, instead of these components
   const deleteBooking = async (event_id: string) => {
@@ -192,7 +213,7 @@ const MyBookings  = () => {
           </Button> */}
         </DialogActions>
       </Dialog>
-          <Button variant="contained" color="success" disabled={true} >Check In</Button>
+          <Button id="checkinbtn" variant="contained" color="success" onClick={() => handleCheckin(item.id)} >Check In</Button>
         </AccordionActions>
         </Accordion>
       ))
