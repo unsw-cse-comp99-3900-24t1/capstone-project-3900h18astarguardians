@@ -247,13 +247,13 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     console.log(event_id);
     console.log(user_id);
     sendOverrideEmail(user_id, event_id);
+    await request.patch(`/bookings/${event_id}/overrideBooking`);
 
-    // remove from timetable
-    const updatedBooking = await request.patch(`/bookings/${event_id}/overrideBooking`);
+    fetchRoomsAndEvents();
 
 
   };
-
+  console.log(events[0]);
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
@@ -311,8 +311,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             viewerExtraComponent={(fields, event) => {
               return (
                 <Button variant="outlined" disabled={!isAdmin} onClick={() => {
-                  // console.log(fields);
-                  // console.log(event);
                   overrideBooking(event.event_id as string, event.user._id);
                 }}>Override</Button>
               );
