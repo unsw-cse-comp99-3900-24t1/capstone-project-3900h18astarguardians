@@ -16,12 +16,18 @@ type Booking = {
   description: string;
   checked_in: boolean;
 };
+interface room {
+  name: string;
+  size: string;
+  _id: string;
+}
 type OldBooking = {
   _id: string;
   start: string;
   end: string;
-  room: string;
-  description: string;
+  title: string;
+  Description: string;
+  room: room;
 };
 
 const AllFileBoxStyle = {
@@ -59,7 +65,7 @@ const MyBookings  = () => {
   };
 
   const handleExportIcs = (event: Booking, oldBookings: OldBooking[]) => {
-    const bookings = oldBookings.find(item => item._id === event.id)!
+    const bookings = oldBookings.find(item => item._id === event.id) as OldBooking
     console.log('item', event, oldBookings, bookings)
     exportIcs([bookings]);
     displaySuccess('success import ics file')
