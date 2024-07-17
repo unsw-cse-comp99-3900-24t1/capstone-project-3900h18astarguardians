@@ -10,6 +10,7 @@ import sendEmailFn from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
+import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail" 
 
 
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
@@ -84,7 +85,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         request.get<{ bookings: Event[] }>("/bookings"),
         request.get<{ users: User[] }>("/users")
       ]);
-      const bookings = eventsResponse.data.bookings.filter(booking => booking.isRequest == false || booking.isApproved);
+      console.log(eventsResponse);
+      const bookings = eventsResponse.data.bookings.filter(booking => (booking.isOverrided === false) && (booking.isRequest == false || booking.isApproved));
 
       console.log(bookings);
 
@@ -240,6 +242,18 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setClickedRoom(room);
   };
 
+  const overrideBooking = async (event_id: string, user_id: string) => {
+    // send email
+    console.log(event_id);
+    console.log(user_id);
+    sendOverrideEmail(user_id, event_id);
+
+    // remove from timetable
+    const updatedBooking = await request.patch(`/bookings/${event_id}/overrideBooking`);
+
+
+  };
+
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
@@ -294,6 +308,15 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             onDelete={deleteBookings}
             events={events}
             onConfirm={onConfirm}
+            viewerExtraComponent={(fields, event) => {
+              return (
+                <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+                  // console.log(fields);
+                  // console.log(event);
+                  overrideBooking(event.event_id as string, event.user._id);
+                }}>Override</Button>
+              );
+            }}
             fields={[
               {
                 name: "Description",
