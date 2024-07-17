@@ -29,6 +29,25 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
 
+
+  function filterEventsInRange() {
+    const startTime = new Date(selectedDate);
+    startTime.setHours(startHour, 0, 0); // Set start time to the startHour on the selected date
+  
+    const endTime = new Date(selectedDate);
+    endTime.setHours(endHour, 0, 0); // Set end time to the endHour on the selected date
+  
+    const filteredEvents = events.filter(event => {
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+  
+      // Include the event if it starts before the endHour and ends after the startHour
+      return eventStart < endTime && eventEnd > startTime;
+    });
+  
+    return filteredEvents;
+  }
+
   // Filter available rooms based on the selected time range
   function filterAvailableRooms(filteredRooms: Room[], filterStartTime: string, filterEndTime: string) {
     // Initialize start and end times to null
@@ -55,10 +74,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
           return event.room._id === room._id && eventStart < endTime && eventEnd > startTime;
         } else if (startTime) {
           // Only start time provided
-          return event.room._id === room._id && eventStart >= startTime;
+          return event.room._id === room._id && eventStart > startTime;
         } else if (endTime) {
           // Only end time provided
-          return event.room._id === room._id && eventEnd <= endTime;
+          return event.room._id === room._id && eventEnd < endTime;
         }
         return false;
       });
@@ -81,6 +100,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
+    let filteredEvents = events;
     if (filters.selectedType) {
       filteredRooms = filteredRooms.filter(room => room.type === filters.selectedType);
     }
@@ -93,8 +113,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     if (filters.startTime || filters.endTime) {
       if (filters.startTime && filters.endTime && filters.startTime < filters.endTime) {
         filteredRooms = filterAvailableRooms(filteredRooms, filters.startTime, filters.endTime);
-        console.log("start time", Number(filters.startTime.split(":")[0]));
-        console.log("end time", Number(filters.endTime.split(":")[0]));
         setStartHour(Number(filters.startTime.split(":")[0]) as DayHours);
         setEndHour(Number(filters.endTime.split(":")[0]) as DayHours);
       } else if (filters.startTime && !filters.endTime) {
@@ -105,6 +123,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         setEndHour(Number(filters.endTime.split(":")[0]) as DayHours);
       }
     }
+    console.log(filteredEvents);
     setFilteredRooms(filteredRooms);
     setCurrentIndex(0);
     setIsLoading(true);
@@ -347,7 +366,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
             draggable={false}
             onDelete={deleteBookings}
-            events={events}
+            events={filterEventsInRange()}
             onConfirm={onConfirm}
             fields={[
               {
