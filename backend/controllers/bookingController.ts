@@ -76,6 +76,7 @@ const createBooking = async (
       $gt: start,
     },
     $or: [{ user: user ? user : userId }, { room: roomId }],
+    isOverrided: false,
   });
 
   if (isClashing.length)
