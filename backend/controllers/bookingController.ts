@@ -97,12 +97,15 @@ const createBooking = async (
   });
   // check if booking is a meeting room that is outside of normal working hours, so that the admin can be notified
   // @ts-ignore fix later
+  const bookingStartHour = moment(booking.start).hour();
+
   if (
     roomExists.type === "meeting room" &&
-    // @ts-ignore fix later
-    (booking.start.getUTCHours() < 7 || booking.start.getUTCHours() > 17)
-  )
+    (bookingStartHour < 7 || bookingStartHour > 17)
+  ) {
     await notifyAdminEmail(booking._id.toString());
+    console.log("email sent");
+  }
 
   if (hasConfirmationEmail)
     await sendConfirmationEmail(
