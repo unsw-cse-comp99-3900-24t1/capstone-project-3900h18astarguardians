@@ -2,10 +2,16 @@ import RoomTimetable from "../components/RoomTimetable";
 import { Box, Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useState } from "react";
 import "../styles/Dashboard.css";
+import MapView from "../components/MapView";
 
 const Dashboard = () => {
   let [selectedDate, setSelectedDate] = useState(new Date());
   let [currLevel, setCurrLevel] = useState(1);
+  
+  // "timetable" | "map"
+  const [currView, setCurrView] = useState("timetable");
+
+
 
   const handleChange = (event: SelectChangeEvent) => {
     setCurrLevel(Number(event.target.value));
@@ -75,8 +81,21 @@ const Dashboard = () => {
           <Button variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
             &gt;
           </Button>
+          {currView === "timetable" && <Button variant="outlined" onClick={() => setCurrView("map")}>
+            Map View
+            </Button>}
+          {currView === "map" && <Button variant="outlined" onClick={() => setCurrView("timetable")}>
+            Timetable View
+            </Button>}
+          {/* <Button variant="outlined">{currView === "timetable" }</Button> */}
         </Box>
-        <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} />
+        {currView === "timetable" &&
+          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} />
+        }
+        {currView === "map" &&
+          <MapView currLevel={currLevel}/>
+        }
+
       </div>
     </>
   );
