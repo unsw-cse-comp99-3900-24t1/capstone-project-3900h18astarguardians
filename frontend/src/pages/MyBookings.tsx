@@ -60,13 +60,11 @@ const MyBookings  = () => {
     try {
       await request.get("/users/showMe");
     } catch (e) {
-      console.log(e);
     }
   };
 
   const handleExportIcs = (event: Booking, oldBookings: OldBooking[]) => {
     const bookings = oldBookings.find(item => item._id === event.id) as OldBooking
-    console.log('item', event, oldBookings, bookings)
     exportIcs([bookings]);
     displaySuccess('success import ics file')
   }
@@ -133,13 +131,11 @@ const MyBookings  = () => {
       let newBookings: Booking[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
-      console.log('bookingsData', data);
 
       setOldBookings(data.filter((item) => new Date(item.start) > today));
 
       for (let i = data.length - 1; i >= 0; i--) {
         // set bookings
-        console.log(data[i].isCheckedIn);
         let startTime = new Date(data[i].start);
         let endTime = new Date(data[i].end);
         let roomName = data[i].room.name;
@@ -159,7 +155,6 @@ const MyBookings  = () => {
           description: 'description not implemented',
           checked_in: data[i].isCheckedIn,
         }
-        console.log(b);
 
         newBookings.push(b);
       }
@@ -167,7 +162,6 @@ const MyBookings  = () => {
       setBookings(newBookings);
       setIsLoading(false);
     } catch (e) {
-      console.log(e);
     }
   }
 

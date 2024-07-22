@@ -23,7 +23,6 @@ const Login = () => {
       displaySuccess("Logged In");
       navigate("/dashboard");
     } catch (e) {
-      console.log(e);
     }
   };
   useEffect(() => {

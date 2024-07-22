@@ -123,7 +123,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         setEndHour(Number(filters.endTime.split(":")[0]) as DayHours);
       }
     }
-    console.log(filteredEvents);
     setFilteredRooms(filteredRooms);
     setCurrentIndex(0);
     setIsLoading(true);
@@ -162,8 +161,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         request.get<{ users: User[] }>("/users")
       ]);
       const bookings = eventsResponse.data.bookings.filter(booking => booking.isRequest == false || booking.isApproved);
-
-      console.log(bookings);
 
       const coloredRooms = roomsResponse.data.rooms.map(room => ({
         ...room,

@@ -58,7 +58,6 @@ function dateDealFn(time: string) {
 }
 
 const exportIcs = (events: event[]) => {
-  console.log('lalalalala', events)
   //@ts-expect-error unknown
   const icsEvents: ics.EventAttributes[]  = events.map(item => {
     const { 
@@ -78,12 +77,10 @@ const exportIcs = (events: event[]) => {
   })
   const { error, value } = ics.createEvents(icsEvents)
   if (error) {
-    console.log(error)
     return
   }
   //@ts-expect-error unknown
   download(`event.ics`, value)
-  console.log('event_info', icsEvents,value)
 }
 
 export default exportIcs;

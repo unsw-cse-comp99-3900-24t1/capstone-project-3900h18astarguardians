@@ -75,7 +75,6 @@ const ResponsiveAppBar = () => {
       const changeResponse = await request.patch('/users/updateUser', {
         ...emailState
       })
-      console.log('response', changeResponse)
       handleCloseNotificationSettingsModal();
       if (changeResponse.status === 200) {
         displaySuccess('Success change notification preferences')
