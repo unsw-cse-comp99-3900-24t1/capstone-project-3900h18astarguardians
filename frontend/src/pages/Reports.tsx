@@ -41,10 +41,8 @@ const Reports  = () => {
     if (token?.type === "admin") {
       setIsAdmin(true);
     }
-    // fetchReports();
   }, [])
 
-  // console.log(value[0]?.toISOString);
 
   const fetchReports = async (start: Date, end: Date) => {
     const usageResponse = await request.post(`/bookings/usageReport?start=${start.toISOString()}&end=${end.toISOString()}`);
@@ -53,7 +51,6 @@ const Reports  = () => {
   
   const generateReports = async () => {
     const reportsData = await fetchReports(startDate?.toDate() ?? new Date() , endDate?.toDate() ?? new Date());
-    console.log(reportsData);
 
     // set most common rooms
     setMostCommonRooms(reportsData.mostCommonlyBookedRooms.map((room: any) => {
@@ -169,7 +166,6 @@ const Reports  = () => {
     {nonCheckedInUsers.length > 0 && <h1>Non-Checked In Users</h1>}
     {
       nonCheckedInUsers.map((item: any, index) => (
-        // <>item.start</>
         <Accordion key={index}>
         <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
@@ -187,7 +183,7 @@ const Reports  = () => {
           <strong>Checked In: False</strong>
         </AccordionDetails>
         <AccordionActions>
-        <Button variant="outlined" color="error" onClick={() => console.log(item)}>
+        <Button variant="outlined" color="error">
           Send Warning Email
         </Button>
       </AccordionActions>
@@ -201,74 +197,3 @@ const Reports  = () => {
 };
 
 export default Reports;
-
-// import * as React from 'react';
-// import Box from '@mui/material/Box';
-// import Typography from '@mui/material/Typography';
-// import Slider from '@mui/material/Slider';
-// import FormControlLabel from '@mui/material/FormControlLabel';
-// import Checkbox from '@mui/material/Checkbox';
-// import { BarChart } from '@mui/x-charts/BarChart';
-
-// export default function BarAnimation() {
-//   const [seriesNb, setSeriesNb] = React.useState(2);
-//   const [itemNb, setItemNb] = React.useState(5);
-//   const [skipAnimation, setSkipAnimation] = React.useState(false);
-
-//   const handleItemNbChange = (event: Event, newValue: number | number[]) => {
-//     if (typeof newValue !== 'number') {
-//       return;
-//     }
-//     setItemNb(newValue);
-//   };
-//   const handleSeriesNbChange = (event: Event, newValue: number | number[]) => {
-//     if (typeof newValue !== 'number') {
-//       return;
-//     }
-//     setSeriesNb(newValue);
-//   };
-
-//   return (
-//     <Box sx={{ width: '100%' }}>
-//       <BarChart
-//         height={300}
-//         series={series
-//           .slice(0, seriesNb)
-//           .map((s) => ({ ...s, data: s.data.slice(0, itemNb) }))}
-//         skipAnimation={skipAnimation}
-//       />
-//       <FormControlLabel
-//         checked={skipAnimation}
-//         control={
-//           <Checkbox onChange={(event) => setSkipAnimation(event.target.checked)} />
-//         }
-//         label="skipAnimation"
-//         labelPlacement="end"
-//       />
-//       <Typography id="input-item-number" gutterBottom>
-//         Number of items
-//       </Typography>
-//       <Slider
-//         value={itemNb}
-//         onChange={handleItemNbChange}
-//         valueLabelDisplay="auto"
-//         min={1}
-//         max={20}
-//         aria-labelledby="input-item-number"
-//       />
-//       <Typography id="input-series-number" gutterBottom>
-//         Number of series
-//       </Typography>
-//       <Slider
-//         value={seriesNb}
-//         onChange={handleSeriesNbChange}
-//         valueLabelDisplay="auto"
-//         min={1}
-//         max={10}
-//         aria-labelledby="input-series-number"
-//       />
-//     </Box>
-//   );
-// }
-
-

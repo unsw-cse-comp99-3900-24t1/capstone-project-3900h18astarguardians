@@ -40,7 +40,6 @@ const Requests  = () => {
     try {
       await request.get("/users/showMe");
     } catch (e) {
-      console.log(e);
     }
   };
 
@@ -119,7 +118,6 @@ const Requests  = () => {
       setRequests(genRequests);
       setIsLoading(false);
     } catch (e) {
-      console.log(e);
     }
   }
 
