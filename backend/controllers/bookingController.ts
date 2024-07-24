@@ -75,12 +75,21 @@ const createBooking = async (
     end: {
       $gt: start,
     },
-    $or:
-      // if cse staff, then they can book different rooms at same time whereas hdr students cannot
-      // book hot desks at same time
-      type === "cse_staff"
-        ? [{ room: roomId }]
-        : [{ user: user ? user : userId }, { room: roomId }],
+    // if cse staff, then they can book different rooms at same time whereas hdr students cannot
+    // book hot desks at same time
+    $and: [
+      {
+        $or: [
+          ...(type === "cse_staff"
+            ? [{ room: roomId }]
+            : [{ user: user ? user : userId }, { room: roomId }]),
+        ],
+      },
+      // booking can only clash with a approved request however doesent clash with a pending or denied request at the
+      // same timeframe
+      { $or: [{ isRequest: false }, { isRequest: true, isApproved: true }] },
+    ],
+
     isOverrided: false,
   });
 
@@ -271,6 +280,10 @@ const deleteBooking = async (
   await bookingToDelete.deleteOne();
   res.status(StatusCodes.OK).json({ success: "booking deleted" });
 };
+
+// const changeBookingRequestStatus = async (, isApprove: boolean) => {
+
+// };
 
 const approveBookingRequest = async (
   { params: { id: bookingId } }: Request,
