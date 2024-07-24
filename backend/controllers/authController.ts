@@ -8,7 +8,7 @@ import {
 import { attachCookiesToResponse } from "../utils";
 import { Request, Response } from "express";
 import { createTokenUser } from "../utils";
-import { sendVerificationEmail } from "../utils/sendVerficationEmail";
+import { sendVerificationEmail } from "../utils/sendVerificationEmail";
 import type { loginBodyI } from "../types";
 import { randomBytes } from "crypto";
 import { isReturnStatement } from "typescript";
