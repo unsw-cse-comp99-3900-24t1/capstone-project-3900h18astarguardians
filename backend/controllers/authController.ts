@@ -11,7 +11,6 @@ import { createTokenUser } from "../utils";
 import { sendVerificationEmail } from "../utils/sendVerificationEmail";
 import type { loginBodyI } from "../types";
 import { randomBytes } from "crypto";
-import { isReturnStatement } from "typescript";
 
 const register = async (
   { body: { email, password } }: Request,

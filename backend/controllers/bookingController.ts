@@ -280,7 +280,7 @@ const deleteBooking = async (
   await bookingToDelete.deleteOne();
   res.status(StatusCodes.OK).json({ success: "booking deleted" });
 };
-
+// ideally, an email should be sent notifying the user that their request has been approved or denied
 const changeBookingRequestStatus = async (
   { params: { id: bookingId } }: Request,
   res: Response,
@@ -306,12 +306,11 @@ const changeBookingRequestStatus = async (
   });
 };
 
-const approveBookingRequest = async (req: Request, res: Response) => 
+const approveBookingRequest = async (req: Request, res: Response) =>
   await changeBookingRequestStatus(req, res, true);
 
-const denyBookingRequest = async (req: Request, res: Response) => 
+const denyBookingRequest = async (req: Request, res: Response) =>
   await changeBookingRequestStatus(req, res, false);
-
 
 const sendFeedback = async (
   { body: { feedback }, user: { email } }: Request,
