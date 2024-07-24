@@ -281,13 +281,10 @@ const deleteBooking = async (
   res.status(StatusCodes.OK).json({ success: "booking deleted" });
 };
 
-// const changeBookingRequestStatus = async (, isApprove: boolean) => {
-
-// };
-
-const approveBookingRequest = async (
+const changeBookingRequestStatus = async (
   { params: { id: bookingId } }: Request,
-  res: Response
+  res: Response,
+  isApprove: boolean
 ) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw new BadRequestError(`No booking with id ${bookingId}`);
@@ -300,33 +297,21 @@ const approveBookingRequest = async (
       `booking ${bookingId} has already been approved or denied`
     );
 
-  booking.isApproved = true;
+  booking.isApproved = isApprove;
   await booking.save();
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: `booking ${bookingId} successfully approved` });
+  res.status(StatusCodes.OK).json({
+    msg: `booking ${bookingId} successfully ${
+      isApprove ? "Approved" : "Denied"
+    }`,
+  });
 };
-const denyBookingRequest = async (
-  { params: { id: bookingId } }: Request,
-  res: Response
-) => {
-  const booking = await Booking.findById(bookingId);
-  if (!booking) throw new BadRequestError(`No booking with id ${bookingId}`);
 
-  if (!booking.isRequest)
-    throw new BadRequestError(`booking ${bookingId} is not a request`);
+const approveBookingRequest = async (req: Request, res: Response) => 
+  await changeBookingRequestStatus(req, res, true);
 
-  if (booking.isApproved !== null)
-    throw new BadRequestError(
-      `booking ${bookingId} has already been approved or denied`
-    );
+const denyBookingRequest = async (req: Request, res: Response) => 
+  await changeBookingRequestStatus(req, res, false);
 
-  booking.isApproved = false;
-  await booking.save();
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: `booking ${bookingId} successfully denied` });
-};
 
 const sendFeedback = async (
   { body: { feedback }, user: { email } }: Request,
