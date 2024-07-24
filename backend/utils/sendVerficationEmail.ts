@@ -1,16 +1,22 @@
 import { sendEmail } from "./sendEmail";
+export const sendVerificationEmail = async (
+  to: string,
+  name: string,
+  verificationToken: string
+) => {
+  const from = "m.arsalah003@gmail.com";
+  const origin = "http://localhost:5000";
+  const url = `${origin}/user/verify?token=${verificationToken}&email=${to}`;
 
-// export const sendVerificationEmail = async (
-//   name: string,
-//   email: string,
-//   verificationToken: string,
-//   origin: string
-// ) => {
-//   const from = "m.arsalah003@gmail.com";
+  const html = `<h4>Hello ${name}</h4> <a href='${url}'>Click on this link to Verify!</a>`;
 
-//   const url = `${origin}/user/verify?token=${verificationToken}&email=${email}`;
-//   const text = `<h4>Hello ${name} </h4> <a href='${url}'>Click on this link to Verify!</a>`;
-
-//   const subject = `Verification email for Auth Workflow`;
-//   await sendEmail({ text, from });
-// };
+  const subject = `Verify your email for the CSE booking system!`;
+  const text = "verify your email";
+  await sendEmail({
+    from,
+    subject,
+    text,
+    to,
+    html,
+  });
+};
