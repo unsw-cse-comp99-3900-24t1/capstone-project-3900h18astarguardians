@@ -5,7 +5,6 @@ const sendEmailFn = async (booking_id: string,
   successFn: ()=>void = () => {},
   errorFn: ()=>void = () => {}
 ) => {
-    console.log('sendEmail', booking_id)
     try {
       const {
         data: { success },
@@ -13,7 +12,6 @@ const sendEmailFn = async (booking_id: string,
         booking: booking_id,
         isConfirmation,
       });
-      console.log('sendEmailResponse', success)
       if(success) {
         successFn()
       }
