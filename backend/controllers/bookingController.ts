@@ -75,7 +75,12 @@ const createBooking = async (
     end: {
       $gt: start,
     },
-    $or: [{ user: user ? user : userId }, { room: roomId }],
+    $or:
+      // if cse staff, then they can book different rooms at same time whereas hdr students cannot
+      // book hot desks at same time
+      type === "cse_staff"
+        ? [{ room: roomId }]
+        : [{ user: user ? user : userId }, { room: roomId }],
     isOverrided: false,
   });
 
