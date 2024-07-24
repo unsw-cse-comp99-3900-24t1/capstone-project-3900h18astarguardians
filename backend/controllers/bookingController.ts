@@ -20,6 +20,8 @@ import { sendOverrideEmail } from "../utils/sendOverrideEmail";
 import { mostCommonUsersQuery } from "../queries/mostCommonUsersQuery";
 import { bookingsNotCheckedInQuery } from "../queries/bookingsNotCheckedInQuery";
 import { mostCommonlyBookedRoomsQuery } from "../queries/mostCommonlyBookedRoomsQuery";
+import { roomsUsageQuery } from "../queries/roomsUsageQuery";
+import { userCheckInUsageQuery } from "../queries/userCheckInUsageQuery";
 
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
@@ -334,12 +336,20 @@ const getUsageReport = async (
     start,
     end
   );
+  // get usage of rooms by percent
+  const roomUsage = await roomsUsageQuery(start, end);
+
+  const checkedInUsage = await userCheckInUsageQuery(start, end);
 
   //most common users
   const mostCommonUsers = await mostCommonUsersQuery(start, end);
-  res
-    .status(StatusCodes.OK)
-    .json({ mostCommonlyBookedRooms, notCheckedIn, mostCommonUsers });
+  res.status(StatusCodes.OK).json({
+    roomUsage,
+    checkedInUsage,
+    mostCommonlyBookedRooms,
+    notCheckedIn,
+    mostCommonUsers,
+  });
 };
 export {
   getUsageReport,
