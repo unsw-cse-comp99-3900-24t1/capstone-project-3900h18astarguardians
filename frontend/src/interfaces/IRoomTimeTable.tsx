@@ -19,6 +19,7 @@ export interface Event {
   draggable: boolean;
   isApproved: boolean;
   isRequest: boolean;
+  isOverrided: boolean;
   room: {
     name: string;
     size: number;
