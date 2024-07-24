@@ -97,26 +97,30 @@ const createBooking = async (
   });
   // check if booking is a meeting room that is outside of normal working hours, so that the admin can be notified
   // @ts-ignore fix later
+  const bookingStartHour = moment(booking.start).hour();
+
+  // sending emails is disabled as usage is nearly 100% with email service
   if (
     roomExists.type === "meeting room" &&
-    // @ts-ignore fix later
-    (booking.start.getUTCHours() < 7 || booking.start.getUTCHours() > 17)
-  )
-    await notifyAdminEmail(booking._id.toString());
+    (bookingStartHour < 7 || bookingStartHour > 17)
+  ) {
+    // await notifyAdminEmail(booking._id.toString());
+    // console.log("email sent");
+  }
 
   if (hasConfirmationEmail)
-    await sendConfirmationEmail(
-      userToBook?.email || email,
-      booking._id.toString()
-    );
-  // notification email currently broken
-  // if (hasNotificationEmail)
-  //   await sendNotificationEmail(
-  //     userToBook?.email || email,
-  //     booking._id.toString()
-  //   );
+    // await sendConfirmationEmail(
+    //   userToBook?.email || email,
+    //   booking._id.toString()
+    // );
+    // notification email currently broken
+    // if (hasNotificationEmail)
+    //   await sendNotificationEmail(
+    //     userToBook?.email || email,
+    //     booking._id.toString()
+    //   );
 
-  res.status(StatusCodes.CREATED).json({ booking });
+    res.status(StatusCodes.CREATED).json({ booking });
 };
 // check for 'active' bookings, that is, a booking from now to the future, not one that has already passes
 const getCurrentUserBookings = async (
@@ -193,7 +197,9 @@ const overrideBooking = async (
   ))!;
   // notify the person who made the booking that its been overrided by an admin
   const personWhoBooked = (await User.findById(updatedBooking.user))!;
-  await sendOverrideEmail(personWhoBooked.email, booking._id.toString());
+
+  // sending emails is disabled as usage is nearly 100% with email service
+  // await sendOverrideEmail(personWhoBooked.email, booking._id.toString());
   res.status(StatusCodes.OK).json({ updatedBooking });
 };
 const getAllBookings = async (
@@ -308,7 +314,8 @@ const sendFeedback = async (
   { body: { feedback }, user: { email } }: Request,
   res: Response
 ) => {
-  await sendFeedbackEmail(feedback, email);
+  // sending emails is disabled as usage is nearly 100% with email service
+  // await sendFeedbackEmail(feedback, email);
   res
     .status(StatusCodes.OK)
     .json({ msg: `feedback sent to admin successfully!` });

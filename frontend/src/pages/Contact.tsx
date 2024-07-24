@@ -23,7 +23,6 @@ const Contact = () => {
       await request.get("/users/showMe");
     } catch (e) {
       navigate("/login");
-      console.log(e);
     }
   };
   useEffect(() => {
@@ -36,7 +35,6 @@ const Contact = () => {
     try {
       const data = new FormData(e.currentTarget);
       const feedback = data.get("feedback");
-      console.log(feedback);
       const {
         data: { res },
       } = await request.post("/bookings/sendFeedback", {

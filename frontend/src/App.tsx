@@ -107,8 +107,6 @@ const App = () => {
     admin
   };
 
-  console.log(token?.type);
-
   return (
     <>
       <BrowserRouter>
