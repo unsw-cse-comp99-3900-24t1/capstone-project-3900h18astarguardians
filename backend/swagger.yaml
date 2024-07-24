@@ -53,6 +53,55 @@ paths:
           headers: {}
       deprecated: false
       security: []
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: register
+      operationId: register
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/registerrequest"
+        required: true
+      responses:
+        "200":
+          description: Token which contains information about user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserToken"
+          headers: {}
+      deprecated: false
+      security: []
+  /auth/verify-email:
+    post:
+      tags:
+        - Auth
+      operationId: verify-email
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/verifyemailrequest"
+        required: true
+      responses:
+        "200":
+          description: Token which contains information about user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserToken"
+          headers: {}
+      deprecated: false
+      security: []
   /users:
     get:
       tags:
@@ -796,12 +845,44 @@ components:
       title: loginrequest
       required:
         - email
+        - password
       type: object
       properties:
         email:
           type: string
+        password:
+          type: string
       example:
         email: tjfxr@unsw.edu.au
+        password: blah123
+    registerrequest:
+      title: registerrequest
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: tjfxr@unsw.edu.au
+        password: blah123
+    verifyemailrequest:
+      title: verifyemailrequest
+      required:
+        - email
+        - verificationToken
+      type: object
+      properties:
+        email:
+          type: string
+        verificationToken:
+          type: string
+      example:
+        email: tjfxr@unsw.edu.au
+        verificationToken: RMd4I87MuROLtKB2zjPO2ggHfyhHuzLhJL7t8vvi
     sendemailrequest:
       title: sendemailrequest
       required:
