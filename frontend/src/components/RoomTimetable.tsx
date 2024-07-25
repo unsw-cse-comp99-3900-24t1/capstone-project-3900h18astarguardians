@@ -51,36 +51,27 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   // Filter available rooms based on the selected time range
   function filterAvailableRooms(filteredRooms: Room[], filterStartTime: string, filterEndTime: string) {
-    // Initialize start and end times to null
-    let startTime = filterStartTime ? new Date(selectedDate) : null;
-    let endTime = filterEndTime ? new Date(selectedDate) : null;
-
-    // Set hours for start and end times if they are provided
-    if (startTime) {
-      startTime.setHours(Number(filterStartTime.split(":")[0]), Number(filterStartTime.split(":")[1]), 0);
+    // initialise the default start and end time
+    let startTime = new Date(selectedDate);
+    startTime.setHours(0, 0, 0, 0);
+    let endTime = new Date(selectedDate);
+    endTime.setHours(23, 59, 59, 999);
+    // set the start and end time based on the filter inputs
+    if (filterStartTime) {
+      startTime.setHours(Number(filterStartTime.split(":")[0]), Number(filterStartTime.split(":")[1]), 0, 0);
+    };
+    if (filterEndTime) {
+      endTime.setHours(Number(filterEndTime.split(":")[0]), Number(filterEndTime.split(":")[1]), 0, 0);
     }
-    if (endTime) {
-      endTime.setHours(Number(filterEndTime.split(":")[0]), Number(filterEndTime.split(":")[1]), 0);
-    }
+    // filter out the events on the selected date
+    const eventsOnSelectedDate = events.filter(event => event.start.toDateString() === new Date(selectedDate).toDateString());
     // Filter rooms based on availability
     let availableRooms = filteredRooms.filter(room => {
       // Check if there's any event in the room that conflicts with the criteria
-      let isRoomOccupied = events.some(event => {
-        // Convert event start and end to Date objects for comparison
-        let eventStart = new Date(event.start);
-        let eventEnd = new Date(event.end);
-        // Determine overlap based on provided start and/or end times
-        if (startTime && endTime) {
-          // Both start and end times provided
-          return event.room._id === room._id && eventStart < endTime && eventEnd > startTime;
-        } else if (startTime) {
-          // Only start time provided
-          return event.room._id === room._id && eventStart > startTime;
-        } else if (endTime) {
-          // Only end time provided
-          return event.room._id === room._id && eventEnd < endTime;
-        }
-        return false;
+      let isRoomOccupied = eventsOnSelectedDate.some(event => {
+        const isPreviousEvent = new Date(event.end) <= startTime;
+        const isFutureEvent = new Date(event.start) >= endTime;
+        return (room._id === event.room._id) && !(isPreviousEvent || isFutureEvent);
       });
       // If no event conflicts, the room is available
       return !isRoomOccupied;
@@ -101,7 +92,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
-    let filteredEvents = events;
     if (filters.selectedType) {
       filteredRooms = filteredRooms.filter(room => room.type === filters.selectedType);
     }
@@ -327,7 +317,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
 
   };
-  console.log(events[0]);
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
@@ -386,7 +375,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             onDelete={deleteBookings}
             events={filterEventsInRange()}
             onConfirm={onConfirm}
-            viewerExtraComponent={(fields, event) => {
+            viewerExtraComponent={(_, event) => {
               return (
                 <Button variant="outlined" disabled={!isAdmin} onClick={() => {
                   overrideBooking(event.event_id as string, event.user._id);
