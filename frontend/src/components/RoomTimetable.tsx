@@ -10,8 +10,8 @@ import sendEmailFn from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
-import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail" 
-
+import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail";
+import { getStartOfDayISO, getEndOfDayISO } from "../utils/ConvertDateFn";
 
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -140,15 +140,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   useEffect(() => {
     setIsLoading(false);
   }, [filteredRooms]);
-  
 
-  const fetchRoomsAndEvents = useCallback(async () => {
+  const fetchRoomsAndEvents = useCallback(async (date: Date) => {
     setIsTableReady(false)
     try {
       setIsLoading(true);
       const [roomsResponse, eventsResponse, usersResponse] = await Promise.all([
         request.get<{ rooms: Room[] }>("/rooms"),
-        request.get<{ bookings: Event[] }>("/bookings"),
+        request.get<{ bookings: Event[] }>(`/bookings?start=${getStartOfDayISO(date)}&end=${getEndOfDayISO(date)}&sort=duration`),
         request.get<{ users: User[] }>("/users")
       ]);
       console.log(eventsResponse);
@@ -185,13 +184,11 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       ));
     } catch (error) {
       console.error("Failed to fetch data", error);
-    } finally {
-
     }
   }, [token]);
 
   useEffect(() => {
-    fetchRoomsAndEvents();
+    fetchRoomsAndEvents(selectedDate);
   }, [update, selectedDate, currLevel, fetchRoomsAndEvents]);
 
   useEffect(() => {
@@ -256,9 +253,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       if (response?.data?.booking._id) {
         sendEmailFn(response?.data?.booking._id, true);
       }
-      console.log("editable", event.editable);
-      console.log("deletable", event.deletable);
-      console.log("draggable", event.draggable);
       events.push({
         event_id: event._id,
         _id: event._id,
@@ -270,7 +264,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         draggable: false,
         room: event.room,
         isApproved: false,
-        isRequest: true,
+        isRequest: false,
         isOverrided: false,
         user: event.user
       });
@@ -311,15 +305,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const overrideBooking = async (event_id: string, user_id: string) => {
     // send email
-    console.log(event_id);
-    console.log(user_id);
     sendOverrideEmail(user_id, event_id);
     await request.patch(`/bookings/${event_id}/overrideBooking`);
 
-    fetchRoomsAndEvents();
+    fetchRoomsAndEvents(selectedDate);
 
 
   };
+  
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
