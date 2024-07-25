@@ -95,6 +95,7 @@ const ResponsiveAppBar = () => {
       removeAdmin();
       navigate("/login");
       displaySuccess("Successfully Logged out");
+      localStorage.removeItem('filterConfig');
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.error;
