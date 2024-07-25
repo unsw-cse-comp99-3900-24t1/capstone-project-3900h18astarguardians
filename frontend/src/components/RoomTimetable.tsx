@@ -68,16 +68,16 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     // Filter rooms based on availability
     let availableRooms = filteredRooms.filter(room => {
       // Check if there's any event in the room that conflicts with the criteria
-      let isRoomOccupied = eventsOnSelectedDate.some(event => {
+      return !(eventsOnSelectedDate.some(event => {
         const isPreviousEvent = new Date(event.end) <= startTime;
         const isFutureEvent = new Date(event.start) >= endTime;
-        return (room._id === event.room._id) && !(isPreviousEvent || isFutureEvent);
-      });
-      // If no event conflicts, the room is available
-      return !isRoomOccupied;
+        return room._id === event.room._id && !isPreviousEvent && !isFutureEvent
+      }));
     });
     return availableRooms;
   }
+
+  
 
   const initializeFilteredRooms = useCallback(() => {
     const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
@@ -256,20 +256,23 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       if (response?.data?.booking._id) {
         sendEmailFn(response?.data?.booking._id, true);
       }
+      console.log("editable", event.editable);
+      console.log("deletable", event.deletable);
+      console.log("draggable", event.draggable);
       events.push({
-        //@ts-ignore
-        event_id: event.event_id,
+        event_id: event._id,
         _id: event._id,
-        title: "dummy title",
+        title: event.title,
         start: event.start,
         end: event.end,
-        // @ts-ignore
-        editable: event.editable,
-        // @ts-ignore
-        deletable: event.deletable,
-        // @ts-ignore
-        draggable: event.draggable,
+        editable: false,
+        deletable: true,
+        draggable: false,
         room: event.room,
+        isApproved: false,
+        isRequest: true,
+        isOverrided: false,
+        user: event.user
       });
       setUpdate(prevUpdate => !prevUpdate);
       const currUserType = token?.type;
