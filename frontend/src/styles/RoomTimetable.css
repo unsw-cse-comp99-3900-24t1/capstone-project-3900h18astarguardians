@@ -31,6 +31,8 @@
 .MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.css-1sfpplk-MuiListItem-root {
   display: grid;
   justify-content: center;
+  border-top: none;
+  padding-bottom: 15px;
 }
 
 .lds-facebook,

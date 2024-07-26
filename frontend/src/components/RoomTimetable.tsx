@@ -105,7 +105,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     applyFilters(filters);
     handleFilterModalClose();
-    console.log(filters);
   };
 
   const handleResetButton = () => {
@@ -169,7 +168,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         request.get<{ bookings: Event[] }>(`/bookings?start=${getStartOfDayISO(date)}&end=${getEndOfDayISO(date)}&sort=duration`),
         request.get<{ users: User[] }>("/users")
       ]);
-      console.log(eventsResponse);
       const bookings = eventsResponse.data.bookings.filter(booking => (booking.isOverrided === false) && (booking.isRequest == false || booking.isApproved));
 
       const coloredRooms = roomsResponse.data.rooms.map(room => ({
@@ -233,8 +231,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }
       applyFilters(filter);
       setIsTableReady(false);
-      console.log("filtering");
-      console.log(filter);
     }
   }, [currLevel]);
 
@@ -315,6 +311,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       const currUserType = token?.type;
       if (currUserType === "non_cse_staff") {
         displaySuccess("Your request has been submitted. The admin will notify you by email upon approval or rejection.")
+      } else {
+        displaySuccess("Booking has been successfully created. Check \"My Bookings\" page for more details.");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -352,7 +350,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     await request.patch(`/bookings/${event_id}/overrideBooking`);
 
     fetchRoomsAndEvents(selectedDate);
-
 
   };
 

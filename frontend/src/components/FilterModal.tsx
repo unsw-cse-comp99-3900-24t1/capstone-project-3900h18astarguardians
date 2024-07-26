@@ -43,7 +43,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   const validateTimes = (start: string, end: string) => {
     const now = new Date();
-    console.log(now);
     // initialise the default start and end time
     let startTime = new Date(selectedDate);
     startTime.setHours(Number(start.split(":")[0]), Number(start.split(":")[1]), 0, 0);
@@ -244,7 +243,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
-            <Typography>Time Span</Typography>
+            <Typography>Available Time Span</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl fullWidth>
