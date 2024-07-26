@@ -22,6 +22,7 @@ interface userDB_I extends mongooseUserI {
 }
 interface loginBodyI {
   email: string;
+  password?: string;
 }
 
 interface errorObjectI {

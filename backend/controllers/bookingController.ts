@@ -20,6 +20,8 @@ import { sendOverrideEmail } from "../utils/sendOverrideEmail";
 import { mostCommonUsersQuery } from "../queries/mostCommonUsersQuery";
 import { bookingsNotCheckedInQuery } from "../queries/bookingsNotCheckedInQuery";
 import { mostCommonlyBookedRoomsQuery } from "../queries/mostCommonlyBookedRoomsQuery";
+import { roomsUsageQuery } from "../queries/roomsUsageQuery";
+import { userCheckInUsageQuery } from "../queries/userCheckInUsageQuery";
 
 // check that the booking doesent clash with any other bookings
 // check that user and room exists
@@ -75,7 +77,21 @@ const createBooking = async (
     end: {
       $gt: start,
     },
-    $or: [{ user: user ? user : userId }, { room: roomId }],
+    // if cse staff, then they can book different rooms at same time whereas hdr students cannot
+    // book hot desks at same time
+    $and: [
+      {
+        $or: [
+          ...(type === "cse_staff"
+            ? [{ room: roomId }]
+            : [{ user: user ? user : userId }, { room: roomId }]),
+        ],
+      },
+      // booking can only clash with a approved request however doesent clash with a pending or denied request at the
+      // same timeframe
+      { $or: [{ isRequest: false }, { isRequest: true, isApproved: true }] },
+    ],
+
     isOverrided: false,
   });
 
@@ -266,10 +282,11 @@ const deleteBooking = async (
   await bookingToDelete.deleteOne();
   res.status(StatusCodes.OK).json({ success: "booking deleted" });
 };
-
-const approveBookingRequest = async (
+// ideally, an email should be sent notifying the user that their request has been approved or denied
+const changeBookingRequestStatus = async (
   { params: { id: bookingId } }: Request,
-  res: Response
+  res: Response,
+  isApprove: boolean
 ) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw new BadRequestError(`No booking with id ${bookingId}`);
@@ -282,33 +299,20 @@ const approveBookingRequest = async (
       `booking ${bookingId} has already been approved or denied`
     );
 
-  booking.isApproved = true;
+  booking.isApproved = isApprove;
   await booking.save();
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: `booking ${bookingId} successfully approved` });
+  res.status(StatusCodes.OK).json({
+    msg: `booking ${bookingId} successfully ${
+      isApprove ? "Approved" : "Denied"
+    }`,
+  });
 };
-const denyBookingRequest = async (
-  { params: { id: bookingId } }: Request,
-  res: Response
-) => {
-  const booking = await Booking.findById(bookingId);
-  if (!booking) throw new BadRequestError(`No booking with id ${bookingId}`);
 
-  if (!booking.isRequest)
-    throw new BadRequestError(`booking ${bookingId} is not a request`);
+const approveBookingRequest = async (req: Request, res: Response) =>
+  await changeBookingRequestStatus(req, res, true);
 
-  if (booking.isApproved !== null)
-    throw new BadRequestError(
-      `booking ${bookingId} has already been approved or denied`
-    );
-
-  booking.isApproved = false;
-  await booking.save();
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: `booking ${bookingId} successfully denied` });
-};
+const denyBookingRequest = async (req: Request, res: Response) =>
+  await changeBookingRequestStatus(req, res, false);
 
 const sendFeedback = async (
   { body: { feedback }, user: { email } }: Request,
@@ -332,12 +336,20 @@ const getUsageReport = async (
     start,
     end
   );
+  // get usage of rooms by percent
+  const roomUsage = await roomsUsageQuery(start, end);
+
+  const checkedInUsage = await userCheckInUsageQuery(start, end);
 
   //most common users
   const mostCommonUsers = await mostCommonUsersQuery(start, end);
-  res
-    .status(StatusCodes.OK)
-    .json({ mostCommonlyBookedRooms, notCheckedIn, mostCommonUsers });
+  res.status(StatusCodes.OK).json({
+    roomUsage,
+    checkedInUsage,
+    mostCommonlyBookedRooms,
+    notCheckedIn,
+    mostCommonUsers,
+  });
 };
 export {
   getUsageReport,
