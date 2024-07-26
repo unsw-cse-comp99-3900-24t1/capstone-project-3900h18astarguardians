@@ -70,7 +70,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="scheduler-container">
+      <div className="dashboard-content">
         <Box sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '25px' }}>
           <Select
             labelId="demo-simple-select-label"

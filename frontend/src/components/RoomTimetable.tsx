@@ -3,6 +3,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
+import { FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { DayHours, EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
@@ -366,7 +367,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setClickedRoom(room);
   };
 
-  const overrideBooking = async (event_id: string, user_id: string) => {
+  const overrideBooking = async (event_id: string, _user_id: string) => {
     // send email
     // !! disabling email sending due to free email usage requirement
     // sendOverrideEmail(user_id, event_id);
@@ -376,10 +377,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   };
 
+  const schedulerButtonStyle = {
+    fontSize: "1.8rem",
+    transition: "transform 0.35s ease, background-color 0.3s ease"
+  };
   return (
     <>
-      <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
-      <Button onClick={handleResetButton}>Reset Filter</Button>
+      <Button onClick={() => setFilterModalOpen(true)}><FilterAlt></FilterAlt></Button>
+      <Button onClick={handleResetButton}><FilterAltOff></FilterAltOff></Button>
       <FilterModal
         open={filterModalOpen}
         handleClose={handleFilterModalClose}
@@ -388,86 +393,88 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         types={['staff room', 'meeting room', 'hot desk', 'normal']}
         selectedDate={selectedDate}
       />
-      <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
-      <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
       {filteredRooms.length > 0 && (
-        <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
-          <Scheduler
-            onCellClick={handleCellClick}
-            key={currentIndex}
-            view="day"
-            day={{
-              startHour: startHour,
-              endHour: endHour,
-              step: 60,
-              cellRenderer: ({ height, start, onClick, ...props }) => {
-                // Set current time to the beginning of the current hour
-                const currTime = new Date();
-                currTime.setMinutes(0, 0, 0);
-                // Ensure 'start' is a Date object (if it's not already)
-                const startTime = new Date(start);
-                // Disable the cell if its start time is in the past
-                const disabled = startTime <= currTime;
-                // Apply disabled-related properties conditionally
-                const restProps = disabled ? {} : props;
+        <div className="scheduler-container">
+          <Button className="scheduler-button" onClick={prevPage} disabled={currentIndex === 0} style={schedulerButtonStyle}>&lt;</Button>
+          <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
+            <Scheduler
+              onCellClick={handleCellClick}
+              key={currentIndex}
+              view="day"
+              day={{
+                startHour: startHour,
+                endHour: endHour,
+                step: 60,
+                cellRenderer: ({ height, start, onClick, ...props }) => {
+                  // Set current time to the beginning of the current hour
+                  const currTime = new Date();
+                  currTime.setMinutes(0, 0, 0);
+                  // Ensure 'start' is a Date object (if it's not already)
+                  const startTime = new Date(start);
+                  // Disable the cell if its start time is in the past
+                  const disabled = startTime <= currTime;
+                  // Apply disabled-related properties conditionally
+                  const restProps = disabled ? {} : props;
+                  return (
+                    <Button
+                      style={{
+                        height: "100%",
+                        background: disabled ? "#eee" : "transparent",
+                        cursor: disabled ? "not-allowed" : "pointer",
+                      }}
+                      onClick={disabled ? () => {} : onClick}
+                      disableRipple={disabled}
+                      {...restProps}
+                    ></Button>
+                  );
+                }
+              }}
+              hourFormat="24"
+              navigation={false}
+              disableViewer={false}
+              selectedDate={selectedDate}
+              disableViewNavigator={true}
+              resourceViewMode={"default"}
+              resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
+              draggable={false}
+              onDelete={deleteBookings}
+              events={filterEventsInRange()}
+              onConfirm={onConfirm}
+              viewerExtraComponent={(_, event) => {
                 return (
-                  <Button
-                    style={{
-                      height: "100%",
-                      background: disabled ? "#eee" : "transparent",
-                      cursor: disabled ? "not-allowed" : "pointer",
-                    }}
-                    onClick={disabled ? () => {} : onClick}
-                    disableRipple={disabled}
-                    {...restProps}
-                  ></Button>
+                  <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+                    overrideBooking(event.event_id as string, event.user._id);
+                  }}>Override</Button>
                 );
-              }
-            }}
-            hourFormat="24"
-            navigation={false}
-            disableViewer={false}
-            selectedDate={selectedDate}
-            disableViewNavigator={true}
-            resourceViewMode={"default"}
-            resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
-            draggable={false}
-            onDelete={deleteBookings}
-            events={filterEventsInRange()}
-            onConfirm={onConfirm}
-            viewerExtraComponent={(_, event) => {
-              return (
-                <Button variant="outlined" disabled={!isAdmin} onClick={() => {
-                  overrideBooking(event.event_id as string, event.user._id);
-                }}>Override</Button>
-              );
-            }}
-            fields={[
-              {
-                name: "Description",
-                type: "input",
-                default: "Default Value...",
-                config: { label: "Details", multiline: true, rows: 4 }
-              },
-              {
-                name: "User",
-                type: "select",
-                default: token?.userId,
-                options: users.map(user => ({
-                  id: user._id,
-                  text: `${user.name} (${user.zid})`,
-                  value: user._id
-                })),
-                config: { label: "User", required: true, disabled: !isAdmin }
-              }
-            ]}
-            resourceFields={{
-              idField: "admin_id",
-              textField: "title",
-              avatarField: "title",
-              colorField: "color"
-            }}
-          />
+              }}
+              fields={[
+                {
+                  name: "Description",
+                  type: "input",
+                  default: "Default Value...",
+                  config: { label: "Details", multiline: true, rows: 4 }
+                },
+                {
+                  name: "User",
+                  type: "select",
+                  default: token?.userId,
+                  options: users.map(user => ({
+                    id: user._id,
+                    text: `${user.name} (${user.zid})`,
+                    value: user._id
+                  })),
+                  config: { label: "User", required: true, disabled: !isAdmin }
+                }
+              ]}
+              resourceFields={{
+                idField: "admin_id",
+                textField: "title",
+                avatarField: "title",
+                colorField: "color"
+              }}
+            />
+          </div>
+          <Button style={schedulerButtonStyle} className="scheduler-button" onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>&gt;</Button>
         </div>
       )}
       {filteredRooms.length == 0 && (
