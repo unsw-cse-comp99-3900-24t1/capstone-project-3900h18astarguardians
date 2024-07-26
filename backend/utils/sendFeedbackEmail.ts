@@ -5,7 +5,7 @@ import { User } from "../models/User";
 
 export const sendFeedbackEmail = async (feedback: string, email: string) => {
   // find admin email address
-  const admin = (await User.findOne({ email: "m.arsalah003@gmail.com" }))!;
+  const admin = (await User.findOne({ email: "rooneytai5236@gmail.com" }))!;
   const to = admin?.email;
   const from = "m.arsalah003@gmail.com";
   const subject = `Feedback from ${email}`;

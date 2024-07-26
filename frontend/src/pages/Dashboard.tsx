@@ -42,7 +42,7 @@ const Dashboard = () => {
     // If today is Sunday, set daysUntilNextSunday to 7 to ensure we're looking at next week's Sunday
     const daysUntilNextSunday = today.getDay() === 0 ? 7 : 7 - today.getDay();
     // Set nextSunday to the next week's Sunday by adding daysUntilNextSunday + 7 to ensure it's next week
-    nextSunday.setDate(today.getDate() + daysUntilNextSunday);
+    nextSunday.setDate(today.getDate() + daysUntilNextSunday + 7);
 
     // Check if the provided date is the same as next week's Sunday
     return date.getDate() === nextSunday.getDate() &&
