@@ -85,7 +85,7 @@ const MapView: React.FC<MapViewProps> = ({ currLevel, setHighlightedRoom, switch
         isAllowed = allowedStaffRoom;
       }
   
-      const buttonStyle = isAllowed ? { cursor: 'pointer' } : {cursor: 'not-allowed' };
+      const buttonStyle = isAllowed ? { cursor: 'pointer', border: '2px solid green', boxShadow: 'inset 0 0 0 1000px rgba(0,355,0,.2)' } : {cursor: 'not-allowed', border: '2px solid red', boxShadow: 'inset 0 0 0 1000px rgba(355,0,0,.2)' };
       return React.cloneElement(button, {
         style: buttonStyle,
         disabled: !isAllowed,
