@@ -13,13 +13,14 @@ import FilterModal from './FilterModal';
 import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail" 
 
 
-const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel }) => {
+const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel, highlightedRoom }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [update, setUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isTableReady, setIsTableReady] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [roomHighlighted, setRoomHighlighted] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
@@ -82,6 +83,19 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const initializeFilteredRooms = useCallback(() => {
     const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
     setFilteredRooms(CurrLevelRooms);
+    console.log(highlightedRoom);
+
+    if (highlightedRoom !== null) {
+      setRoomHighlighted(true);
+      for (let i = 0; i < filteredRooms.length; i++) {
+        if (filteredRooms[i].name === highlightedRoom) {
+          console.log(`index should be ${i}`);
+          setCurrentIndex(i);
+        }
+      }
+    }
+
+
     setIsLoading(false);
   }, [rooms, currLevel]);
 
@@ -129,6 +143,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
+    setRoomHighlighted(false);
   };
 
   useEffect(() => {
@@ -237,6 +252,15 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }
       setIsTableReady(true);
     }
+    if (roomHighlighted) {
+      // add border to first column in schedular
+      const schedulerElement = document.querySelector('.css-1mrufi') as HTMLElement;
+      if (schedulerElement !== null) {
+        const firstChild = schedulerElement.children[0] as HTMLElement;
+        firstChild.style.border = '2px solid red';
+      }
+    }
+
   }, [isLoading, currentIndex]);
 
   const clickedRoomRef = useRef(clickedRoom);
@@ -289,10 +313,12 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const nextPage = () => {
     setCurrentIndex(prevIndex => Math.min(prevIndex + roomsDisplay, filteredRooms.length - roomsDisplay));
+    setRoomHighlighted(false);
   };
 
   const prevPage = () => {
     setCurrentIndex(prevIndex => Math.max(prevIndex - roomsDisplay, 0));
+    setRoomHighlighted(false);
   };
 
   if (isLoading) {
