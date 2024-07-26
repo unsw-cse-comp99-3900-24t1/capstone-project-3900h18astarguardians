@@ -30,7 +30,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
 
-
+  // do not display the events within the filtered time period
   function filterEventsInRange() {
     const startTime = new Date(selectedDate);
     startTime.setHours(startHour, 0, 0); // Set start time to the startHour on the selected date
@@ -45,7 +45,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       // Include the event if it starts before the endHour and ends after the startHour
       return eventStart < endTime && eventEnd > startTime;
     });
-  
     return filteredEvents;
   }
 
@@ -63,12 +62,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     if (filterEndTime) {
       endTime.setHours(Number(filterEndTime.split(":")[0]), Number(filterEndTime.split(":")[1]), 0, 0);
     }
-    // filter out the events on the selected date
-    const eventsOnSelectedDate = events.filter(event => event.start.toDateString() === new Date(selectedDate).toDateString());
     // Filter rooms based on availability
     let availableRooms = filteredRooms.filter(room => {
       // Check if there's any event in the room that conflicts with the criteria
-      return !(eventsOnSelectedDate.some(event => {
+      return !(events.some(event => {
         const isPreviousEvent = new Date(event.end) <= startTime;
         const isFutureEvent = new Date(event.start) >= endTime;
         return room._id === event.room._id && !isPreviousEvent && !isFutureEvent
@@ -77,11 +74,26 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     return availableRooms;
   }
 
-  
-
   const initializeFilteredRooms = useCallback(() => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
+    // const CurrLevelRooms = filteredRooms.filter(room => room.level === currLevel);
+    // setFilteredRooms(CurrLevelRooms);
+    if (!isTableReady) {
+      const savedFilters = localStorage.getItem('filterConfig');
+        let filter;
+        if (savedFilters) {
+          filter = JSON.parse(savedFilters);
+        } else {
+          filter = {
+            selectedOptions:[],
+            selectedType:"",
+            capacityMin:0,
+            capacityMax:0,
+            startTime:"",
+            endTime:""
+          }
+        }
+        applyFilters(filter);
+      }
     setIsLoading(false);
   }, [rooms, currLevel]);
 
@@ -90,6 +102,24 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
   const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
+    applyFilters(filters);
+    handleFilterModalClose();
+    console.log(filters);
+  };
+
+  const handleResetButton = () => {
+    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
+    setFilteredRooms(CurrLevelRooms);
+    localStorage.removeItem('filterConfig');
+    setStartHour(0);
+    setEndHour(24);
+    setCurrentIndex(0);
+    setIsLoading(true);
+    setIsTableReady(false);
+  };
+
+  const applyFilters = (filters: { selectedOptions: string[]; selectedType: string, 
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
     if (filters.selectedType) {
@@ -115,17 +145,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       }
     }
     setFilteredRooms(filteredRooms);
-    setCurrentIndex(0);
-    setIsLoading(true);
-    setIsTableReady(false);
-    handleFilterModalClose();
-  };
-
-  const handleResetButton = () => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
-    setStartHour(0);
-    setEndHour(24);
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
@@ -193,6 +212,30 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   useEffect(() => {
     setCurrentIndex(0);
+  }, [currLevel]);
+
+  useEffect(() => {
+    // Automatically apply filters when currLevel or selectedDate changes
+    if (filteredRooms.length > 0) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      let filter;
+      if (savedFilters) {
+        filter = JSON.parse(savedFilters);
+      } else {
+        filter = {
+          selectedOptions:[],
+          selectedType:"",
+          capacityMin:0,
+          capacityMax:0,
+          startTime:"",
+          endTime:""
+        }
+      }
+      applyFilters(filter);
+      setIsTableReady(false);
+      console.log("filtering");
+      console.log(filter);
+    }
   }, [currLevel]);
 
   const getColorForRoomType = (type: string): string => {
@@ -312,7 +355,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
 
   };
-  
+
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
@@ -323,6 +366,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         handleConfirm={handleFilterModalConfirm}
         options={['printer', 'projector', 'other']}
         types={['staff room', 'meeting room', 'hot desk', 'normal']}
+        selectedDate={selectedDate}
       />
       <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
       <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
