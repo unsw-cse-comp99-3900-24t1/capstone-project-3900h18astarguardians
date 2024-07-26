@@ -2,10 +2,21 @@ import RoomTimetable from "../components/RoomTimetable";
 import { Box, Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useState } from "react";
 import "../styles/Dashboard.css";
+import MapView from "../components/MapView";
 
 const Dashboard = () => {
   let [selectedDate, setSelectedDate] = useState(new Date());
-  let [currLevel, setCurrLevel] = useState(1);
+  let [currLevel, setCurrLevel] = useState(2);
+
+  // "timetable" | "map"
+  const [currView, setCurrView] = useState("timetable");
+  const [highlightedRoom, setHighlightedRoom] = useState<string|null>(null);
+
+  const mySetHighlightedRoom = (name: string) => {
+    console.log(name);
+    setHighlightedRoom(name);
+  }
+
 
   const handleChange = (event: SelectChangeEvent) => {
     setCurrLevel(Number(event.target.value));
@@ -51,6 +62,12 @@ const Dashboard = () => {
   };
   
 
+  console.log(highlightedRoom);
+
+  const switchToTimetableView = () => {
+    setCurrView("timetable")
+  }
+
   return (
     <>
       <div className="scheduler-container">
@@ -61,7 +78,6 @@ const Dashboard = () => {
             value={currLevel.toString()}
             label="Level"
             onChange={handleChange}>
-            <MenuItem value={1}>Level One</MenuItem>
             <MenuItem value={2}>Level Two</MenuItem>
             <MenuItem value={3}>Level Three</MenuItem>
             <MenuItem value={4}>Level Four</MenuItem>
@@ -76,8 +92,21 @@ const Dashboard = () => {
           <Button variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
             &gt;
           </Button>
+          {currView === "timetable" && <Button variant="outlined" onClick={() => setCurrView("map")}>
+            Map View
+            </Button>}
+          {currView === "map" && <Button variant="outlined" onClick={() => setCurrView("timetable")}>
+            Timetable View
+            </Button>}
+          {/* <Button variant="outlined">{currView === "timetable" }</Button> */}
         </Box>
-        <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} />
+        {currView === "timetable" &&
+          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} highlightedRoom={highlightedRoom}/>
+        }
+        {currView === "map" &&
+          <MapView currLevel={currLevel} setHighlightedRoom={mySetHighlightedRoom} switchView={switchToTimetableView}/>
+        }
+
       </div>
     </>
   );
