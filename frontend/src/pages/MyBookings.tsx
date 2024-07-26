@@ -1,11 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useGlobalContext } from "../utils/context";
 import exportIcs from '../utils/exportIcs'
 import Box from "@mui/material/Box";
+import "../styles/MyBookings.css"
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 type Booking = {
   id: string;
@@ -15,12 +17,49 @@ type Booking = {
   room: string;
   description: string;
   checked_in: boolean;
+  backgroundColor: string
 };
-interface room {
+
+type Request = {
+  id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  room: string;
+  description: string;
+  checked_in: boolean;
+  backgroundColor: string;
+  isApproved: boolean | null;
+};
+
+// type Room = {
+//   _id: string;
+//   name: string;
+//   size: number;
+//   // Add other properties if needed
+// };
+
+type BookingRequestData = {
+  _id: string;
+  user: string;
+  start: string; // ISO 8601 string
+  end: string;   // ISO 8601 string
+  duration: number;
+  isApproved: boolean | null;
+  isCheckedIn: boolean;
+  isOverrided: boolean;
+  isRequest: boolean;
+  room: room;
+  __v: number;
+};
+
+type room = {
   name: string;
   size: string;
   _id: string;
+  type: string;
 }
+
 type OldBooking = {
   _id: string;
   start: string;
@@ -36,11 +75,13 @@ const AllFileBoxStyle = {
 }
 
 const MyBookings  = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { displaySuccess, displayError } = useGlobalContext();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
   const [oldBookings, setOldBookings] = useState<OldBooking[]>([]);
-  const [currTime, setCurrTime] = useState<Date>(new Date());
-  const [open, setOpen] = useState(false);
+  const currTime = (new Date().getTime());
   const [isLoading, setIsLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState<string>('');
 
@@ -127,12 +168,26 @@ const MyBookings  = () => {
   const getBookings = async () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
-      let data = resp.data.bookings;
+      let data: BookingRequestData[] = resp.data.bookings;
+
+      console.log(data);
+
       let newBookings: Booking[] = [];
+      let newRequests: Request[] = [];
       let today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      setOldBookings(data.filter((item) => new Date(item.start) > today));
+      let todaysBookings = data.filter((item) => new Date(item.start) > today);
+      setOldBookings(todaysBookings.map((booking) => {
+        return {
+          _id: booking._id,
+          start: booking.start,
+          end: booking.end,
+          title: booking.room.name,
+          Description: '',
+          room: booking.room
+        }
+      }));
 
       for (let i = data.length - 1; i >= 0; i--) {
         // set bookings
@@ -140,33 +195,66 @@ const MyBookings  = () => {
         let endTime = new Date(data[i].end);
         let roomName = data[i].room.name;
         
+        let booking = data[i];
         // only view bookings from today onward
         if (startTime <= today) {
           continue;
         }
 
-        let description = 'desc not implemented';
-        let b: Booking = {
-          id: `${data[i]._id}`,
-          date: `${String(startTime.getDate()).padStart(2, '0')}/${String(startTime.getMonth() + 1).padStart(2, '0')}/${startTime.getFullYear()}`,
-          start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
-          end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
-          room: roomName,
-          description: 'description not implemented',
-          checked_in: data[i].isCheckedIn,
+        if (booking.isRequest === false || (booking.isRequest && booking.isApproved === true)) {
+          
+          let color = 'rgba(255, 0, 0, 0.5)'
+          if (booking.isCheckedIn) {
+            color = 'rgba(0, 255, 0, 0.5)'
+          } else if (Math.abs(Math.floor(((new Date(booking.start).getTime() - currTime) / 60000))) < 15) {
+            console.log(Math.floor(((new Date(booking.start).getTime() - currTime) / 60000)));
+            color = 'rgba(255,255,0, 0.5)';
+          } else if ((Math.floor(((new Date(booking.start).getTime() - currTime) / 60000)) > 15)) {
+            color = 'rgba(0,0,0, 0.1)';
+          }
+
+          let b: Booking = {
+            id: `${data[i]._id}`,
+            date: `${String(startTime.getDate()).padStart(2, '0')}/${String(startTime.getMonth() + 1).padStart(2, '0')}/${startTime.getFullYear()}`,
+            start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
+            end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
+            room: roomName,
+            description: 'description not implemented',
+            checked_in: data[i].isCheckedIn,
+            backgroundColor: color
+          }
+
+          newBookings.push(b);
+        } else {
+          let color = 'rgba(255, 0, 0, 0.5)'
+          if (booking.isApproved === null) {
+            color = 'rgba(255,255,0, 0.5)'
+          }
+
+          let r: Request = {
+            id: `${data[i]._id}`,
+            date: `${String(startTime.getDate()).padStart(2, '0')}/${String(startTime.getMonth() + 1).padStart(2, '0')}/${startTime.getFullYear()}`,
+            start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
+            end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
+            room: roomName,
+            description: 'description not implemented',
+            checked_in: data[i].isCheckedIn,
+            backgroundColor: color,
+            isApproved: data[i].isApproved
+          }
+          newRequests.push(r);
         }
 
-        newBookings.push(b);
       }
-      // let date = data.book
       setBookings(newBookings);
+      setRequests(newRequests);
       setIsLoading(false);
     } catch (e) {
     }
   }
 
   const parseTime = (dateStr: string, timeStr: string): Date => {
-    const [hours, period] = timeStr.match(/(\d+)([ap]m)/i).slice(1);
+    const [hours, period] = timeStr.match(/(\d+)([ap]m)/i)!.slice(1);
     const date = new Date(dateStr.split('/').reverse().join('-'));
     const hours24 = period.toLowerCase() === 'pm' ? (+hours % 12) + 12 : +hours % 12;
     date.setHours(hours24, 0, 0, 0);
@@ -181,15 +269,41 @@ const MyBookings  = () => {
 
   
    return <>
-    {!isLoading && bookings.length === 0 &&
+    <Box sx={{
+      marginLeft: '12px'
+    }}>
+    {!isLoading && bookings.length + requests.length === 0 &&
       <h1>You have no bookings</h1>
     }
     {isLoading && <h1>Loading your bookings ... <CircularProgress /></h1>}
+
+    {!isLoading && bookings.length > 0 && 
+    <>
+    <h1>
+      Bookings
+    </h1>
+    <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row'}}>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Didnt Check In: <div className='circle' id='red'></div>
+        </Box>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Pending Check In: <div className='circle' id='yellow'></div>
+        </Box>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Checked In: <div className='circle' id='green'></div>
+        </Box>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Starting later (Can't Check In): <div className='circle' id='grey'></div>
+        </Box>
+      </Box>
+    </>
+    }
     {
-      !isLoading && bookings.map((item, index) => {
-        const startTime = parseTime(item.date, item.start_time);
-        const endTime = parseTime(item.date, item.end_time);
-        const isDisabled = endTime < currTime || Math.floor(((startTime - currTime) / 1000) / 60) > 15 || item.checked_in;
+      !isLoading && bookings.length > 0 &&
+      bookings.map((item, index) => {
+        const startTime = parseTime(item.date, item.start_time).getTime();
+        const endTime = parseTime(item.date, item.end_time).getTime();
+        const isDisabled = endTime < currTime || Math.floor(((startTime - currTime) / 60000)) > 15 || item.checked_in;
 
         return (
           <Accordion key={index}>
@@ -197,6 +311,9 @@ const MyBookings  = () => {
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1-content"
               id="panel1-header"
+              sx={{
+                background: `linear-gradient(to right, ${item.backgroundColor}, rgba(0, 0, 0, 0))`
+              }}
             >
               <strong>Booking for {item.start_time} : {item.date} at {item.room}</strong>
             </AccordionSummary>
@@ -243,6 +360,79 @@ const MyBookings  = () => {
         );
       })
     }
+    {!isLoading && requests.length > 0 && 
+    <>
+      <h1>Requests</h1>
+      <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row'}}>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Denied: <div className='circle' id='red'></div>
+        </Box>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          Pending: <div className='circle' id='yellow'></div>
+        </Box>
+      </Box>
+    </>
+    
+    }
+    
+    {
+      !isLoading && requests.map((item, index) => {
+        return (
+          <Box sx={{
+
+          }}>
+          <Accordion key={index}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+              sx={{
+                background: `linear-gradient(to right, ${item.backgroundColor}, rgba(0, 0, 0, 0))`
+              }}
+            >
+              <strong>Booking for {item.start_time} : {item.date} at {item.room}</strong>
+            </AccordionSummary>
+            <AccordionDetails>
+              {item.isApproved === false &&
+                <h1>This booking request was denied.</h1>
+              }
+              <strong>Request Details:</strong> <br /><br />
+              Start Time: {item.start_time}<br />
+              End Time: {item.end_time}<br />
+              Room: {item.room}<br />
+              <strong>Approval Status: {item.isApproved === null ? 'Pending' : 'Denied'}</strong>
+            </AccordionDetails>
+            <AccordionActions>
+              <Button variant="outlined" color="error" onClick={() => handleClickOpen(item.id)}>
+                Cancel Request
+              </Button>
+              <Dialog
+                open={openDialog === item.id}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to cancel this request?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose} color="primary">
+                    No
+                  </Button>
+                  <Button onClick={() => handleConfirm(item.id)} color="primary" autoFocus>
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </AccordionActions>
+          </Accordion>
+          </Box>
+        );
+      })
+    }
     {!isLoading && bookings.length !== 0 &&
       <Box sx={AllFileBoxStyle}>
         <Button variant="outlined" color="primary" onClick={() => handleAllExportIcs(oldBookings)}>
@@ -250,6 +440,7 @@ const MyBookings  = () => {
         </Button>
       </Box>
     }
+    </Box>
   </>;
 };
 
