@@ -37,6 +37,7 @@ export interface Event {
 export interface RoomTimetableProps {
   selectedDate: Date;
   currLevel: number;
+  highlightedRoom: string | null;
 }
 
 export interface User {

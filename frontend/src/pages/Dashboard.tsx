@@ -6,11 +6,16 @@ import MapView from "../components/MapView";
 
 const Dashboard = () => {
   let [selectedDate, setSelectedDate] = useState(new Date());
-  let [currLevel, setCurrLevel] = useState(1);
-  
+  let [currLevel, setCurrLevel] = useState(2);
+
   // "timetable" | "map"
   const [currView, setCurrView] = useState("timetable");
+  const [highlightedRoom, setHighlightedRoom] = useState<string|null>(null);
 
+  const mySetHighlightedRoom = (name: string) => {
+    console.log(name);
+    setHighlightedRoom(name);
+  }
 
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -56,6 +61,12 @@ const Dashboard = () => {
       date.getFullYear() === nextSunday.getFullYear();
   };
 
+  console.log(highlightedRoom);
+
+  const switchToTimetableView = () => {
+    setCurrView("timetable")
+  }
+
   return (
     <>
       <div className="scheduler-container">
@@ -66,7 +77,6 @@ const Dashboard = () => {
             value={currLevel.toString()}
             label="Level"
             onChange={handleChange}>
-            <MenuItem value={1}>Level One</MenuItem>
             <MenuItem value={2}>Level Two</MenuItem>
             <MenuItem value={3}>Level Three</MenuItem>
             <MenuItem value={4}>Level Four</MenuItem>
@@ -90,10 +100,10 @@ const Dashboard = () => {
           {/* <Button variant="outlined">{currView === "timetable" }</Button> */}
         </Box>
         {currView === "timetable" &&
-          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} />
+          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} highlightedRoom={highlightedRoom}/>
         }
         {currView === "map" &&
-          <MapView currLevel={currLevel}/>
+          <MapView currLevel={currLevel} setHighlightedRoom={mySetHighlightedRoom} switchView={switchToTimetableView}/>
         }
 
       </div>
