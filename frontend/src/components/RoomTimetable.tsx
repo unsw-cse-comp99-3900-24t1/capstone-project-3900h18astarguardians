@@ -151,7 +151,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         request.get<{ bookings: Event[] }>("/bookings"),
         request.get<{ users: User[] }>("/users")
       ]);
-      console.log(eventsResponse);
       const bookings = eventsResponse.data.bookings.filter(booking => (booking.isOverrided === false) && (booking.isRequest == false || booking.isApproved));
 
       const coloredRooms = roomsResponse.data.rooms.map(room => ({
@@ -308,9 +307,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const overrideBooking = async (event_id: string, user_id: string) => {
     // send email
-    console.log(event_id);
-    console.log(user_id);
-    sendOverrideEmail(user_id, event_id);
+
+    // !! disabling email sending due to free email usage requirement
+    // sendOverrideEmail(user_id, event_id);
     await request.patch(`/bookings/${event_id}/overrideBooking`);
 
     fetchRoomsAndEvents();
