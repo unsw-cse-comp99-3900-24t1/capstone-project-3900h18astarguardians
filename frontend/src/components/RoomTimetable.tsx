@@ -152,6 +152,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
+    setRoomHighlighted(false);
   };
 
   useEffect(() => {
