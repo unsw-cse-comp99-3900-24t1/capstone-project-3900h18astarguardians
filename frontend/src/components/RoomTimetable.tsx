@@ -10,8 +10,8 @@ import sendEmailFn from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
-import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail" 
-
+import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail";
+import { getStartOfDayISO, getEndOfDayISO } from "../utils/ConvertDateFn";
 
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel, highlightedRoom }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -31,7 +31,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
 
-
+  // do not display the events within the filtered time period
   function filterEventsInRange() {
     const startTime = new Date(selectedDate);
     startTime.setHours(startHour, 0, 0); // Set start time to the startHour on the selected date
@@ -46,7 +46,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       // Include the event if it starts before the endHour and ends after the startHour
       return eventStart < endTime && eventEnd > startTime;
     });
-  
     return filteredEvents;
   }
 
@@ -64,25 +63,37 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     if (filterEndTime) {
       endTime.setHours(Number(filterEndTime.split(":")[0]), Number(filterEndTime.split(":")[1]), 0, 0);
     }
-    // filter out the events on the selected date
-    const eventsOnSelectedDate = events.filter(event => event.start.toDateString() === new Date(selectedDate).toDateString());
     // Filter rooms based on availability
     let availableRooms = filteredRooms.filter(room => {
       // Check if there's any event in the room that conflicts with the criteria
-      let isRoomOccupied = eventsOnSelectedDate.some(event => {
+      return !(events.some(event => {
         const isPreviousEvent = new Date(event.end) <= startTime;
         const isFutureEvent = new Date(event.start) >= endTime;
-        return (room._id === event.room._id) && !(isPreviousEvent || isFutureEvent);
-      });
-      // If no event conflicts, the room is available
-      return !isRoomOccupied;
+        return room._id === event.room._id && !isPreviousEvent && !isFutureEvent
+      }));
     });
     return availableRooms;
   }
 
   const initializeFilteredRooms = useCallback(() => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
+    if (!isTableReady) {
+      const savedFilters = localStorage.getItem('filterConfig');
+        let filter;
+        if (savedFilters) {
+          filter = JSON.parse(savedFilters);
+        } else {
+          filter = {
+            selectedOptions:[],
+            selectedType:"",
+            capacityMin:0,
+            capacityMax:0,
+            startTime:"",
+            endTime:""
+          }
+        }
+        applyFilters(filter);
+    }
+    
     console.log(highlightedRoom);
 
     if (highlightedRoom !== null) {
@@ -94,8 +105,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         }
       }
     }
-
-
     setIsLoading(false);
   }, [rooms, currLevel]);
 
@@ -104,6 +113,23 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   };
 
   const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
+    applyFilters(filters);
+    handleFilterModalClose();
+  };
+
+  const handleResetButton = () => {
+    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
+    setFilteredRooms(CurrLevelRooms);
+    localStorage.removeItem('filterConfig');
+    setStartHour(0);
+    setEndHour(24);
+    setCurrentIndex(0);
+    setIsLoading(true);
+    setIsTableReady(false);
+  };
+
+  const applyFilters = (filters: { selectedOptions: string[]; selectedType: string, 
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
     if (filters.selectedType) {
@@ -132,18 +158,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
-    handleFilterModalClose();
-  };
-
-  const handleResetButton = () => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
-    setStartHour(0);
-    setEndHour(24);
-    setCurrentIndex(0);
-    setIsLoading(true);
-    setIsTableReady(false);
-    setRoomHighlighted(false);
   };
 
   useEffect(() => {
@@ -155,15 +169,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   useEffect(() => {
     setIsLoading(false);
   }, [filteredRooms]);
-  
 
-  const fetchRoomsAndEvents = useCallback(async () => {
+  const fetchRoomsAndEvents = useCallback(async (date: Date) => {
     setIsTableReady(false)
     try {
       setIsLoading(true);
       const [roomsResponse, eventsResponse, usersResponse] = await Promise.all([
         request.get<{ rooms: Room[] }>("/rooms"),
-        request.get<{ bookings: Event[] }>("/bookings"),
+        request.get<{ bookings: Event[] }>(`/bookings?start=${getStartOfDayISO(date)}&end=${getEndOfDayISO(date)}&sort=duration`),
         request.get<{ users: User[] }>("/users")
       ]);
       const bookings = eventsResponse.data.bookings.filter(booking => (booking.isOverrided === false) && (booking.isRequest == false || booking.isApproved));
@@ -199,17 +212,37 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       ));
     } catch (error) {
       console.error("Failed to fetch data", error);
-    } finally {
-
     }
   }, [token]);
 
   useEffect(() => {
-    fetchRoomsAndEvents();
+    fetchRoomsAndEvents(selectedDate);
   }, [update, selectedDate, currLevel, fetchRoomsAndEvents]);
 
   useEffect(() => {
     setCurrentIndex(0);
+  }, [currLevel]);
+
+  useEffect(() => {
+    // Automatically apply filters when currLevel or selectedDate changes
+    if (filteredRooms.length > 0) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      let filter;
+      if (savedFilters) {
+        filter = JSON.parse(savedFilters);
+      } else {
+        filter = {
+          selectedOptions:[],
+          selectedType:"",
+          capacityMin:0,
+          capacityMax:0,
+          startTime:"",
+          endTime:""
+        }
+      }
+      applyFilters(filter);
+      setIsTableReady(false);
+    }
   }, [currLevel]);
 
   const getColorForRoomType = (type: string): string => {
@@ -280,24 +313,26 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         sendEmailFn(response?.data?.booking._id, true);
       }
       events.push({
-        //@ts-ignore
-        event_id: event.event_id,
+        event_id: event._id,
         _id: event._id,
-        title: "dummy title",
+        title: event.title,
         start: event.start,
         end: event.end,
-        // @ts-ignore
-        editable: event.editable,
-        // @ts-ignore
-        deletable: event.deletable,
-        // @ts-ignore
-        draggable: event.draggable,
+        editable: false,
+        deletable: true,
+        draggable: false,
         room: event.room,
+        isApproved: false,
+        isRequest: false,
+        isOverrided: false,
+        user: event.user
       });
       setUpdate(prevUpdate => !prevUpdate);
       const currUserType = token?.type;
       if (currUserType === "non_cse_staff") {
         displaySuccess("Your request has been submitted. The admin will notify you by email upon approval or rejection.")
+      } else {
+        displaySuccess("Booking has been successfully created. Check \"My Bookings\" page for more details.");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -333,15 +368,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   const overrideBooking = async (event_id: string, user_id: string) => {
     // send email
-
     // !! disabling email sending due to free email usage requirement
     // sendOverrideEmail(user_id, event_id);
     await request.patch(`/bookings/${event_id}/overrideBooking`);
 
-    fetchRoomsAndEvents();
-
+    fetchRoomsAndEvents(selectedDate);
 
   };
+
   return (
     <>
       <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
@@ -352,6 +386,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         handleConfirm={handleFilterModalConfirm}
         options={['printer', 'projector', 'other']}
         types={['staff room', 'meeting room', 'hot desk', 'normal']}
+        selectedDate={selectedDate}
       />
       <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
       <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>

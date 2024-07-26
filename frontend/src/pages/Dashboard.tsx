@@ -46,20 +46,21 @@ const Dashboard = () => {
       date.getFullYear() === today.getFullYear();
   };
 
-  const isNextWeekSunday = (date: Date) => {
+  const isNextWeekSunday = (date : Date) => {
     const today = new Date();
-    const nextSunday = new Date();
+    const nextSunday = new Date(today);
     // Calculate days to next Sunday (0 is Sunday, 1 is Monday, ..., 6 is Saturday)
-    // If today is Sunday, set daysUntilNextSunday to 7 to ensure we're looking at next week's Sunday
     const daysUntilNextSunday = today.getDay() === 0 ? 7 : 7 - today.getDay();
-    // Set nextSunday to the next week's Sunday by adding daysUntilNextSunday + 7 to ensure it's next week
+    // Set nextSunday to the next week's Sunday by adding daysUntilNextSunday
     nextSunday.setDate(today.getDate() + daysUntilNextSunday);
-
+    // If the upcomming Sunday is this week, add 7 days to get to next week's Sunday
+    if (daysUntilNextSunday < 7) {
+      nextSunday.setDate(nextSunday.getDate() + 7);
+    }
     // Check if the provided date is the same as next week's Sunday
-    return date.getDate() === nextSunday.getDate() &&
-      date.getMonth() === nextSunday.getMonth() &&
-      date.getFullYear() === nextSunday.getFullYear();
+    return date.getDate() === nextSunday.getDate()
   };
+  
 
   console.log(highlightedRoom);
 
