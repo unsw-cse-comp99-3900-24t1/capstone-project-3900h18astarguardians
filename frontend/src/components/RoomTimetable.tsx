@@ -117,6 +117,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
     applyFilters(filters);
     handleFilterModalClose();
+    const filterContainer = document.querySelector('.filter-container') as HTMLElement;
+    filterContainer.style.background = "linear-gradient(to right, rgb(230, 227, 227) 50%, white 50%)";
   };
 
   const handleResetButton = () => {
@@ -128,6 +130,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
+    const filterContainer = document.querySelector('.filter-container') as HTMLElement;
+    filterContainer.style.background = "linear-gradient(to right, white 50%, rgb(230, 227, 227) 50%)";
   };
 
   const applyFilters = (filters: { selectedOptions: string[]; selectedType: string, 
@@ -381,18 +385,27 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     fontSize: "1.8rem",
     transition: "transform 0.35s ease, background-color 0.3s ease"
   };
+
+  const filterButtonStyle = {
+    transition: "transform 0.35s ease",
+    cursor: "pointer"
+  };
+
   return (
     <>
-      <Button onClick={() => setFilterModalOpen(true)}><FilterAlt></FilterAlt></Button>
-      <Button onClick={handleResetButton}><FilterAltOff></FilterAltOff></Button>
-      <FilterModal
-        open={filterModalOpen}
-        handleClose={handleFilterModalClose}
-        handleConfirm={handleFilterModalConfirm}
-        options={['printer', 'projector', 'other']}
-        types={['staff room', 'meeting room', 'hot desk', 'normal']}
-        selectedDate={selectedDate}
-      />
+      <div className="filter-container">
+        <FilterAlt className="filter-button" onClick={() => setFilterModalOpen(true)} style={filterButtonStyle}></FilterAlt>
+        <FilterAltOff className="filter-button" onClick={handleResetButton} style={filterButtonStyle}></FilterAltOff>
+        <FilterModal
+          open={filterModalOpen}
+          handleClose={handleFilterModalClose}
+          handleConfirm={handleFilterModalConfirm}
+          options={['printer', 'projector', 'other']}
+          types={['staff room', 'meeting room', 'hot desk', 'normal']}
+          selectedDate={selectedDate}
+        />
+      </div>
+      <br></br>
       {filteredRooms.length > 0 && (
         <div className="scheduler-container">
           <Button className="scheduler-button" onClick={prevPage} disabled={currentIndex === 0} style={schedulerButtonStyle}>&lt;</Button>
