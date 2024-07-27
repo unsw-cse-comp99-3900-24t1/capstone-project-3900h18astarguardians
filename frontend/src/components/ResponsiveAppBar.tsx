@@ -19,6 +19,7 @@ import { request } from "../utils/axios";
 import { useEffect, useState } from 'react';
 import NotificationSettingsModal from '../components/NotificationSettingsModal';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Badge from '@mui/material/Badge';
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ function ResponsiveAppBar() {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -203,15 +204,21 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink}
-                to={`/${page}`}
-              >
-                {page}
-              </Button>
+              <Badge badgeContent={17} color="error" sx={{
+                '& .MuiBadge-badge': {
+                  transform: 'translateY(5px)',
+                },
+              }}>
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/${page}`}
+                >
+                  {page}
+                </Button>
+              </Badge>
             ))}
           </Box>
 
