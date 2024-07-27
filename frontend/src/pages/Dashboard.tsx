@@ -13,13 +13,13 @@ const Dashboard = () => {
   const [highlightedRoom, setHighlightedRoom] = useState<string|null>(null);
 
   const mySetHighlightedRoom = (name: string) => {
-    console.log(name);
     setHighlightedRoom(name);
   }
 
 
   const handleChange = (event: SelectChangeEvent) => {
     setCurrLevel(Number(event.target.value));
+    setHighlightedRoom(null);
   };
 
   const handleDateChangeForward = () => {
