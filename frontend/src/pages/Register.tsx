@@ -31,15 +31,13 @@ const Register = () => {
     }
     try {
       const {
-        data: { user },
+        data: { name },
       } = await request.post("/auth/register", {
-        name: data.get("name"),
         email: data.get("email"),
         password: data.get("password"),
       });
-      handleToken(user);
-      displaySuccess("Registered Successfully");
-      navigate("/dashboard");
+      displaySuccess("Registered Successfully! An email will be sent to you with verification instructions");
+      navigate("/login");
     } catch (e) {
       if (e) {
         if (e instanceof AxiosError) {
@@ -75,18 +73,6 @@ const Register = () => {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="given-name"
-                  name="name"
-                  required
-                  fullWidth
-                  id="name"
-                  label="name"
-                  autoFocus
-                />
-              </Grid>
-
               <Grid item xs={12}>
                 <TextField
                   required

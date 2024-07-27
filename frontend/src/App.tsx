@@ -11,6 +11,7 @@ import OTPInput from "./pages/OTPInput";
 import Reset from "./pages/Reset";
 import Contact from "./pages/Contact";
 import Requests from "./pages/Requests";
+import Verification from "./pages/Verification";
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
@@ -125,6 +126,7 @@ const App = () => {
             <Route path="*" element={<h1> Page Not Found</h1>} />
             <Route path="contact" element={<Contact />}/>
             <Route path="requests" element={<Requests />}/>
+            <Route path="user/:verify" element={<Verification />}/>
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>
