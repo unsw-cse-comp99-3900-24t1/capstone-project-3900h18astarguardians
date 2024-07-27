@@ -43,7 +43,7 @@ export const buttons_level2 = Array.from({ length: 19 }, (_, index) => (
     <button className="mapBtn staff" id='r304' key='r304'></button>,
     <button className="mapBtn staff" id='r306' key='r306'></button>,
     <button className="mapBtn meeting" id='r307' key='r307'></button>,
-    <button className="mapBtn meeting" id='r308' key='r308'></button>,
+    <button className="mapBtn staff" id='r308' key='r308'></button>,
     <button className="mapBtn staff" id='r310' key='r310'></button>,
     <button className="mapBtn staff" id='r311' key='r311'></button>,
     <button className="mapBtn staff" id='r312' key='r312'></button>,

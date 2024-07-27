@@ -282,7 +282,7 @@ const MyBookings  = () => {
     <h1>
       Bookings
     </h1>
-    <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row'}}>
+    <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row', marginBottom: '8px'}}>
         <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
           Didnt Check In: <div className='circle' id='red'></div>
         </Box>
@@ -363,7 +363,7 @@ const MyBookings  = () => {
     {!isLoading && requests.length > 0 && 
     <>
       <h1>Requests</h1>
-      <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row'}}>
+      <Box sx={{display: 'flex', gap: '20px', flexWrap: 'wrap', flexDirection: isSmallScreen ? 'column' : 'row', marginBottom: '8px'}}>
         <Box sx={{display: 'flex', alignItems: 'center', gap: '8px'}}>
           Denied: <div className='circle' id='red'></div>
         </Box>
