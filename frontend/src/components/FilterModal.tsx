@@ -40,7 +40,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [endTimeError, setEndTimeError] = useState(false);
   const [helperTextStart, setHelperTextStart] = useState('');
   const [helperTextEnd, setHelperTextEnd] = useState('');
-
+  /* validate the start and end time */
   const validateTimes = (start: string, end: string) => {
     const now = new Date();
     // initialise the default start and end time

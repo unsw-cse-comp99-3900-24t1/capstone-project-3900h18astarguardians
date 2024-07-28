@@ -392,7 +392,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     fontSize: "1.8rem",
     transition: "transform 0.35s ease, background-color 0.3s ease",
   };
-
+  /* button styles */
   const button = {
     border: 'none',
     padding: '10px',

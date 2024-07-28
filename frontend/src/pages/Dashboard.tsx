@@ -21,7 +21,7 @@ const Dashboard = () => {
     setCurrLevel(Number(event.target.value));
     setHighlightedRoom(null);
   };
-
+  /* handle the date change */
   const handleDateChangeForward = () => {
     setSelectedDate(prevDate => {
       const nextDay = new Date(prevDate);
