@@ -35,35 +35,6 @@
   padding-bottom: 15px;
 }
 
-.scheduler-container {
-  display: flex;
-  align-items: flex-start;
-  width: 95%;
-  justify-content: space-between;
-}
-
-
-.filter-btn-container {
-  display: flex;
-  flex-direction: column;
-  border: 2px solid #1976d2;
-  border-radius: 10px;
-  color: #1976d2;
-}
-
-.filter-button {
-  transition: transform 0.35s ease;
-}
-
-.filter-button:hover {
-  transform: scale(1.35);
-}
-
-.scheduler-button:hover {
-  transform: scale(1.35); /* Makes the button bigger */
-  animation: colorChange 2s infinite;
-}
-
 .lds-facebook,
 .lds-facebook div {
   box-sizing: border-box;
@@ -106,22 +77,3 @@
   }
 }
 
-@keyframes colorChange {
-  0% { background-color: white; }
-  50% { background-color: lightgrey; }
-  100% { background-color: white; }
-}
-/* Add this to your CSS file or a <style> tag in your component */
-@keyframes enlargeShrink {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.5); /* adjust the scale as needed */
-  }
-}
-
-.enlarge-shrink {
-  display: inline-block; /* ensures the element can transform */
-  animation: enlargeShrink 1s ease-in-out infinite; /* 1s duration and infinite loop */
-}
