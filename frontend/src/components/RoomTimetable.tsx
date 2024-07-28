@@ -3,7 +3,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
-import { ArrowCircleLeft, FilterAlt, FilterAltOff } from '@mui/icons-material';
+import { FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { DayHours, EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
@@ -120,9 +120,11 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     selectedOptions: string[]; selectedType: string,
     capacityMin: number, capacityMax: number, startTime: string, endTime: string
   }) => {
-    applyFilters(filters);
+    if (localStorage.getItem('filterConfig')) {
+      applyFilters(filters);
+      setIsFiltered(false);
+    }
     handleFilterModalClose();
-    setIsFiltered(false);
   };
 
   const handleResetButton = () => {
@@ -241,8 +243,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       let filter;
       if (savedFilters) {
         filter = JSON.parse(savedFilters);
-        setIsFiltered(true);
+        setIsFiltered(false);
       } else {
+        setIsFiltered(true);
         filter = {
           selectedOptions: [],
           selectedType: "",
