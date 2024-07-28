@@ -41,19 +41,13 @@
   justify-content: space-between;
 }
 
-.filter-container {
+
+.filter-btn-container {
   display: flex;
-  align-items: center;
-  gap: 50px;
+  flex-direction: column;
   border: 2px solid #1976d2;
   border-radius: 10px;
-  padding: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
   color: #1976d2;
-  background: linear-gradient(to right, white 50%, rgb(230, 227, 227) 50%);
-  height: 1rem;
-  justify-content: space-between;
 }
 
 .filter-button {
@@ -115,5 +109,19 @@
   0% { background-color: white; }
   50% { background-color: lightgrey; }
   100% { background-color: white; }
+}
+/* Add this to your CSS file or a <style> tag in your component */
+@keyframes enlargeShrink {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5); /* adjust the scale as needed */
+  }
+}
+
+.enlarge-shrink {
+  display: inline-block; /* ensures the element can transform */
+  animation: enlargeShrink 1s ease-in-out infinite; /* 1s duration and infinite loop */
 }
 
