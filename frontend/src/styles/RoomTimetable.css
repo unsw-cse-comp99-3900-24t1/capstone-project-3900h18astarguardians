@@ -1,5 +1,6 @@
 .scrollable-scheduler {
-  flex-grow: 1;
+  height: 100%;
+  width: 100%;
 }
 
 /* 'day' element below the 'name' in the room column */
@@ -124,4 +125,3 @@
   display: inline-block; /* ensures the element can transform */
   animation: enlargeShrink 1s ease-in-out infinite; /* 1s duration and infinite loop */
 }
-
