@@ -120,10 +120,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     selectedOptions: string[]; selectedType: string,
     capacityMin: number, capacityMax: number, startTime: string, endTime: string
   }) => {
-    if (localStorage.getItem('filterConfig')) {
       applyFilters(filters);
       setIsFiltered(false);
-    }
+
     handleFilterModalClose();
   };
 
