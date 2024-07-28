@@ -16,7 +16,7 @@ const Dashboard = () => {
     setHighlightedRoom(name);
   }
 
-
+  /* handle the level change */
   const handleChange = (event: SelectChangeEvent) => {
     setCurrLevel(Number(event.target.value));
     setHighlightedRoom(null);

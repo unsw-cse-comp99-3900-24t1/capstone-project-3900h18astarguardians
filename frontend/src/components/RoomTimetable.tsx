@@ -401,7 +401,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     cursor: "pointer",
     alighItems: "center"
   }
-
+  /* filter button styles*/
   const filterBtnContainer = {
     alignItems: "center",
     width: "60%",

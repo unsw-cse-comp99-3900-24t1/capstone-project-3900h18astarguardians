@@ -83,7 +83,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   };
 
 
-
+  /* useEffect for dynamic styles */
   useEffect(() => {
     const newStyle = {
       position: 'absolute',
