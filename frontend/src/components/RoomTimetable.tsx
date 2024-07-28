@@ -3,6 +3,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
+import { ArrowCircleLeft, FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { DayHours, EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
@@ -24,6 +25,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
+  const [isFiltered, setIsFiltered] = useState<boolean>(false);
   const [clickedRoom, setClickedRoom] = useState<Room | undefined>();
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [startHour, setStartHour] = useState<DayHours>(0);
@@ -35,14 +37,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   function filterEventsInRange() {
     const startTime = new Date(selectedDate);
     startTime.setHours(startHour, 0, 0); // Set start time to the startHour on the selected date
-  
+
     const endTime = new Date(selectedDate);
     endTime.setHours(endHour, 0, 0); // Set end time to the endHour on the selected date
-  
+
     const filteredEvents = events.filter(event => {
       const eventStart = new Date(event.start);
       const eventEnd = new Date(event.end);
-  
+
       // Include the event if it starts before the endHour and ends after the startHour
       return eventStart < endTime && eventEnd > startTime;
     });
@@ -78,22 +80,24 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const initializeFilteredRooms = useCallback(() => {
     if (!isTableReady) {
       const savedFilters = localStorage.getItem('filterConfig');
-        let filter;
-        if (savedFilters) {
-          filter = JSON.parse(savedFilters);
-        } else {
-          filter = {
-            selectedOptions:[],
-            selectedType:"",
-            capacityMin:0,
-            capacityMax:0,
-            startTime:"",
-            endTime:""
-          }
+      let filter;
+      if (savedFilters) {
+        filter = JSON.parse(savedFilters);
+        setIsFiltered(false);
+      } else {
+        setIsFiltered(true);
+        filter = {
+          selectedOptions: [],
+          selectedType: "",
+          capacityMin: 0,
+          capacityMax: 0,
+          startTime: "",
+          endTime: ""
         }
-        applyFilters(filter);
+      }
+      applyFilters(filter);
     }
-    
+
     console.log(highlightedRoom);
 
     if (highlightedRoom !== null) {
@@ -112,10 +116,13 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setFilterModalOpen(false);
   };
 
-  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
-    capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
+  const handleFilterModalConfirm = (filters: {
+    selectedOptions: string[]; selectedType: string,
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string
+  }) => {
     applyFilters(filters);
     handleFilterModalClose();
+    setIsFiltered(false);
   };
 
   const handleResetButton = () => {
@@ -128,10 +135,13 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setIsLoading(true);
     setIsTableReady(false);
     setRoomHighlighted(false);
+    setIsFiltered(true);
   };
 
-  const applyFilters = (filters: { selectedOptions: string[]; selectedType: string, 
-    capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
+  const applyFilters = (filters: {
+    selectedOptions: string[]; selectedType: string,
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string
+  }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
     if (filters.selectedType) {
       filteredRooms = filteredRooms.filter(room => room.type === filters.selectedType);
@@ -231,14 +241,15 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       let filter;
       if (savedFilters) {
         filter = JSON.parse(savedFilters);
+        setIsFiltered(true);
       } else {
         filter = {
-          selectedOptions:[],
-          selectedType:"",
-          capacityMin:0,
-          capacityMax:0,
-          startTime:"",
-          endTime:""
+          selectedOptions: [],
+          selectedType: "",
+          capacityMin: 0,
+          capacityMax: 0,
+          startTime: "",
+          endTime: ""
         }
       }
       applyFilters(filter);
@@ -367,7 +378,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setClickedRoom(room);
   };
 
-  const overrideBooking = async (event_id: string, user_id: string) => {
+  const overrideBooking = async (event_id: string, _user_id: string) => {
     // send email
     // !! disabling email sending due to free email usage requirement
     // sendOverrideEmail(user_id, event_id);
@@ -377,10 +388,29 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
 
   };
 
+  const schedulerButtonStyle = {
+    fontSize: "1.8rem",
+    transition: "transform 0.35s ease, background-color 0.3s ease",
+  };
+
+  const button = {
+    border: 'none',
+    padding: '10px',
+    transition: "transform 0.35s ease",
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    alighItems: "center"
+  }
+
+  const filterBtnContainer = {
+    alignItems: "center",
+    width: "60%",
+    marginTop: "26px",
+    background: isFiltered? "linear-gradient(to bottom, white 50%, rgb(230, 227, 227) 50%)": "linear-gradient(to bottom, rgb(230, 227, 227) 50%, white 50%)"
+  }
+
   return (
     <>
-      <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
-      <Button onClick={handleResetButton}>Reset Filter</Button>
       <FilterModal
         open={filterModalOpen}
         handleClose={handleFilterModalClose}
@@ -389,91 +419,111 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         types={['staff room', 'meeting room', 'hot desk', 'normal']}
         selectedDate={selectedDate}
       />
-      <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
-      <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
-      {filteredRooms.length > 0 && (
-        <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
-          <Scheduler
-            onCellClick={handleCellClick}
-            key={currentIndex}
-            view="day"
-            day={{
-              startHour: startHour,
-              endHour: endHour,
-              step: 60,
-              cellRenderer: ({ height, start, onClick, ...props }) => {
-                // Set current time to the beginning of the current hour
-                const currTime = new Date();
-                currTime.setMinutes(0, 0, 0);
-                // Ensure 'start' is a Date object (if it's not already)
-                const startTime = new Date(start);
-                // Disable the cell if its start time is in the past
-                const disabled = startTime <= currTime;
-                // Apply disabled-related properties conditionally
-                const restProps = disabled ? {} : props;
-                return (
-                  <Button
-                    style={{
-                      height: "100%",
-                      background: disabled ? "#eee" : "transparent",
-                      cursor: disabled ? "not-allowed" : "pointer",
-                    }}
-                    onClick={disabled ? () => {} : onClick}
-                    disableRipple={disabled}
-                    {...restProps}
-                  ></Button>
-                );
-              }
-            }}
-            hourFormat="24"
-            navigation={false}
-            disableViewer={false}
-            selectedDate={selectedDate}
-            disableViewNavigator={true}
-            resourceViewMode={"default"}
-            resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
-            draggable={false}
-            onDelete={deleteBookings}
-            events={filterEventsInRange()}
-            onConfirm={onConfirm}
-            viewerExtraComponent={(_, event) => {
-              return (
-                <Button variant="outlined" disabled={!isAdmin} onClick={() => {
-                  overrideBooking(event.event_id as string, event.user._id);
-                }}>Override</Button>
-              );
-            }}
-            fields={[
-              {
-                name: "Description",
-                type: "input",
-                default: "Default Value...",
-                config: { label: "Details", multiline: true, rows: 4 }
-              },
-              {
-                name: "User",
-                type: "select",
-                default: token?.userId,
-                options: users.map(user => ({
-                  id: user._id,
-                  text: `${user.name} (${user.zid})`,
-                  value: user._id
-                })),
-                config: { label: "User", required: true, disabled: !isAdmin }
-              }
-            ]}
-            resourceFields={{
-              idField: "admin_id",
-              textField: "title",
-              avatarField: "title",
-              colorField: "color"
-            }}
-          />
+      <div className="scheduler-container">
+        <div className="scheduler-filter-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button className="scheduler-button" onClick={prevPage} disabled={currentIndex === 0} style={schedulerButtonStyle}>&lt;</Button>
+          <div className="filter-btn-container" style={filterBtnContainer}>
+            <button style={button} className="filter-button" onClick={() => setFilterModalOpen(true)}>
+              <FilterAlt></FilterAlt>
+            </button>
+            <button style={button} disabled={isFiltered} className="filter-button" onClick={handleResetButton}>
+              <FilterAltOff></FilterAltOff>
+            </button>
+          </div>
         </div>
-      )}
-      {filteredRooms.length == 0 && (
-        <h3>No rooms available</h3>
-      )}
+        {filteredRooms.length > 0 && (
+          <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
+            <Scheduler
+              onCellClick={handleCellClick}
+              key={currentIndex}
+              view="day"
+              day={{
+                startHour: startHour,
+                endHour: endHour,
+                step: 60,
+                cellRenderer: ({ height, start, onClick, ...props }) => {
+                  // Set current time to the beginning of the current hour
+                  const currTime = new Date();
+                  currTime.setMinutes(0, 0, 0);
+                  // Ensure 'start' is a Date object (if it's not already)
+                  const startTime = new Date(start);
+                  // Disable the cell if its start time is in the past
+                  const disabled = startTime <= currTime;
+                  // Apply disabled-related properties conditionally
+                  const restProps = disabled ? {} : props;
+                  return (
+                    <Button
+                      style={{
+                        height: "100%",
+                        background: disabled ? "#eee" : "transparent",
+                        cursor: disabled ? "not-allowed" : "pointer",
+                      }}
+                      onClick={disabled ? () => { } : onClick}
+                      disableRipple={disabled}
+                      {...restProps}
+                    ></Button>
+                  );
+                }
+              }}
+              hourFormat="24"
+              navigation={false}
+              disableViewer={false}
+              selectedDate={selectedDate}
+              disableViewNavigator={true}
+              resourceViewMode={"default"}
+              resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
+              draggable={false}
+              onDelete={deleteBookings}
+              events={filterEventsInRange()}
+              onConfirm={onConfirm}
+              viewerExtraComponent={(_, event) => {
+                return (
+                  <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+                    overrideBooking(event.event_id as string, event.user._id);
+                  }}>Override</Button>
+                );
+              }}
+              fields={[
+                {
+                  name: "Description",
+                  type: "input",
+                  default: "Default Value...",
+                  config: { label: "Details", multiline: true, rows: 4 }
+                },
+                {
+                  name: "User",
+                  type: "select",
+                  default: token?.userId,
+                  options: users.map(user => ({
+                    id: user._id,
+                    text: `${user.name} (${user.zid})`,
+                    value: user._id
+                  })),
+                  config: { label: "User", required: true, disabled: !isAdmin }
+                }
+              ]}
+              resourceFields={{
+                idField: "admin_id",
+                textField: "title",
+                avatarField: "title",
+                colorField: "color"
+              }}
+            />
+          </div>)}
+        {filteredRooms.length == 0 && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h3>No rooms available</h3>
+            <h3
+              style={{ textDecoration: "underline", color: "red", cursor: "pointer" }}
+              className={'enlarge-shrink'}
+              onClick={handleResetButton}
+            >
+              Reset Filter!
+            </h3>
+          </div>
+        )}
+        <Button style={schedulerButtonStyle} className="scheduler-button" onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>&gt;</Button>
+      </div>
     </>
   );
 });

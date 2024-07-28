@@ -1,6 +1,5 @@
 .scrollable-scheduler {
-  height: 100%;
-  width: 100%;
+  flex-grow: 1;
 }
 
 /* 'day' element below the 'name' in the room column */
@@ -33,6 +32,41 @@
   justify-content: center;
   border-top: none;
   padding-bottom: 15px;
+}
+
+.scheduler-container {
+  display: flex;
+  align-items: flex-start;
+  width: 95%;
+  justify-content: space-between;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  border: 2px solid #1976d2;
+  border-radius: 10px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: #1976d2;
+  background: linear-gradient(to right, white 50%, rgb(230, 227, 227) 50%);
+  height: 1rem;
+  justify-content: space-between;
+}
+
+.filter-button {
+  transition: transform 0.35s ease;
+}
+
+.filter-button:hover {
+  transform: scale(1.35);
+}
+
+.scheduler-button:hover {
+  transform: scale(1.35); /* Makes the button bigger */
+  animation: colorChange 2s infinite;
 }
 
 .lds-facebook,
@@ -75,5 +109,11 @@
     top: 24px;
     height: 32px;
   }
+}
+
+@keyframes colorChange {
+  0% { background-color: white; }
+  50% { background-color: lightgrey; }
+  100% { background-color: white; }
 }
 
