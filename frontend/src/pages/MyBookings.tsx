@@ -39,7 +39,7 @@ type Request = {
 //   // Add other properties if needed
 // };
 
-type BookingRequestData = {
+export type BookingRequestData = {
   _id: string;
   user: string;
   start: string; // ISO 8601 string
@@ -74,7 +74,11 @@ const AllFileBoxStyle = {
   padding: '50px 0'
 }
 
-const MyBookings  = () => {
+interface RequestsProps {
+  setNumCheckIns: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const MyBookings: React.FC<RequestsProps> = ({ setNumCheckIns }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { displaySuccess, displayError } = useGlobalContext();
@@ -116,6 +120,8 @@ const MyBookings  = () => {
   }
 
   const handleCheckin = (id: string) => {
+    console.log('check in');
+    setNumCheckIns(numPrev => numPrev - 1);
     checkIn(id);
   }
 

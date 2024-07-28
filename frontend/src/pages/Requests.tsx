@@ -14,7 +14,11 @@ type Request = {
   user: string;
 };
 
-const Requests  = () => {
+interface RequestsProps {
+  setNumRequests: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
   const { displaySuccess, displayError } = useGlobalContext();
   const [requests, setRequests] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,10 +33,12 @@ const Requests  = () => {
   };
 
   const handleDeny = (id: string) => {
+    setNumRequests(numRequests => numRequests - 1);
     denyRequest(id);
   };
 
   const handleApprove = (id: string) => {
+    setNumRequests(numRequests => numRequests - 1);
     approveRequest(id);
   }
 

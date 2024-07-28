@@ -21,13 +21,22 @@ import NotificationSettingsModal from '../components/NotificationSettingsModal';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Badge from '@mui/material/Badge';
 
-function ResponsiveAppBar() {
+interface ResponsiveAppBarProps {
+  numCheckIns: number;
+  numRequests: number;
+}
+
+
+
+const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numRequests }) => {
   const navigate = useNavigate();
   const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false);
   const [emailState, setEmailState] = useState({
     hasConfirmationEmail: true,
     hasNotificationEmail: true,
   });
+
+
   let pages = [];
   const { token, removeToken, displaySuccess, displayError, removeAdmin } = useGlobalContext();
   const handleCloseNotificationSettingsModal = () => setNotificationSettingsOpen(false);
@@ -64,9 +73,10 @@ function ResponsiveAppBar() {
   }
 
   useEffect(() => {
-    getUserInfo()
+    getUserInfo();
   }, [])
   
+
   // const pages = ['login', 'MyBookings', 'contact', 'requests','reports'];
   const settings = ['Dashboard'];
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -203,12 +213,77 @@ function ResponsiveAppBar() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Badge badgeContent={17} color="error" sx={{
+            {
+              token &&
+              <Badge badgeContent={numCheckIns} color="error" sx={{
                 '& .MuiBadge-badge': {
                   transform: 'translateY(5px)',
                 },
               }}>
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                component={RouterLink}
+                to={`/myBookings`}
+              >
+                myBookings
+              </Button>
+              </Badge>
+            }
+            {
+              token && 
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                component={RouterLink}
+                to={`/contact`}
+              >
+                Contact
+              </Button>
+            }
+            {
+              token?.type === "admin" && 
+              <Badge badgeContent={numRequests} color="error" sx={{
+                '& .MuiBadge-badge': {
+                  transform: 'translateY(5px)',
+                },
+              }}>
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                component={RouterLink}
+                to={`/requests`}
+              >
+                requests
+              </Button>
+              </Badge>
+            }
+            {
+              token?.type === "admin" && 
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                component={RouterLink}
+                to={`/reports`}
+              >
+                reports
+              </Button>
+            }
+            {/* <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/${page}`}
+                >
+                  {page}
+            </Button> */}
+            {/* {pages.map((page) => (
+              // <Badge badgeContent={17} color="error" sx={{
+              //   '& .MuiBadge-badge': {
+              //     transform: 'translateY(5px)',
+              //   },
+              // }}>
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
@@ -218,8 +293,9 @@ function ResponsiveAppBar() {
                 >
                   {page}
                 </Button>
-              </Badge>
-            ))}
+                
+              // </Badge>
+            ))} */}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
