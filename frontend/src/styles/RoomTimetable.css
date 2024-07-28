@@ -35,6 +35,36 @@
   padding-bottom: 15px;
 }
 
+/* style for scheduler container */
+.scheduler-container {
+  display: flex;
+  align-items: flex-start;
+  width: 95%;
+  justify-content: space-between;
+}
+
+
+.filter-btn-container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #1976d2;
+  border-radius: 10px;
+  color: #1976d2;
+}
+
+.filter-button {
+  transition: transform 0.35s ease;
+}
+
+.filter-button:hover {
+  transform: scale(1.35);
+}
+
+.scheduler-button:hover {
+  transform: scale(1.35); /* Makes the button bigger */
+  animation: colorChange 2s infinite;
+}
+
 .lds-facebook,
 .lds-facebook div {
   box-sizing: border-box;
