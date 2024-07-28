@@ -1,6 +1,5 @@
 .scrollable-scheduler {
-  height: 100%;
-  width: 100%;
+  flex-grow: 1;
 }
 
 /* 'day' element below the 'name' in the room column */
@@ -35,7 +34,6 @@
   padding-bottom: 15px;
 }
 
-/* style for scheduler container */
 .scheduler-container {
   display: flex;
   align-items: flex-start;
@@ -107,3 +105,22 @@
   }
 }
 
+@keyframes colorChange {
+  0% { background-color: white; }
+  50% { background-color: lightgrey; }
+  100% { background-color: white; }
+}
+/* Add this to your CSS file or a <style> tag in your component */
+@keyframes enlargeShrink {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5); /* adjust the scale as needed */
+  }
+}
+
+.enlarge-shrink {
+  display: inline-block; /* ensures the element can transform */
+  animation: enlargeShrink 1s ease-in-out infinite; /* 1s duration and infinite loop */
+}
