@@ -118,6 +118,7 @@ const Requests  = () => {
       setRequests(genRequests);
       setIsLoading(false);
     } catch (e) {
+      console.log("error", e);
     }
   }
 

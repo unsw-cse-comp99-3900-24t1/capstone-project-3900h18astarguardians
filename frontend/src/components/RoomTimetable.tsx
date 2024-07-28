@@ -130,8 +130,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
-    const filterContainer = document.querySelector('.filter-container') as HTMLElement;
-    filterContainer.style.background = "linear-gradient(to right, white 50%, rgb(230, 227, 227) 50%)";
+    setRoomHighlighted(false);
   };
 
   const applyFilters = (filters: { selectedOptions: string[]; selectedType: string, 
