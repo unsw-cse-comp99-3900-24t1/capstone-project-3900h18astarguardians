@@ -1,5 +1,5 @@
 import RoomTimetable from "../components/RoomTimetable";
-import { Box, Button, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useState } from "react";
 import "../styles/Dashboard.css";
 import MapView from "../components/MapView";
@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   // "timetable" | "map"
   const [currView, setCurrView] = useState("timetable");
-  const [highlightedRoom, setHighlightedRoom] = useState<string | null>(null);
+  const [highlightedRoom, setHighlightedRoom] = useState<string|null>(null);
 
   const mySetHighlightedRoom = (name: string) => {
     setHighlightedRoom(name);
@@ -46,7 +46,7 @@ const Dashboard = () => {
       date.getFullYear() === today.getFullYear();
   };
 
-  const isNextWeekSunday = (date: Date) => {
+  const isNextWeekSunday = (date : Date) => {
     const today = new Date();
     const nextSunday = new Date(today);
     // Calculate days to next Sunday (0 is Sunday, 1 is Monday, ..., 6 is Saturday)
@@ -60,7 +60,7 @@ const Dashboard = () => {
     // Check if the provided date is the same as next week's Sunday
     return date.getDate() === nextSunday.getDate()
   };
-
+  
 
   console.log(highlightedRoom);
 
@@ -70,49 +70,41 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="dashboard-content">
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '20px',
-            backgroundColor: '#f5f5f5',
-            borderRadius: '8px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            gap: '20px',
-            marginBottom: '20px',
-          }}
-        >
+      <div className="scheduler-container">
+        <Box sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '25px' }}>
           <Select
+            labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={currLevel.toString()}
-            onChange={handleChange}
-            sx={{ minWidth: '120px' }}
-          >
+            label="Level"
+            onChange={handleChange}>
             <MenuItem value={2}>Level Two</MenuItem>
             <MenuItem value={3}>Level Three</MenuItem>
             <MenuItem value={4}>Level Four</MenuItem>
             <MenuItem value={5}>Level Five</MenuItem>
           </Select>
+          <Box>
+            {`${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`}
+          </Box>
           <Button variant="outlined" onClick={handleDateChangeBackwards} disabled={isToday(selectedDate)}>
             &lt;
           </Button>
-          <Typography variant="h6" sx={{ minWidth: '150px', textAlign: 'center', fontSize: '1.8em' }}>
-            {`${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`}
-          </Typography>
           <Button variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
             &gt;
           </Button>
-          <Button variant="outlined" onClick={() => setCurrView(currView === "timetable" ? "map" : "timetable")}>
-            {currView === "timetable" ? "Map View" : "Timetable View"}
-          </Button>
+          {currView === "timetable" && <Button variant="outlined" onClick={() => setCurrView("map")}>
+            Map View
+            </Button>}
+          {currView === "map" && <Button variant="outlined" onClick={() => setCurrView("timetable")}>
+            Timetable View
+            </Button>}
+          {/* <Button variant="outlined">{currView === "timetable" }</Button> */}
         </Box>
         {currView === "timetable" &&
-          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} highlightedRoom={highlightedRoom} />
+          <RoomTimetable selectedDate={selectedDate} currLevel={currLevel} highlightedRoom={highlightedRoom}/>
         }
         {currView === "map" &&
-          <MapView currLevel={currLevel} setHighlightedRoom={mySetHighlightedRoom} switchView={switchToTimetableView} />
+          <MapView currLevel={currLevel} setHighlightedRoom={mySetHighlightedRoom} switchView={switchToTimetableView}/>
         }
 
       </div>

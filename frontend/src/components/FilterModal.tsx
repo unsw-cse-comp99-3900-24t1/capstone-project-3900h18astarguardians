@@ -141,6 +141,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setEndTimeError(false);
     setHelperTextStart("");
     setHelperTextEnd("");
+    
   };
 
   const handleToggleOption = (option: string) => {
