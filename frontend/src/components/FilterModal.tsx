@@ -68,7 +68,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setHelperTextStart(helperTextStart);
     setHelperTextEnd(helperTextEnd);
   };
-  
+
 
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const newStartTime = e.target.value;
@@ -105,25 +105,25 @@ const FilterModal: React.FC<FilterModalProps> = ({
   }, [equipmentExpanded, typeExpanded]);
 
   useEffect(() => {
-      if (open) {
-        const savedFilters = localStorage.getItem('filterConfig');
-        if (savedFilters) {
-          const {
-            selectedOptions,
-            selectedType,
-            capacityMin,
-            capacityMax,
-            startTime,
-            endTime
-          } = JSON.parse(savedFilters);
-          setSelectedOptions(selectedOptions);
-          setSelectedType(selectedType);
-          setCapacityMin(capacityMin);
-          setCapacityMax(capacityMax);
-          setStartTime(startTime);
-          setEndTime(endTime);
-        }
+    if (open) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      if (savedFilters) {
+        const {
+          selectedOptions,
+          selectedType,
+          capacityMin,
+          capacityMax,
+          startTime,
+          endTime
+        } = JSON.parse(savedFilters);
+        setSelectedOptions(selectedOptions);
+        setSelectedType(selectedType);
+        setCapacityMin(capacityMin);
+        setCapacityMax(capacityMax);
+        setStartTime(startTime);
+        setEndTime(endTime);
       }
+    }
   }, [open]);
 
   const clearFilters = () => {
@@ -141,7 +141,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setEndTimeError(false);
     setHelperTextStart("");
     setHelperTextEnd("");
-    
   };
 
   const handleToggleOption = (option: string) => {
@@ -166,6 +165,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
   };
 
   const saveFilters = () => {
+    if (selectedOptions.length === 0 && capacityMin === "" && selectedType === "" && capacityMax === "" && startTime === "" && endTime === "") {
+      localStorage.removeItem('filterConfig');
+      console.log("fking hell");
+      return;
+    }
     const filterConfig = {
       selectedOptions,
       selectedType,
@@ -222,23 +226,23 @@ const FilterModal: React.FC<FilterModalProps> = ({
             <Typography>Type</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <RadioGroup 
-            value={selectedType} 
-            onChange={(e) => setSelectedType(e.target.value)}>
-            {types.map((type) => (
+            <RadioGroup
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}>
+              {types.map((type) => (
+                <FormControlLabel
+                  key={type}
+                  value={type}
+                  control={<Radio />}
+                  label={type}
+                />
+              ))}
               <FormControlLabel
-                key={type}
-                value={type}
+                value=""
                 control={<Radio />}
-                label={type}
+                label="any"
               />
-            ))}
-            <FormControlLabel
-              value=""
-              control={<Radio />}
-              label="any"
-            />
-        </RadioGroup>
+            </RadioGroup>
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
@@ -331,7 +335,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </Button>
           <Button
             variant="contained"
-            disabled = {startTimeError || endTimeError}
+            disabled={startTimeError || endTimeError}
             onClick={() => {
               handleConfirm({
                 selectedOptions,

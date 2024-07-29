@@ -18,7 +18,7 @@ const register = async (
 ) => {
   const userExists = await User.findOne({ email });
   if (!userExists)
-    throw new BadRequestError("The email doesent exist in the Database");
+    throw new BadRequestError("The email doesn't exist in the Database");
 
   if (userExists.isVerified)
     throw new BadRequestError("The user is already verified");
@@ -57,7 +57,7 @@ const login = async (
 
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid)
-      throw new UnauthenticatedError("password doesent match");
+      throw new UnauthenticatedError("password doesn't match");
   }
 
   const tokenUser = createTokenUser(user);
@@ -81,7 +81,7 @@ const verifyEmail = async (
   res: Response
 ) => {
   const user = await User.findOne({ email });
-  if (!user) throw new UnauthenticatedError(`email doesent exist`);
+  if (!user) throw new UnauthenticatedError(`email doesn't exist`);
   if (user.verificationToken !== verificationToken)
     throw new UnauthenticatedError(`verification token is invalid`);
   user.isVerified = true;

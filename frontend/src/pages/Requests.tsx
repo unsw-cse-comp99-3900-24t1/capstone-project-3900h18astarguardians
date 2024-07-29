@@ -124,6 +124,7 @@ const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
       setRequests(genRequests);
       setIsLoading(false);
     } catch (e) {
+      console.log("error", e);
     }
   }
 
