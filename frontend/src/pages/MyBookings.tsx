@@ -18,6 +18,7 @@ type Booking = {
   description: string;
   checked_in: boolean;
   backgroundColor: string
+  dateString: string;
 };
 
 type Request = {
@@ -39,7 +40,7 @@ type Request = {
 //   // Add other properties if needed
 // };
 
-type BookingRequestData = {
+export type BookingRequestData = {
   _id: string;
   user: string;
   start: string; // ISO 8601 string
@@ -74,7 +75,11 @@ const AllFileBoxStyle = {
   padding: '50px 0'
 }
 
-const MyBookings  = () => {
+interface RequestsProps {
+  setNumCheckIns: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const MyBookings: React.FC<RequestsProps> = ({ setNumCheckIns }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { displaySuccess, displayError } = useGlobalContext();
@@ -94,6 +99,15 @@ const MyBookings  = () => {
   };
 
   const handleConfirm = (id: string) => {
+    // TODO: if can be checked in: reduce numCheckIns
+    for (let booking of bookings) {
+      if (booking.id === id) {
+        if (Math.abs(Math.floor(((new Date(booking.dateString).getTime() - currTime) / 60000))) < 15) {
+          setNumCheckIns(prev => prev - 1);
+        }
+      }
+    }
+
     deleteBooking(id);
   };
 
@@ -141,6 +155,7 @@ const MyBookings  = () => {
     } finally {
       getBookings();
       setIsLoading(false);
+      setNumCheckIns(numPrev => numPrev - 1);
     }
   }
   // NOTE: i think this function along with the same function in RoomTimetable
@@ -169,8 +184,6 @@ const MyBookings  = () => {
     try {
       const resp = await request.get("/bookings/showAllMyBookings");
       let data: BookingRequestData[] = resp.data.bookings;
-
-      console.log(data);
 
       let newBookings: Booking[] = [];
       let newRequests: Request[] = [];
@@ -207,7 +220,6 @@ const MyBookings  = () => {
           if (booking.isCheckedIn) {
             color = 'rgba(0, 255, 0, 0.5)'
           } else if (Math.abs(Math.floor(((new Date(booking.start).getTime() - currTime) / 60000))) < 15) {
-            console.log(Math.floor(((new Date(booking.start).getTime() - currTime) / 60000)));
             color = 'rgba(255,255,0, 0.5)';
           } else if ((Math.floor(((new Date(booking.start).getTime() - currTime) / 60000)) > 15)) {
             color = 'rgba(0,0,0, 0.1)';
@@ -221,7 +233,8 @@ const MyBookings  = () => {
             room: roomName,
             description: 'description not implemented',
             checked_in: data[i].isCheckedIn,
-            backgroundColor: color
+            backgroundColor: color,
+            dateString: data[i].start
           }
 
           newBookings.push(b);
