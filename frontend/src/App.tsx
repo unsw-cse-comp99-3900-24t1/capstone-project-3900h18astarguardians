@@ -93,7 +93,6 @@ const App = () => {
     localStorage.setItem("admin", JSON.stringify(false));
   }
 
-  console.log(numCheckIns);
 
   useEffect(() => {
     IsCheckInReady().then((num) => {

@@ -210,7 +210,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
               textDecoration: 'none',
             }}
           >
-            LOGO
+            CSE-ROOMS
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {
@@ -297,7 +297,10 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
               // </Badge>
             ))} */}
           </Box>
-
+          
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            {token?.name} ({token?.zid})
+          </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} size="large" color="inherit" >

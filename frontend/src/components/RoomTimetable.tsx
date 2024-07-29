@@ -94,13 +94,10 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         applyFilters(filter);
     }
     
-    console.log(highlightedRoom);
-
     if (highlightedRoom !== null) {
       setRoomHighlighted(true);
       for (let i = 0; i < filteredRooms.length; i++) {
         if (filteredRooms[i].name === highlightedRoom) {
-          console.log(`index should be ${i}`);
           setCurrentIndex(i);
         }
       }

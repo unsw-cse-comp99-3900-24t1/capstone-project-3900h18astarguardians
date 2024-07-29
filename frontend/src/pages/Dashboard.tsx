@@ -62,7 +62,6 @@ const Dashboard = () => {
   };
   
 
-  console.log(highlightedRoom);
 
   const switchToTimetableView = () => {
     setCurrView("timetable")
