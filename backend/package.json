@@ -2,14 +2,13 @@
   "name": "comp3900_backend",
   "version": "1.0.0",
   "main": "app.js",
-  "type": "module",
   "scripts": {
     "build": "rimraf dist && npx tsc",
     "preserve": "npm run build",
     "serve": "concurrently \"npx tsc -w\" \"nodemon dist/app.js\"",
     "start": "node dist/app.js",
     "tsc": "tsc",
-    "test": "jest --verbose ./__tests__"
+    "test": "rimraf dist && jest --verbose ./__tests__"
   },
   "author": "",
   "license": "ISC",
