@@ -132,6 +132,18 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
     }
   }
 
+  function typeOfUser() {
+    if (token?.type === "admin") {
+      return "Admin";
+    } else if (token?.type === "hdr_student") {
+      return "HDR Student";
+    } else if (token?.type === "non_cse_staff") {
+      return "Non CSE Staff";
+    } else {
+      return "CSE Staff";
+    }
+  }
+
   return (
     <AppBar position="static" >
       <Container maxWidth="xl">
@@ -299,7 +311,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
           </Box>
           
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {token?.name} ({token?.zid})
+            {token && <b>{token?.name} ({token?.zid}) | {typeOfUser()}</b>}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

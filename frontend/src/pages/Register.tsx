@@ -16,7 +16,7 @@ import { FormEvent } from "react";
 // blah
 // fixing stuff rn
 const Register = () => {
-  const { displayError, displaySuccess, handleToken } = useGlobalContext();
+  const { displayError, displaySuccess} = useGlobalContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -31,7 +31,7 @@ const Register = () => {
     }
     try {
       const {
-        data: { name },
+        data: { },
       } = await request.post("/auth/register", {
         email: data.get("email"),
         password: data.get("password"),
@@ -88,7 +88,7 @@ const Register = () => {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label="Your Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"
