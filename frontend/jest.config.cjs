@@ -13,6 +13,7 @@ module.exports = {
   coverageDirectory: "coverage",
   coverageReporters: ["html", "text"],
   collectCoverageFrom: [
-    './src/pages/Register.tsx'
+    './src/pages/Register.tsx',
+    './src/components/FilterModal.tsx'
   ]
 };

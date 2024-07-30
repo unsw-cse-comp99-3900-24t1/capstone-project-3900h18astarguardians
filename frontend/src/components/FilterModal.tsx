@@ -167,7 +167,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const saveFilters = () => {
     if (selectedOptions.length === 0 && capacityMin === "" && selectedType === "" && capacityMax === "" && startTime === "" && endTime === "") {
       localStorage.removeItem('filterConfig');
-      console.log("fking hell");
       return;
     }
     const filterConfig = {
@@ -198,6 +197,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             handleClose();
           }}
           sx={{ position: 'absolute', right: 8, top: 8 }}
+          data-testid='Modal close button'
         >
           <CloseIcon />
         </IconButton>
@@ -206,7 +206,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={() => setEquipmentExpanded(!equipmentExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+          <AccordionSummary data-testid="eq-summary" expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
             <Typography>Equipment</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -222,7 +222,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={() => setTypeExpanded(!typeExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+          <AccordionSummary data-testid="types" expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
             <Typography>Type</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -246,7 +246,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
+          <AccordionSummary data-testid="timespan" expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
             <Typography>Available Time Span</Typography>
           </AccordionSummary>
           <AccordionDetails>
