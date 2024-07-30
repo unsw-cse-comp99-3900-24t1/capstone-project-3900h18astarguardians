@@ -20,10 +20,12 @@ interface FilterModalProps {
   }) => void;
   options: string[];
   types: string[];
+  selectedDate: Date;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
-  open, handleClose, handleConfirm, options, types}) => {
+  open, handleClose, handleConfirm, options, types, selectedDate
+}) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
   const [capacityMin, setCapacityMin] = useState<number | "">("");
@@ -34,6 +36,53 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [typeExpanded, setTypeExpanded] = useState<boolean>(false);
   const [timeExpanded, setTimeExpanded] = useState<boolean>(false);
   const [modalStyle, setModalStyle] = useState({});
+  const [startTimeError, setStartTimeError] = useState(false);
+  const [endTimeError, setEndTimeError] = useState(false);
+  const [helperTextStart, setHelperTextStart] = useState('');
+  const [helperTextEnd, setHelperTextEnd] = useState('');
+
+  const validateTimes = (start: string, end: string) => {
+    const now = new Date();
+    // initialise the default start and end time
+    let startTime = new Date(selectedDate);
+    startTime.setHours(Number(start.split(":")[0]), Number(start.split(":")[1]), 0, 0);
+    let endTime = new Date(selectedDate);
+    endTime.setHours(Number(end.split(":")[0]), Number(end.split(":")[1]), 0, 0);
+    let startTimeError = false;
+    let endTimeError = false;
+    let helperTextStart = '';
+    let helperTextEnd = '';
+
+    if (start || end) {
+      if (startTime >= endTime) {
+        endTimeError = true;
+        helperTextEnd = 'End time must be later than start time!';
+      }
+      else if (startTime <= now) {
+        startTimeError = true;
+        helperTextStart = 'Start time must be at least 1 hour from now!';
+      }
+    }
+    setStartTimeError(startTimeError);
+    setEndTimeError(endTimeError);
+    setHelperTextStart(helperTextStart);
+    setHelperTextEnd(helperTextEnd);
+  };
+
+
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const newStartTime = e.target.value;
+    setStartTime(newStartTime);
+    validateTimes(newStartTime, endTime);
+  };
+
+  const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const newEndTime = e.target.value;
+    setEndTime(newEndTime);
+    validateTimes(startTime, newEndTime);
+  };
+
+
 
   useEffect(() => {
     const newStyle = {
@@ -55,6 +104,28 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setModalStyle(newStyle);
   }, [equipmentExpanded, typeExpanded]);
 
+  useEffect(() => {
+    if (open) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      if (savedFilters) {
+        const {
+          selectedOptions,
+          selectedType,
+          capacityMin,
+          capacityMax,
+          startTime,
+          endTime
+        } = JSON.parse(savedFilters);
+        setSelectedOptions(selectedOptions);
+        setSelectedType(selectedType);
+        setCapacityMin(capacityMin);
+        setCapacityMax(capacityMax);
+        setStartTime(startTime);
+        setEndTime(endTime);
+      }
+    }
+  }, [open]);
+
   const clearFilters = () => {
     setSelectedOptions([]);
     setSelectedType("");
@@ -65,6 +136,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setEquipmentExpanded(false);
     setTypeExpanded(false);
     setTimeExpanded(false);
+    localStorage.removeItem('filterConfig');
+    setStartTimeError(false);
+    setEndTimeError(false);
+    setHelperTextStart("");
+    setHelperTextEnd("");
   };
 
   const handleToggleOption = (option: string) => {
@@ -88,16 +164,39 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
+  const saveFilters = () => {
+    if (selectedOptions.length === 0 && capacityMin === "" && selectedType === "" && capacityMax === "" && startTime === "" && endTime === "") {
+      localStorage.removeItem('filterConfig');
+      console.log("fking hell");
+      return;
+    }
+    const filterConfig = {
+      selectedOptions,
+      selectedType,
+      capacityMin,
+      capacityMax,
+      startTime,
+      endTime
+    };
+    localStorage.setItem('filterConfig', JSON.stringify(filterConfig));
+  };
+
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={() => {
+        saveFilters();
+        handleClose();
+      }}
       aria-labelledby="filter-modal-title"
       aria-describedby="filter-modal-description"
     >
       <Box sx={modalStyle}>
         <IconButton
-          onClick={handleClose}
+          onClick={() => {
+            saveFilters();
+            handleClose();
+          }}
           sx={{ position: 'absolute', right: 8, top: 8 }}
         >
           <CloseIcon />
@@ -129,8 +228,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           <AccordionDetails>
             <RadioGroup
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-            >
+              onChange={(e) => setSelectedType(e.target.value)}>
               {types.map((type) => (
                 <FormControlLabel
                   key={type}
@@ -139,12 +237,17 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   label={type}
                 />
               ))}
+              <FormControlLabel
+                value=""
+                control={<Radio />}
+                label="any"
+              />
             </RadioGroup>
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
-            <Typography>Time Span</Typography>
+            <Typography>Available Time Span</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl fullWidth>
@@ -155,7 +258,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   shrink: true,
                 }}
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={handleStartTimeChange}
+                error={startTimeError}
+                helperText={startTimeError ? helperTextStart : ''}
                 sx={{ mb: 2 }}
               />
               <TextField
@@ -165,8 +270,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   shrink: true,
                 }}
                 value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                sx={{ mb : 2 }}
+                onChange={handleEndTimeChange}
+                error={endTimeError}
+                helperText={endTimeError ? helperTextEnd : ''}
+                sx={{ mb: 2 }}
               />
             </FormControl>
           </AccordionDetails>
@@ -228,6 +335,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </Button>
           <Button
             variant="contained"
+            disabled={startTimeError || endTimeError}
             onClick={() => {
               handleConfirm({
                 selectedOptions,
@@ -237,6 +345,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 startTime,
                 endTime
               });
+              saveFilters();
               handleClose();
             }}
             sx={{ mt: 2 }}

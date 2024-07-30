@@ -14,7 +14,11 @@ type Request = {
   user: string;
 };
 
-const Requests  = () => {
+interface RequestsProps {
+  setNumRequests: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
   const { displaySuccess, displayError } = useGlobalContext();
   const [requests, setRequests] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +37,7 @@ const Requests  = () => {
   };
 
   const handleApprove = (id: string) => {
+    setNumRequests(numRequests => numRequests - 1);
     approveRequest(id);
   }
 
@@ -60,6 +65,7 @@ const Requests  = () => {
     } finally {
       getRequests();
       setIsLoading(false);
+      setNumRequests(numRequests => numRequests - 1);
     }
   }
 
@@ -118,6 +124,7 @@ const Requests  = () => {
       setRequests(genRequests);
       setIsLoading(false);
     } catch (e) {
+      console.log("error", e);
     }
   }
 

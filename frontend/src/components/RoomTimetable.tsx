@@ -3,6 +3,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
 import "../styles/RoomTimetable.css";
 import { Button } from "@mui/material";
+import { FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { DayHours, EventActions, ProcessedEvent } from "@aldabil/react-scheduler/types";
 import axios from "axios";
 import { useGlobalContext } from "../utils/context";
@@ -10,8 +11,8 @@ import sendEmailFn from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
-import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail" 
-
+import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail";
+import { getStartOfDayISO, getEndOfDayISO } from "../utils/ConvertDateFn";
 
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel, highlightedRoom }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -24,6 +25,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [users, setUsers] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
+  const [isFiltered, setIsFiltered] = useState<boolean>(false);
   const [clickedRoom, setClickedRoom] = useState<Room | undefined>();
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [startHour, setStartHour] = useState<DayHours>(0);
@@ -31,22 +33,21 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
 
-
+  // do not display the events within the filtered time period
   function filterEventsInRange() {
     const startTime = new Date(selectedDate);
     startTime.setHours(startHour, 0, 0); // Set start time to the startHour on the selected date
-  
+
     const endTime = new Date(selectedDate);
     endTime.setHours(endHour, 0, 0); // Set end time to the endHour on the selected date
-  
+
     const filteredEvents = events.filter(event => {
       const eventStart = new Date(event.start);
       const eventEnd = new Date(event.end);
-  
+
       // Include the event if it starts before the endHour and ends after the startHour
       return eventStart < endTime && eventEnd > startTime;
     });
-  
     return filteredEvents;
   }
 
@@ -64,38 +65,47 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     if (filterEndTime) {
       endTime.setHours(Number(filterEndTime.split(":")[0]), Number(filterEndTime.split(":")[1]), 0, 0);
     }
-    // filter out the events on the selected date
-    const eventsOnSelectedDate = events.filter(event => event.start.toDateString() === new Date(selectedDate).toDateString());
     // Filter rooms based on availability
     let availableRooms = filteredRooms.filter(room => {
       // Check if there's any event in the room that conflicts with the criteria
-      let isRoomOccupied = eventsOnSelectedDate.some(event => {
+      return !(events.some(event => {
         const isPreviousEvent = new Date(event.end) <= startTime;
         const isFutureEvent = new Date(event.start) >= endTime;
-        return (room._id === event.room._id) && !(isPreviousEvent || isFutureEvent);
-      });
-      // If no event conflicts, the room is available
-      return !isRoomOccupied;
+        return room._id === event.room._id && !isPreviousEvent && !isFutureEvent
+      }));
     });
     return availableRooms;
   }
 
   const initializeFilteredRooms = useCallback(() => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
-    console.log(highlightedRoom);
+    if (!isTableReady) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      let filter;
+      if (savedFilters) {
+        filter = JSON.parse(savedFilters);
+        setIsFiltered(false);
+      } else {
+        setIsFiltered(true);
+        filter = {
+          selectedOptions: [],
+          selectedType: "",
+          capacityMin: 0,
+          capacityMax: 0,
+          startTime: "",
+          endTime: ""
+        }
+      }
+      applyFilters(filter);
+    }
 
     if (highlightedRoom !== null) {
       setRoomHighlighted(true);
       for (let i = 0; i < filteredRooms.length; i++) {
         if (filteredRooms[i].name === highlightedRoom) {
-          console.log(`index should be ${i}`);
           setCurrentIndex(i);
         }
       }
     }
-
-
     setIsLoading(false);
   }, [rooms, currLevel]);
 
@@ -103,8 +113,33 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setFilterModalOpen(false);
   };
 
-  const handleFilterModalConfirm = (filters: { selectedOptions: string[]; selectedType: string, 
-    capacityMin: number, capacityMax: number, startTime: string, endTime: string }) => {
+  const handleFilterModalConfirm = (filters: {
+    selectedOptions: string[]; selectedType: string,
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string
+  }) => {
+      applyFilters(filters);
+      setIsFiltered(false);
+
+    handleFilterModalClose();
+  };
+
+  const handleResetButton = () => {
+    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
+    setFilteredRooms(CurrLevelRooms);
+    localStorage.removeItem('filterConfig');
+    setStartHour(0);
+    setEndHour(24);
+    setCurrentIndex(0);
+    setIsLoading(true);
+    setIsTableReady(false);
+    setRoomHighlighted(false);
+    setIsFiltered(true);
+  };
+
+  const applyFilters = (filters: {
+    selectedOptions: string[]; selectedType: string,
+    capacityMin: number, capacityMax: number, startTime: string, endTime: string
+  }) => {
     let filteredRooms = rooms.filter(room => room.level === currLevel);
     if (filters.selectedType) {
       filteredRooms = filteredRooms.filter(room => room.type === filters.selectedType);
@@ -132,18 +167,6 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setCurrentIndex(0);
     setIsLoading(true);
     setIsTableReady(false);
-    handleFilterModalClose();
-  };
-
-  const handleResetButton = () => {
-    const CurrLevelRooms = rooms.filter(room => room.level === currLevel);
-    setFilteredRooms(CurrLevelRooms);
-    setStartHour(0);
-    setEndHour(24);
-    setCurrentIndex(0);
-    setIsLoading(true);
-    setIsTableReady(false);
-    setRoomHighlighted(false);
   };
 
   useEffect(() => {
@@ -155,15 +178,14 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   useEffect(() => {
     setIsLoading(false);
   }, [filteredRooms]);
-  
 
-  const fetchRoomsAndEvents = useCallback(async () => {
+  const fetchRoomsAndEvents = useCallback(async (date: Date) => {
     setIsTableReady(false)
     try {
       setIsLoading(true);
       const [roomsResponse, eventsResponse, usersResponse] = await Promise.all([
         request.get<{ rooms: Room[] }>("/rooms"),
-        request.get<{ bookings: Event[] }>("/bookings"),
+        request.get<{ bookings: Event[] }>(`/bookings?start=${getStartOfDayISO(date)}&end=${getEndOfDayISO(date)}&sort=duration`),
         request.get<{ users: User[] }>("/users")
       ]);
       const bookings = eventsResponse.data.bookings.filter(booking => (booking.isOverrided === false) && (booking.isRequest == false || booking.isApproved));
@@ -199,17 +221,39 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       ));
     } catch (error) {
       console.error("Failed to fetch data", error);
-    } finally {
-
     }
   }, [token]);
 
   useEffect(() => {
-    fetchRoomsAndEvents();
+    fetchRoomsAndEvents(selectedDate);
   }, [update, selectedDate, currLevel, fetchRoomsAndEvents]);
 
   useEffect(() => {
     setCurrentIndex(0);
+  }, [currLevel]);
+
+  useEffect(() => {
+    // Automatically apply filters when currLevel or selectedDate changes
+    if (filteredRooms.length > 0) {
+      const savedFilters = localStorage.getItem('filterConfig');
+      let filter;
+      if (savedFilters) {
+        filter = JSON.parse(savedFilters);
+        setIsFiltered(false);
+      } else {
+        setIsFiltered(true);
+        filter = {
+          selectedOptions: [],
+          selectedType: "",
+          capacityMin: 0,
+          capacityMax: 0,
+          startTime: "",
+          endTime: ""
+        }
+      }
+      applyFilters(filter);
+      setIsTableReady(false);
+    }
   }, [currLevel]);
 
   const getColorForRoomType = (type: string): string => {
@@ -280,24 +324,26 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         sendEmailFn(response?.data?.booking._id, true);
       }
       events.push({
-        //@ts-ignore
-        event_id: event.event_id,
+        event_id: event._id,
         _id: event._id,
-        title: "dummy title",
+        title: event.title,
         start: event.start,
         end: event.end,
-        // @ts-ignore
-        editable: event.editable,
-        // @ts-ignore
-        deletable: event.deletable,
-        // @ts-ignore
-        draggable: event.draggable,
+        editable: false,
+        deletable: true,
+        draggable: false,
         room: event.room,
+        isApproved: false,
+        isRequest: false,
+        isOverrided: false,
+        user: event.user
       });
       setUpdate(prevUpdate => !prevUpdate);
       const currUserType = token?.type;
       if (currUserType === "non_cse_staff") {
         displaySuccess("Your request has been submitted. The admin will notify you by email upon approval or rejection.")
+      } else {
+        displaySuccess("Booking has been successfully created. Check \"My Bookings\" page for more details.");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -331,113 +377,152 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
     setClickedRoom(room);
   };
 
-  const overrideBooking = async (event_id: string, user_id: string) => {
+  const overrideBooking = async (event_id: string, _user_id: string) => {
     // send email
-
     // !! disabling email sending due to free email usage requirement
     // sendOverrideEmail(user_id, event_id);
     await request.patch(`/bookings/${event_id}/overrideBooking`);
 
-    fetchRoomsAndEvents();
-
+    fetchRoomsAndEvents(selectedDate);
 
   };
+
+  const schedulerButtonStyle = {
+    fontSize: "1.8rem",
+    transition: "transform 0.35s ease, background-color 0.3s ease",
+  };
+
+  const button = {
+    border: 'none',
+    padding: '10px',
+    transition: "transform 0.35s ease",
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    alighItems: "center"
+  }
+
+  const filterBtnContainer = {
+    alignItems: "center",
+    width: "60%",
+    marginTop: "26px",
+    background: isFiltered? "linear-gradient(to bottom, white 50%, rgb(230, 227, 227) 50%)": "linear-gradient(to bottom, rgb(230, 227, 227) 50%, white 50%)"
+  }
+
   return (
     <>
-      <Button onClick={() => setFilterModalOpen(true)}>Open Filter</Button>
-      <Button onClick={handleResetButton}>Reset Filter</Button>
       <FilterModal
         open={filterModalOpen}
         handleClose={handleFilterModalClose}
         handleConfirm={handleFilterModalConfirm}
         options={['printer', 'projector', 'other']}
         types={['staff room', 'meeting room', 'hot desk', 'normal']}
+        selectedDate={selectedDate}
       />
-      <Button onClick={prevPage} disabled={currentIndex === 0}>Back</Button>
-      <Button onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>Next</Button>
-      {filteredRooms.length > 0 && (
-        <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
-          <Scheduler
-            onCellClick={handleCellClick}
-            key={currentIndex}
-            view="day"
-            day={{
-              startHour: startHour,
-              endHour: endHour,
-              step: 60,
-              cellRenderer: ({ height, start, onClick, ...props }) => {
-                // Set current time to the beginning of the current hour
-                const currTime = new Date();
-                currTime.setMinutes(0, 0, 0);
-                // Ensure 'start' is a Date object (if it's not already)
-                const startTime = new Date(start);
-                // Disable the cell if its start time is in the past
-                const disabled = startTime <= currTime;
-                // Apply disabled-related properties conditionally
-                const restProps = disabled ? {} : props;
-                return (
-                  <Button
-                    style={{
-                      height: "100%",
-                      background: disabled ? "#eee" : "transparent",
-                      cursor: disabled ? "not-allowed" : "pointer",
-                    }}
-                    onClick={disabled ? () => {} : onClick}
-                    disableRipple={disabled}
-                    {...restProps}
-                  ></Button>
-                );
-              }
-            }}
-            hourFormat="24"
-            navigation={false}
-            disableViewer={false}
-            selectedDate={selectedDate}
-            disableViewNavigator={true}
-            resourceViewMode={"default"}
-            resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
-            draggable={false}
-            onDelete={deleteBookings}
-            events={filterEventsInRange()}
-            onConfirm={onConfirm}
-            viewerExtraComponent={(_, event) => {
-              return (
-                <Button variant="outlined" disabled={!isAdmin} onClick={() => {
-                  overrideBooking(event.event_id as string, event.user._id);
-                }}>Override</Button>
-              );
-            }}
-            fields={[
-              {
-                name: "Description",
-                type: "input",
-                default: "Default Value...",
-                config: { label: "Details", multiline: true, rows: 4 }
-              },
-              {
-                name: "User",
-                type: "select",
-                default: token?.userId,
-                options: users.map(user => ({
-                  id: user._id,
-                  text: `${user.name} (${user.zid})`,
-                  value: user._id
-                })),
-                config: { label: "User", required: true, disabled: !isAdmin }
-              }
-            ]}
-            resourceFields={{
-              idField: "admin_id",
-              textField: "title",
-              avatarField: "title",
-              colorField: "color"
-            }}
-          />
+      <div className="scheduler-container">
+        <div className="scheduler-filter-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button className="scheduler-button" onClick={prevPage} disabled={currentIndex === 0} style={schedulerButtonStyle}>&lt;</Button>
+          <div className="filter-btn-container" style={filterBtnContainer}>
+            <button style={button} className="filter-button" onClick={() => setFilterModalOpen(true)}>
+              <FilterAlt></FilterAlt>
+            </button>
+            <button style={button} disabled={isFiltered} className="filter-button" onClick={handleResetButton}>
+              <FilterAltOff></FilterAltOff>
+            </button>
+          </div>
         </div>
-      )}
-      {filteredRooms.length == 0 && (
-        <h3>No rooms available</h3>
-      )}
+        {filteredRooms.length > 0 && (
+          <div className="scrollable-scheduler" style={isTableReady ? {} : { display: "none" }}>
+            <Scheduler
+              onCellClick={handleCellClick}
+              key={currentIndex}
+              view="day"
+              day={{
+                startHour: startHour,
+                endHour: endHour,
+                step: 60,
+                cellRenderer: ({ height, start, onClick, ...props }) => {
+                  // Set current time to the beginning of the current hour
+                  const currTime = new Date();
+                  currTime.setMinutes(0, 0, 0);
+                  // Ensure 'start' is a Date object (if it's not already)
+                  const startTime = new Date(start);
+                  // Disable the cell if its start time is in the past
+                  const disabled = startTime <= currTime;
+                  // Apply disabled-related properties conditionally
+                  const restProps = disabled ? {} : props;
+                  return (
+                    <Button
+                      style={{
+                        height: "100%",
+                        background: disabled ? "#eee" : "transparent",
+                        cursor: disabled ? "not-allowed" : "pointer",
+                      }}
+                      onClick={disabled ? () => { } : onClick}
+                      disableRipple={disabled}
+                      {...restProps}
+                    ></Button>
+                  );
+                }
+              }}
+              hourFormat="24"
+              navigation={false}
+              disableViewer={false}
+              selectedDate={selectedDate}
+              disableViewNavigator={true}
+              resourceViewMode={"default"}
+              resources={filteredRooms.slice(currentIndex, currentIndex + roomsDisplay)}
+              draggable={false}
+              onDelete={deleteBookings}
+              events={filterEventsInRange()}
+              onConfirm={onConfirm}
+              viewerExtraComponent={(_, event) => {
+                return (
+                  <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+                    overrideBooking(event.event_id as string, event.user._id);
+                  }}>Override</Button>
+                );
+              }}
+              fields={[
+                {
+                  name: "Description",
+                  type: "input",
+                  default: "Default Value...",
+                  config: { label: "Details", multiline: true, rows: 4 }
+                },
+                {
+                  name: "User",
+                  type: "select",
+                  default: token?.userId,
+                  options: users.map(user => ({
+                    id: user._id,
+                    text: `${user.name} (${user.zid})`,
+                    value: user._id
+                  })),
+                  config: { label: "User", required: true, disabled: !isAdmin }
+                }
+              ]}
+              resourceFields={{
+                idField: "admin_id",
+                textField: "title",
+                avatarField: "title",
+                colorField: "color"
+              }}
+            />
+          </div>)}
+        {filteredRooms.length == 0 && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h3>No rooms available</h3>
+            <h3
+              style={{ textDecoration: "underline", color: "red", cursor: "pointer" }}
+              className={'enlarge-shrink'}
+              onClick={handleResetButton}
+            >
+              Reset Filter!
+            </h3>
+          </div>
+        )}
+        <Button style={schedulerButtonStyle} className="scheduler-button" onClick={nextPage} disabled={currentIndex + roomsDisplay >= filteredRooms.length}>&gt;</Button>
+      </div>
     </>
   );
 });

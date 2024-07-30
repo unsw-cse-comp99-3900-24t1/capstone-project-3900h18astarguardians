@@ -16,7 +16,7 @@ import { FormEvent } from "react";
 // blah
 // fixing stuff rn
 const Register = () => {
-  const { displayError, displaySuccess, handleToken } = useGlobalContext();
+  const { displayError, displaySuccess} = useGlobalContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -31,15 +31,13 @@ const Register = () => {
     }
     try {
       const {
-        data: { user },
+        data: { },
       } = await request.post("/auth/register", {
-        name: data.get("name"),
         email: data.get("email"),
         password: data.get("password"),
       });
-      handleToken(user);
-      displaySuccess("Registered Successfully");
-      navigate("/dashboard");
+      displaySuccess("Registered Successfully! An email will be sent to you with verification instructions");
+      navigate("/login");
     } catch (e) {
       if (e) {
         if (e instanceof AxiosError) {
@@ -77,18 +75,6 @@ const Register = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  autoComplete="given-name"
-                  name="name"
-                  required
-                  fullWidth
-                  id="name"
-                  label="name"
-                  autoFocus
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
                   required
                   fullWidth
                   id="email"
@@ -102,7 +88,7 @@ const Register = () => {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label="Your Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"

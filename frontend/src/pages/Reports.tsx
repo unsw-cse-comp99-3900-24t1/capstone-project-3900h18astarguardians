@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, Checkbox, FormControlLabel, Slider, Typography } from '@mui/material';
@@ -9,6 +9,15 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { BarChart } from '@mui/x-charts/BarChart';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import "../styles/Reports.css"
+
+interface NonCheckedInUser {
+  userId: string;
+  count: number;
+  name: string;
+  email: string;
+  zid: string;
+};
+
 const Reports  = () => {
 
   const [numRooms, setNumRooms] = React.useState(3);
@@ -19,7 +28,9 @@ const Reports  = () => {
   const [endDate, setEndDate] = React.useState<Dayjs | null>(dayjs());
   const [mostCommonRooms, setMostCommonRooms] = useState([]);
   const [mostCommonUsers, setMostCommonUsers] = useState([]);
-  const [nonCheckedInUsers, setNonCheckedInUsers] = useState([]);
+  const [roomsPercentage, setRoomsPercentage] = useState([]);
+  // const [mostCommonUsers, setMostCommonUsers] = useState([]);
+  const [nonCheckedInUsers, setNonCheckedInUsers] = useState<NonCheckedInUser[]>([]);
 
   const handleItemNbChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue !== 'number') {
@@ -50,8 +61,17 @@ const Reports  = () => {
   }
   
   const generateReports = async () => {
-    const reportsData = await fetchReports(startDate?.toDate() ?? new Date() , endDate?.toDate() ?? new Date());
+    let startTime = startDate?.toDate() ?? new Date();
+    startTime.setHours(0);
+    startTime.setHours(0);
+    let endTime = endDate?.toDate() ?? new Date();
+    endTime.setHours(23);
+    endTime.setMinutes(59);
+    console.log(startTime.toISOString())
+    console.log(endTime.toISOString())
+    const reportsData = await fetchReports(startTime, endTime);
 
+    console.log(reportsData);
     // set most common rooms
     setMostCommonRooms(reportsData.mostCommonlyBookedRooms.map((room: any) => {
       return {
@@ -70,33 +90,64 @@ const Reports  = () => {
       }
     })
     .sort((a: { count: number }, b: { count: number }) => b.count - a.count)
-  );
+   );
 
-  setNonCheckedInUsers(reportsData.notCheckedIn.map((booking: any) => {
-    const start = new Date(booking.start);
-    const end = new Date(booking.end);
-    const day = String(start.getDate()).padStart(2, '0');
-    const month = String(start.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = start.getFullYear();
-
-
+   console.log(reportsData.mostCommonlyBookedRooms.map((room: any) => {
     return {
-      date: `${day}/${month}/${year}`,
-      start: `${start.getHours() % 12}${start.getHours() >= 12 ? 'pm' : 'am'}`,
-      end: `${end.getHours() % 12}${end.getHours() >= 12 ? 'pm' : 'am'}`,
-      room: booking.room.name,
-      name: booking.user.name,
-      email: booking.user.email,
+      name: room.name,
+      usage: room.usage * 100,
     }
   }));
+    // set most common rooms usage
+    setRoomsPercentage(reportsData.roomUsage.map((room: any) => {
+      return {
+        name: room.name,
+        usage: room.usage,
+      }
+    })
+    .sort((a: { usage: number }, b: { usage: number }) => b.usage - a.usage)
+    );
 
+  let newNonCheckedInUsers = [];
+  let nonCheckedInUsersObjs: { [key: string]: { count: number, name_: string, zid: string, email: string } }  = {}
+  for (let booking of reportsData.notCheckedIn) {
+    const userId = booking.user._id;
+    const userName = booking.user.name;
+    if (nonCheckedInUsersObjs[userId]) {
+      nonCheckedInUsersObjs[userId].count++;
+    } else {
+      nonCheckedInUsersObjs[userId] = { count: 1, name_: userName, email: booking.user.email, zid: booking.user.zid };
+    }
   }
 
+  newNonCheckedInUsers = Object.keys(nonCheckedInUsersObjs).map(userId => {
+    return { userId: userId, 
+      count: nonCheckedInUsersObjs[userId].count, 
+      name: nonCheckedInUsersObjs[userId].name_, 
+      email: nonCheckedInUsersObjs[userId].email,
+      zid: nonCheckedInUsersObjs[userId].zid
+     };
+  });
+  newNonCheckedInUsers.sort((a, b) => b.count- a.count);
+
+  setNonCheckedInUsers(newNonCheckedInUsers);
+  }
+
+  // this code automatically scrolls when an accordian is clicked
+  // inspired by https://stackoverflow.com/questions/60289640/react-useref-scrollintoview-how-to-only-autoscroll-a-specific-div-inside-of
+  // except with an array of elements
+  const refs = useRef<(HTMLDivElement | null)[]>([]);
+  const handleAccordionChange = (index: number) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+    if (isExpanded && refs.current[index]) {
+      refs.current[index]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return <Box sx={{
     display: 'flex',
     justifyContent: 'center',
-    width: '100%'
+    width: '100%',
+    marginBottom: '200px'
   }}>
     <div className="robotoFont page">
    {!isAdmin && <h1>Only admins can see Usage reports!</h1>}
@@ -123,7 +174,8 @@ const Reports  = () => {
       </LocalizationProvider>
       <Button variant='contained' onClick={generateReports}>Generate Report</Button>
       </Box>
-      <Box sx={{ width: '90%' }}>
+    <Box sx={{ width: '90%', display: 'flex', flexDirection: 'column' }}>
+      <Box ><h1>Rooms report</h1></Box>
       <BarChart
         height={300}
         dataset={mostCommonRooms.slice(0,numRooms)}
@@ -131,8 +183,18 @@ const Reports  = () => {
         series={[{ dataKey: 'count', label: 'Most booked rooms' }]}
         skipAnimation={false}
       />
+
+    </Box>
+    <Box sx={{ width: '90%' }}>
+      <BarChart
+        height={300}
+        dataset={roomsPercentage.slice(0,numRooms)}
+        xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+        series={[{ dataKey: 'usage', label: 'Room usage %' }]}
+        skipAnimation={false}
+      />
       <Typography id="input-item-number" gutterBottom>
-        Number of items
+        Number of Rooms
       </Typography>
       <Slider
         value={numRooms}
@@ -143,7 +205,8 @@ const Reports  = () => {
         aria-labelledby="input-item-number"
       />
     </Box>
-    <Box sx={{ width: '90%' }}>
+    <Box sx={{ width: '90%', display: 'flex', flexDirection: 'column' }}>
+      <Box><h1>Users report</h1></Box>
       <BarChart
         height={300}
         dataset={mostCommonUsers.slice(0,numUsers)}
@@ -166,21 +229,19 @@ const Reports  = () => {
     {nonCheckedInUsers.length > 0 && <h1>Non-Checked In Users</h1>}
     {
       nonCheckedInUsers.map((item: any, index) => (
-        <Accordion key={index}>
+        <Accordion key={index}onChange={handleAccordionChange(index)} ref={(el) => (refs.current[index] = el)}>
         <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
         id="panel1-header"
         >
-          <strong>Booking at {item.room} for {item.name}</strong>
+          <strong>{item.count} {item.count > 1 || item.count === 0 ? 'bookings' : 'booking' } not checked-in to for {item.name}</strong>
         </AccordionSummary>
         <AccordionDetails>
           <strong>Details:</strong> <br />
-          Date: {item.date} <br />
-          Start Time: {item.start}<br />
-          End Time: {item.end}<br />
-          Room: {item.room}<br />
-          <strong>Checked In: False</strong>
+          Name: {item.name}<br />
+          zID: {item.zid}<br />
+          Email: {item.email}<br />
         </AccordionDetails>
         <AccordionActions>
         <Button variant="outlined" color="error">
