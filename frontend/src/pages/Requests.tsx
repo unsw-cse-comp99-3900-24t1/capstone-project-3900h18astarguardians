@@ -33,7 +33,6 @@ const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
   };
 
   const handleDeny = (id: string) => {
-    setNumRequests(numRequests => numRequests - 1);
     denyRequest(id);
   };
 
@@ -66,6 +65,7 @@ const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
     } finally {
       getRequests();
       setIsLoading(false);
+      setNumRequests(numRequests => numRequests - 1);
     }
   }
 
