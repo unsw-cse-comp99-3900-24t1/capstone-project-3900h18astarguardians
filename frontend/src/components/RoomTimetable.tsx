@@ -330,6 +330,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       const response = await request.post("/bookings", {
         "room": clickedRoomRef.current?._id,
         "start": event.start.toString(),
+        "description": event.title,
         "duration": Math.abs(event.end.getTime() - event.start.getTime()) / 3600000,
         ...(isAdmin && event.User !== token?.userId ? { "user": event.User } : {})
       });
@@ -349,7 +350,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         isApproved: false,
         isRequest: false,
         isOverrided: false,
-        user: event.user
+        user: event.user,
+        description: event.title
       });
       setUpdate(prevUpdate => !prevUpdate);
       const currUserType = token?.type;
@@ -491,18 +493,19 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               onConfirm={onConfirm}
               viewerExtraComponent={(_, event) => {
                 return (
-                  <Button variant="outlined" disabled={!isAdmin} onClick={() => {
+                  <>
+                    <br></br>
+                    Description: {event.description}
+                    <br></br>
+                    <br></br>
+                   {token?.type === "admin" && <Button variant="outlined" disabled={!isAdmin} onClick={() => {
                     overrideBooking(event.event_id as string, event.user._id);
-                  }}>Override</Button>
+                  }}>Override
+                  </Button>}
+                  </>
                 );
               }}
               fields={[
-                {
-                  name: "Description",
-                  type: "input",
-                  default: "Default Value...",
-                  config: { label: "Details", multiline: true, rows: 4 }
-                },
                 {
                   name: "User",
                   type: "select",
