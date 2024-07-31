@@ -60,7 +60,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
       }
       else if (startTime <= now) {
         startTimeError = true;
-        helperTextStart = 'Start time must be at least 1 hour from now!';
+        helperTextStart = 'Start time must be in the future!';
       }
     }
     setStartTimeError(startTimeError);
@@ -183,10 +183,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   return (
     <Modal
       open={open}
-      onClose={() => {
-        saveFilters();
-        handleClose();
-      }}
       aria-labelledby="filter-modal-title"
       aria-describedby="filter-modal-description"
     >
@@ -295,7 +291,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setCapacityMin('')} edge="end">
+                  <IconButton data-testid="clear-capacity-min" onClick={() => setCapacityMin('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
@@ -317,7 +313,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setCapacityMax('')} edge="end">
+                  <IconButton data-testid="clear-capacity-max" onClick={() => setCapacityMax('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
