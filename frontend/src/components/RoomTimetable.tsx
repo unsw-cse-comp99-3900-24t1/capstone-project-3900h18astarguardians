@@ -358,6 +358,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
       } else {
         displaySuccess("Booking has been successfully created. Check \"My Bookings\" page for more details.");
       }
+      setRoomHighlighted(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);
@@ -438,7 +439,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             <button style={button} className="filter-button" onClick={() => setFilterModalOpen(true)}>
               <FilterAlt></FilterAlt>
             </button>
-            <button style={button} disabled={isFiltered} className="filter-button" onClick={handleResetButton}>
+            <button style={button} disabled={isFiltered || roomHighlighted !== null} className="filter-button" onClick={handleResetButton}>
               <FilterAltOff></FilterAltOff>
             </button>
           </div>
@@ -460,7 +461,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
                   // Ensure 'start' is a Date object (if it's not already)
                   const startTime = new Date(start);
                   // Disable the cell if its start time is in the past
-                  const disabled = startTime <= currTime;
+                  const disabled = startTime < currTime;
                   // Apply disabled-related properties conditionally
                   const restProps = disabled ? {} : props;
                   return (
