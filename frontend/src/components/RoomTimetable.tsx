@@ -272,8 +272,8 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const getColorForRoomType = (type: string): string => {
     switch (type) {
       case "meeting room": return "green";
-      case "hot desk": return "red";
-      case "normal": return "orange";
+      case "hot desk": return "orange";
+      case "normal": return "blue";
       case "staff room": return "purple";
       default: return "grey";
     }
