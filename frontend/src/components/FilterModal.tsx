@@ -60,7 +60,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
       }
       else if (startTime <= now) {
         startTimeError = true;
-        helperTextStart = 'Start time must be at least 1 hour from now!';
+        helperTextStart = 'Start time must be in the future!';
       }
     }
     setStartTimeError(startTimeError);
@@ -167,7 +167,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const saveFilters = () => {
     if (selectedOptions.length === 0 && capacityMin === "" && selectedType === "" && capacityMax === "" && startTime === "" && endTime === "") {
       localStorage.removeItem('filterConfig');
-      console.log("fking hell");
       return;
     }
     const filterConfig = {
@@ -184,10 +183,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   return (
     <Modal
       open={open}
-      onClose={() => {
-        saveFilters();
-        handleClose();
-      }}
       aria-labelledby="filter-modal-title"
       aria-describedby="filter-modal-description"
     >
@@ -198,6 +193,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             handleClose();
           }}
           sx={{ position: 'absolute', right: 8, top: 8 }}
+          data-testid='Modal close button'
         >
           <CloseIcon />
         </IconButton>
@@ -206,7 +202,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={() => setEquipmentExpanded(!equipmentExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+          <AccordionSummary data-testid="eq-summary" expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
             <Typography>Equipment</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -222,7 +218,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={() => setTypeExpanded(!typeExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+          <AccordionSummary data-testid="types" expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
             <Typography>Type</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -246,7 +242,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </AccordionDetails>
         </Accordion>
         <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
+          <AccordionSummary data-testid="timespan" expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
             <Typography>Available Time Span</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -295,7 +291,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setCapacityMin('')} edge="end">
+                  <IconButton data-testid="clear-capacity-min" onClick={() => setCapacityMin('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
@@ -317,7 +313,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setCapacityMax('')} edge="end">
+                  <IconButton data-testid="clear-capacity-max" onClick={() => setCapacityMax('')} edge="end">
                     <CloseIcon />
                   </IconButton>
                 </InputAdornment>
