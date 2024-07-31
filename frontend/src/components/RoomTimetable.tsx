@@ -198,6 +198,19 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         avatar: "https://picsum.photos/200/300",
       }));
 
+      // coloredRooms
+      coloredRooms.sort((a, b) => {
+        const getNumericPart = (str: string): number => {
+          const numericPart = str.match(/\d+/);
+          return numericPart ? parseInt(numericPart[0], 10) : 0;
+        };
+      
+        const numA = getNumericPart(a.title);
+        const numB = getNumericPart(b.title);
+      
+        return numA - numB;
+      })
+
       setRooms(coloredRooms);
       setEvents(bookings.map(event => ({
         ...event,
