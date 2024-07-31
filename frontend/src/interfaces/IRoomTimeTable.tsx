@@ -33,6 +33,7 @@ export interface Event {
     zid: string;
     _id: string;
   }
+  description: string;
 }
 
 export interface RoomTimetableProps {

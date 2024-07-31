@@ -114,7 +114,7 @@ const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
           start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
           end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
           room: roomName,
-          description: 'description not implemented',
+          description: data[i].description,
           user: data[i].user.name,
         }
 
@@ -152,6 +152,7 @@ const Requests: React.FC<RequestsProps> = ({ setNumRequests }) => {
           </AccordionSummary>
           <AccordionDetails>
             <strong>Details:</strong> <br /><br />
+            Title: {item.description}<br />
             Start Time: {item.start_time}<br />
             End Time: {item.end_time}<br />
             Room: {item.room}<br />
