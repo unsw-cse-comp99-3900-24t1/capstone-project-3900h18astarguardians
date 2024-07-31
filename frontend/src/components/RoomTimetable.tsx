@@ -439,7 +439,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
             <button style={button} className="filter-button" onClick={() => setFilterModalOpen(true)}>
               <FilterAlt></FilterAlt>
             </button>
-            <button style={button} disabled={isFiltered} className="filter-button" onClick={handleResetButton}>
+            <button style={button} disabled={isFiltered && !roomHighlighted} className="filter-button" onClick={handleResetButton}>
               <FilterAltOff></FilterAltOff>
             </button>
           </div>
