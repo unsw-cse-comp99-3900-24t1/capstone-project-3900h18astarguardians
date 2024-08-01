@@ -1,10 +1,15 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import { 
+  Button,
+  IconButton, 
+  Modal, 
+  Checkbox, 
+  FormControlLabel, 
+  FormControl,
+  FormLabel,
+  FormGroup,
+  } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 const style = {
   position: "absolute",
@@ -19,8 +24,20 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+interface NotificationState {
+  hasConfirmationEmail: boolean,
+  hasNotificationEmail: boolean,
+}
+interface NotificationModalProps {
+  open: boolean;
+  handleClose: () => void;
+  handleConfirm: () => void;
+  state: NotificationState,
+  setState: (state: NotificationState) => void;
+}
 
-const TextModal = ({ state, setState, open, handleClose, handleConfirm }) => {
+const TextModal: React.FC<NotificationModalProps> = ({ state, setState, open, handleClose, handleConfirm }) => {
+  // @ts-expect-error do not know type
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
@@ -34,31 +51,43 @@ const TextModal = ({ state, setState, open, handleClose, handleConfirm }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+        <IconButton
+          onClick={() => {
+            handleClose();
+          }}
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+          data-testid='Modal close button'
+        >
+          <CloseIcon />
+        </IconButton>
           <FormControl component="fieldset">
             <FormLabel component="legend">Notification Setting</FormLabel>
             <br />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={state.hasConfirmationEmail}
-                  onChange={handleChange}
-                  name="hasConfirmationEmail"
-                  color="primary"
-                />
-              }
-              label="Receive Confirmation Email"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={state.hasNotificationEmail}
-                  onChange={handleChange}
-                  name="hasNotificationEmail"
-                  color="primary"
-                />
-              }
-              label="Receive Notification Email"
-            />
+            <FormGroup data-testid="hasConfirmationEmail">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.hasConfirmationEmail}
+                    onChange={handleChange}
+                    name="hasConfirmationEmail"
+                    color="primary"
+                    aria-label='hasConfirmationEmail'
+                  />
+                }
+                label="Receive Confirmation Email"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.hasNotificationEmail}
+                    onChange={handleChange}
+                    name="hasNotificationEmail"
+                    color="primary"
+                  />
+                }
+                label="Receive Notification Email"
+              />
+            </FormGroup>
           </FormControl>
           <br />
           <br />
