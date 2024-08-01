@@ -52,6 +52,7 @@ export type BookingRequestData = {
   isRequest: boolean;
   room: room;
   __v: number;
+  description: string;
 };
 
 type room = {
@@ -231,7 +232,7 @@ const MyBookings: React.FC<RequestsProps> = ({ setNumCheckIns }) => {
             start_time: `${startTime.getHours() % 12}${startTime.getHours() >= 12 ? 'pm' : 'am'}`,
             end_time: `${endTime.getHours() % 12}${endTime.getHours() >= 12 ? 'pm' : 'am'}`,
             room: roomName,
-            description: 'description not implemented',
+            description: data[i].description,
             checked_in: data[i].isCheckedIn,
             backgroundColor: color,
             dateString: data[i].start
