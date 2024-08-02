@@ -204,28 +204,44 @@ describe('FilterModal', () => {
 
   it('should prevent invalid input in time fields', async() => {
     setup();
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
     // get the time inputs
     const startTimeInput = screen.getByLabelText('Start Time');
     const endTimeInput = screen.getByLabelText('End Time');
     // produce times to test
     const startTime = new Date();
-    startTime.setHours(startTime.getHours() + 27);
     const endTime = new Date();
-    endTime.setHours(endTime.getHours() + 26);
+    if(startTime.getHours() < 12 && startTime.getHours() > 1) {
+      startTime.setHours(startTime.getHours() + 12);
+      endTime.setHours(endTime.getHours() + 11);
+    }
+    else if (startTime.getHours() === 12) {
+      startTime.setHours(startTime.getHours() + 2);
+      endTime.setHours(endTime.getHours() + 1);
+    }
+    else if (startTime.getHours() <= 1) {
+      startTime.setHours(startTime.getHours() + 14);
+      endTime.setHours(endTime.getHours() + 13);
+    }
+    else {
+      startTime.setHours(14);
+      endTime.setHours(13);
+    }
+    
     fireEvent.change(endTimeInput, { target: { value: `${endTime.getHours()}:00` } });
     fireEvent.change(startTimeInput, { target: { value: `${startTime.getHours()}:00` } });
 
     await screen.findByText('End time must be later than start time!');
     expect(screen.getByText('End time must be later than start time!')).toBeInTheDocument();
-    
-    startTime.setHours(startTime.getHours() - 28);
-    fireEvent.change(startTimeInput, { target: { value: `${startTime.getHours()}:00` } });
+
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
+    fireEvent.change(startTimeInput, { target: { value: `00:00` } });
     await screen.findByText('Start time must be in the future!');
     expect(screen.getByText('Start time must be in the future!')).toBeInTheDocument();
 
     // clear all
     fireEvent.click(screen.getByRole('button', { name: /clear/i }));
-    fireEvent.change(endTimeInput, { target: { value: `${endTime.getHours()}:00` } });
+    fireEvent.change(endTimeInput, { target: { value: `00:00` } });
     expect(screen.queryByText('End time must be later than start time!')).not.toBeInTheDocument();
     expect(screen.queryByText('Start time must be in the future!')).not.toBeInTheDocument();
   });
@@ -236,7 +252,8 @@ describe('FilterModal', () => {
   });
   
   it('test equipment change or statement', ()=> {
-    setup();
+    setup("admin");
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
     const option = screen.getByLabelText('Option 1');
     fireEvent.click(option);
     expect(option).toBeChecked();
@@ -245,14 +262,17 @@ describe('FilterModal', () => {
   });
 
   it('calls handleClose and saves to localStorage when the close button is clicked with changed value', () => {
-    setup();
+    setup("admin");
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
     // Simulate setting some filters
     fireEvent.change(screen.getByLabelText('Capacity Min'), { target: { value: '30' } });
     fireEvent.change(screen.getByLabelText('Capacity Max'), { target: { value: '50' } });
     fireEvent.change(screen.getByLabelText('Start Time'), { target: { value: '08:00' } });
     fireEvent.change(screen.getByLabelText('End Time'), { target: { value: '10:00' } });
     fireEvent.click(screen.getByLabelText('Type 1'));
-    fireEvent.click(screen.getByLabelText('Option 1'));
+    const option = screen.getByLabelText('Option 1');
+    fireEvent.click(option);
+    expect(option).toBeChecked();
   
     // Click the close button
     fireEvent.click(screen.getByTestId('Modal close button'));
