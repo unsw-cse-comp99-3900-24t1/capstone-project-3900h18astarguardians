@@ -21,10 +21,11 @@ interface FilterModalProps {
   options: string[];
   types: string[];
   selectedDate: Date;
+  userType: string;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
-  open, handleClose, handleConfirm, options, types, selectedDate
+  open, handleClose, handleConfirm, options, types, selectedDate, userType
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
@@ -40,6 +41,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [endTimeError, setEndTimeError] = useState(false);
   const [helperTextStart, setHelperTextStart] = useState('');
   const [helperTextEnd, setHelperTextEnd] = useState('');
+
+  // remove hotdesk option in type for CSE staff
+  if(userType === "cse_staff") {
+    types = types.filter((type) => type !== "hot desk");
+  }
 
   const validateTimes = (start: string, end: string) => {
     const now = new Date();
@@ -201,7 +207,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           Apply Filters
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        <Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={() => setEquipmentExpanded(!equipmentExpanded)}>
+        {(userType != "hdr_student" && <Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={() => setEquipmentExpanded(!equipmentExpanded)}>
           <AccordionSummary data-testid="eq-summary" expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
             <Typography>Equipment</Typography>
           </AccordionSummary>
@@ -216,8 +222,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
               ))}
             </FormGroup>
           </AccordionDetails>
-        </Accordion>
-        <Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={() => setTypeExpanded(!typeExpanded)}>
+        </Accordion>)}
+        {(userType !== "hdr_student" && userType !== "non_cse_staff") && (<Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={() => setTypeExpanded(!typeExpanded)}>
           <AccordionSummary data-testid="types" expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
             <Typography>Type</Typography>
           </AccordionSummary>
@@ -240,8 +246,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
               />
             </RadioGroup>
           </AccordionDetails>
-        </Accordion>
-        <Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={() => setTimeExpanded(!timeExpanded)}>
+        </Accordion>)}
+        <Accordion sx={{ mb: 2 }} expanded={timeExpanded || userType === "hdr_student"} onChange={() => setTimeExpanded(!timeExpanded)}>
           <AccordionSummary data-testid="timespan" expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
             <Typography>Available Time Span</Typography>
           </AccordionSummary>
@@ -275,7 +281,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </AccordionDetails>
         </Accordion>
         <Divider sx={{ my: 2 }} />
-        <FormControl fullWidth>
+        {(userType != "hdr_student" && <FormControl fullWidth>
           <TextField
             label="Capacity Min"
             type="number"
@@ -320,7 +326,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               )
             }}
           />
-        </FormControl>
+        </FormControl>)}
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             variant="outlined"

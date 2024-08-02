@@ -25,28 +25,44 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
+<<<<<<< HEAD
                 <span class='fraction'>0/113</span>
+=======
+                <span class='fraction'>116/116</span>
+>>>>>>> origin
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
+<<<<<<< HEAD
                 <span class='fraction'>0/28</span>
+=======
+                <span class='fraction'>38/38</span>
+>>>>>>> origin
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
+<<<<<<< HEAD
                 <span class='fraction'>0/24</span>
+=======
+                <span class='fraction'>25/25</span>
+>>>>>>> origin
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
+<<<<<<< HEAD
                 <span class='fraction'>0/113</span>
+=======
+                <span class='fraction'>115/115</span>
+>>>>>>> origin
             </div>
         
             
@@ -419,8 +435,19 @@
 <a name='L354'></a><a href='#L354'>354</a>
 <a name='L355'></a><a href='#L355'>355</a>
 <a name='L356'></a><a href='#L356'>356</a>
+<<<<<<< HEAD
 <a name='L357'></a><a href='#L357'>357</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+=======
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+>>>>>>> origin
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -444,7 +471,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<<<<<<< HEAD
 <span class="cline-any cline-no">&nbsp;</span>
+=======
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+>>>>>>> origin
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -462,8 +494,18 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<<<<<<< HEAD
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+=======
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">65x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">65x</span>
+<span class="cline-any cline-yes">8x</span>
+>>>>>>> origin
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -798,10 +840,16 @@ interface FilterModalProps {
   options: string[];
   types: string[];
   selectedDate: Date;
+  userType: string;
 }
 &nbsp;
+<<<<<<< HEAD
 const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
   open, handleClose, handleConfirm, options, types, selectedDate
+=======
+const FilterModal: React.FC&lt;FilterModalProps&gt; = ({
+  open, handleClose, handleConfirm, options, types, selectedDate, userType
+>>>>>>> origin
 }) =&gt; {
   const [selectedOptions, setSelectedOptions] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([]);</span>
   const [selectedType, setSelectedType] = <span class="cstat-no" title="statement not covered" >useState&lt;string&gt;("");</span>
@@ -818,8 +866,18 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
   const [helperTextStart, setHelperTextStart] = <span class="cstat-no" title="statement not covered" >useState('');</span>
   const [helperTextEnd, setHelperTextEnd] = <span class="cstat-no" title="statement not covered" >useState('');</span>
 &nbsp;
+<<<<<<< HEAD
   const validateTimes = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tart: string, end: string) =&gt; {</span>
     const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
+=======
+  // remove hotdesk option in type for CSE staff
+  if(userType === "cse_staff") {
+    types = types.filter((type) =&gt; type !== "hot desk");
+  }
+&nbsp;
+  const validateTimes = (start: string, end: string) =&gt; {
+    const now = new Date();
+>>>>>>> origin
     // initialise the default start and end time
     let startTime = <span class="cstat-no" title="statement not covered" >new Date(selectedDate);</span>
 <span class="cstat-no" title="statement not covered" >    startTime.setHours(Number(start.split(":")[0]), Number(start.split(":")[1]), 0, 0);</span>
@@ -978,7 +1036,11 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
           Apply Filters
         &lt;/Typography&gt;
         &lt;Divider sx={{ mb: 2 }} /&gt;
+<<<<<<< HEAD
         &lt;Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setEquipmentExpanded(!equipmentExpanded)}</span>&gt;
+=======
+        {(userType != "hdr_student" &amp;&amp; &lt;Accordion sx={{ mb: 2 }} expanded={equipmentExpanded} onChange={() =&gt; setEquipmentExpanded(!equipmentExpanded)}&gt;
+>>>>>>> origin
           &lt;AccordionSummary data-testid="eq-summary" expandIcon={&lt;ExpandMoreIcon /&gt;} aria-controls="panel1a-content" id="panel1a-header"&gt;
             &lt;Typography&gt;Equipment&lt;/Typography&gt;
           &lt;/AccordionSummary&gt;
@@ -993,8 +1055,13 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
               ))}
             &lt;/FormGroup&gt;
           &lt;/AccordionDetails&gt;
+<<<<<<< HEAD
         &lt;/Accordion&gt;
         &lt;Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setTypeExpanded(!typeExpanded)}</span>&gt;
+=======
+        &lt;/Accordion&gt;)}
+        {(userType !== "hdr_student" &amp;&amp; userType !== "non_cse_staff") &amp;&amp; (&lt;Accordion sx={{ mb: 2 }} expanded={typeExpanded} onChange={() =&gt; setTypeExpanded(!typeExpanded)}&gt;
+>>>>>>> origin
           &lt;AccordionSummary data-testid="types" expandIcon={&lt;ExpandMoreIcon /&gt;} aria-controls="panel2a-content" id="panel2a-header"&gt;
             &lt;Typography&gt;Type&lt;/Typography&gt;
           &lt;/AccordionSummary&gt;
@@ -1017,8 +1084,13 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
               /&gt;
             &lt;/RadioGroup&gt;
           &lt;/AccordionDetails&gt;
+<<<<<<< HEAD
         &lt;/Accordion&gt;
         &lt;Accordion sx={{ mb: 2 }} expanded={timeExpanded} onChange={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setTimeExpanded(!timeExpanded)}</span>&gt;
+=======
+        &lt;/Accordion&gt;)}
+        &lt;Accordion sx={{ mb: 2 }} expanded={timeExpanded || userType === "hdr_student"} onChange={() =&gt; setTimeExpanded(!timeExpanded)}&gt;
+>>>>>>> origin
           &lt;AccordionSummary data-testid="timespan" expandIcon={&lt;ExpandMoreIcon /&gt;} aria-controls="panel4a-content" id="panel4a-header"&gt;
             &lt;Typography&gt;Available Time Span&lt;/Typography&gt;
           &lt;/AccordionSummary&gt;
@@ -1052,7 +1124,7 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
           &lt;/AccordionDetails&gt;
         &lt;/Accordion&gt;
         &lt;Divider sx={{ my: 2 }} /&gt;
-        &lt;FormControl fullWidth&gt;
+        {(userType != "hdr_student" &amp;&amp; &lt;FormControl fullWidth&gt;
           &lt;TextField
             label="Capacity Min"
             type="number"
@@ -1097,7 +1169,7 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
               )
             }}
           /&gt;
-        &lt;/FormControl&gt;
+        &lt;/FormControl&gt;)}
         &lt;Box sx={{ display: 'flex', justifyContent: 'space-between' }}&gt;
           &lt;Button
             variant="outlined"
@@ -1138,7 +1210,11 @@ const FilterModal: React.FC&lt;FilterModalProps&gt; = <span class="cstat-no" tit
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+<<<<<<< HEAD
                 at 2024-08-02T04:56:05.870Z
+=======
+                at 2024-08-02T07:27:08.781Z
+>>>>>>> origin
             </div>
         <script src="../prettify.js"></script>
         <script>
