@@ -11,7 +11,6 @@ import sendEmailFn from "../utils/SendEmailFn";
 import deleteBookingsFn from "../utils/DeleteBookingsFn";
 import { Room, Event, RoomTimetableProps, User } from '../interfaces/IRoomTimeTable';
 import FilterModal from './FilterModal';
-import { sendOverrideEmail } from "../../../backend/utils/sendOverrideEmail";
 import { getStartOfDayISO, getEndOfDayISO } from "../utils/ConvertDateFn";
 
 const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLevel, highlightedRoom }) => {
