@@ -6,19 +6,20 @@ const mockHandleClose = jest.fn();
 const mockHandleConfirm = jest.fn();
 
 const defaultProps = {
+  open: true,
   handleClose: mockHandleClose,
   handleConfirm: mockHandleConfirm,
   options: ['Option 1', 'Option 2'],
   types: ['Type 1', 'Type 2'],
   selectedDate: new Date(),
 };
-const setup = (open=true) => {
-  return render(<FilterModal open={open} {...defaultProps} />);
+const setup = (userType: string = "") => {
+  return render(<FilterModal userType={userType} {...defaultProps} />);
 };
 
 describe('FilterModal', () => {
   it('renders correctly when open', () => {
-    setup();
+    setup("cse_staff");
 
     // Check if the modal title is rendered
     expect(screen.getByText('Apply Filters')).toBeInTheDocument();

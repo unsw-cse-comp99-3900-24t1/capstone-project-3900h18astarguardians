@@ -32,7 +32,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
   const [endHour, setEndHour] = useState<DayHours>(24);
   const roomsDisplay = 5;
   const { displaySuccess, displayError, token } = useGlobalContext();
-
+  const userType = token?.type;
   // do not display the events within the filtered time period
   function filterEventsInRange() {
     const startTime = new Date(selectedDate);
@@ -431,8 +431,9 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         handleClose={handleFilterModalClose}
         handleConfirm={handleFilterModalConfirm}
         options={['printer', 'projector', 'other']}
-        types={['staff room', 'meeting room', 'hot desk', 'normal']}
+        types={['staff room', 'meeting room', 'hot desk']}
         selectedDate={selectedDate}
+        userType = {userType ? userType : ""}
       />
       <div className="scheduler-container">
         <div className="scheduler-filter-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
