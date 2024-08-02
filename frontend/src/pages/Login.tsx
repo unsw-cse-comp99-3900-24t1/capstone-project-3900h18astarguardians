@@ -13,7 +13,7 @@ import Container from "@mui/material/Container";
 import { useNavigate, Link } from "react-router-dom";
 import { AxiosError } from "axios";
 const Login = () => {
-  const { displayError, displaySuccess, handleToken, handleEmail, token, handleAdmin, removeAdmin } =
+  const { displayError, displaySuccess, handleToken, handleEmail, handleAdmin, removeAdmin } =
     useGlobalContext();
 
   const navigate = useNavigate();
@@ -91,7 +91,7 @@ const Login = () => {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label="Your Password"
                   type="password"
                   id="password"
                   autoComplete="password"
