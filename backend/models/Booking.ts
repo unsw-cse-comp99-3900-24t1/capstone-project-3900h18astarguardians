@@ -33,6 +33,7 @@ const bookingSchema = new Schema<
   },
   duration: {
     type: Number,
+    required: true,
     min: 1,
     max: 8,
   },

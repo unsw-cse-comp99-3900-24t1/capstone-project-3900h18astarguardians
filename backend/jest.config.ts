@@ -1,6 +1,7 @@
 import type { JestConfigWithTsJest } from "ts-jest";
 
 const config: JestConfigWithTsJest = {
+  globalSetup: "./populate.ts",
   verbose: true,
   transform: {
     "^.+\\.ts?$": [
