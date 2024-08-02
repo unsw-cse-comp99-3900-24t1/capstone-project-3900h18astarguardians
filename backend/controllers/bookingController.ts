@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError } from "../errors";
+import {
+  BadRequestError,
+  UnauthenticatedError,
+  UnauthorizedError,
+} from "../errors";
 import { mongooseBookingI, tokenUserI } from "../types";
 import { Room } from "../models/Room";
 import { Booking } from "../models/Booking";
@@ -47,7 +51,7 @@ const createBooking = async (
   res: Response
 ) => {
   if (user && type !== "admin")
-    throw new BadRequestError(
+    throw new UnauthenticatedError(
       `A ${type} is not authorized to book on behalf of someone else`
     );
   let userToBook;
@@ -94,7 +98,7 @@ const createBooking = async (
 
     isOverrided: false,
   });
-
+  console.log(isClashing);
   if (isClashing.length)
     throw new BadRequestError(
       `Either this booking clashes with an already existing booking OR you cannot book two rooms within the same timeframe`
@@ -176,7 +180,7 @@ const checkInBooking = async (
     throw new BadRequestError(`There is no booking with id ${bookingId}`);
 
   if (booking.user.toString() !== userId)
-    throw new BadRequestError(
+    throw new UnauthorizedError(
       `Only the user who made the booking can check in to it`
     );
 

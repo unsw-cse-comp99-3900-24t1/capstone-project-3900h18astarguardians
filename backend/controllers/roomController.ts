@@ -57,11 +57,11 @@ const getSingleRoom = async (
   { params: { id: roomId } }: Request,
   res: Response
 ) => {
-  const product = await Room.findOne({ _id: roomId });
+  const room = await Room.findOne({ _id: roomId });
 
-  if (!product) throw new BadRequestError(`There is no room with id ${roomId}`);
+  if (!room) throw new BadRequestError(`There is no room with id ${roomId}`);
 
-  res.status(StatusCodes.OK).json({ product });
+  res.status(StatusCodes.OK).json({ room });
 };
 
 const updateRoom = async (
