@@ -57,17 +57,21 @@ describe('NotificationModal', () => {
   });
 
   it('change successfully and close modal', async () => {
-    // mockRequestPost.mockResolvedValueOnce({ data: {} });
     setup();
     const confirmationEmail = screen.getByLabelText('Receive Confirmation Email');
     fireEvent.click(confirmationEmail);
-    screen.debug(confirmationEmail)
-    expect(confirmationEmail).toBeChecked();
+    // screen.debug(confirmationEmail)
+    expect(mockSetState).toHaveBeenCalled();
 
     const NotificationEmail = screen.getByLabelText('Receive Notification Email');
-    screen.debug(NotificationEmail)
+    // screen.debug(NotificationEmail)
     fireEvent.click(NotificationEmail)
-    expect(NotificationEmail).toBeChecked();
+    expect(mockSetState).toHaveBeenCalled();
+  
+    const submitButton = screen.getByRole("button", { name: /CONFIRM/i })
+    fireEvent.click(submitButton)
+    // screen.debug(submitButton)
+    expect(mockHandleConfirm).toHaveBeenCalled();
   })
 
 })

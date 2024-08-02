@@ -14,6 +14,7 @@ module.exports = {
   coverageReporters: ["html", "text"],
   collectCoverageFrom: [
     './src/pages/Register.tsx',
-    './src/components/FilterModal.tsx'
+    './src/components/FilterModal.tsx',
+    './src/components/NotificationSettingsModal.tsx',
   ]
 };

@@ -452,6 +452,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
               onCellClick={handleCellClick}
               key={currentIndex}
               view="day"
+              data-testid="scheduler_table"
               day={{
                 startHour: startHour,
                 endHour: endHour,
