@@ -43,8 +43,13 @@ const App = () => {
     localStorage.getItem("admin") && JSON.parse(localStorage.getItem("admin")!)
   );
 
-  const displayError = (msg: string) =>
-    enqueueSnackbar(msg, { variant: "error" });
+  const displayError = (msg: string) => {
+    console.log(msg);
+    if (msg) {
+      enqueueSnackbar(msg, { variant: "error" });
+    }
+  }
+
 
   const displaySuccess = (msg: string) =>
     enqueueSnackbar(msg, { variant: "success" });
@@ -106,7 +111,7 @@ const App = () => {
   const globalVars = {
     displayError,
     displaySuccess,
-    displayWarning, 
+    displayWarning,
     displayInfo,
     handleToken,
     removeToken,
@@ -127,7 +132,7 @@ const App = () => {
     <>
       <BrowserRouter>
         <MyGlobalContext.Provider value={globalVars}>
-          <ResponsiveAppBar numCheckIns={numCheckIns} numRequests={numRequests}/>
+          <ResponsiveAppBar numCheckIns={numCheckIns} numRequests={numRequests} />
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="register" element={<Register />} />
