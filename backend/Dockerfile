@@ -1,7 +1,7 @@
 # backend/Dockerfile
 
 # Stage 1: Build stage
-FROM node:17 AS build
+FROM node:20 AS build
 
 WORKDIR /usr/src/app
 
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production stage
-FROM node:17
+FROM node:20
 
 WORKDIR /usr/src/app
 
