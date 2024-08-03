@@ -10,12 +10,11 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 const Contact = () => {
-  const { displayError, displaySuccess, email } =
+  const { displayError, displaySuccess } =
     useGlobalContext();
-
   const navigate = useNavigate();
   // Need to properly implement this
   const checkLoggedIn = async () => {
@@ -35,9 +34,7 @@ const Contact = () => {
     try {
       const data = new FormData(e.currentTarget);
       const feedback = data.get("feedback");
-      const {
-        data: { res },
-      } = await request.post("/bookings/sendFeedback", {
+      await request.post("/bookings/sendFeedback", {
         feedback
       });
       displaySuccess("Sent!");
