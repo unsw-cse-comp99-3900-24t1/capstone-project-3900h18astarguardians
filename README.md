@@ -9,4 +9,4 @@ Assuming docker is installed and running:
 
 # Tutorial:
 
-[View the tutorial page here](https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900h18astarguardians/blob/tutorial/tutorial.html)
+[View the tutorial page here](https://htmlpreview.github.io/?https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900h18astarguardians/blob/tutorial/tutorial.html)
