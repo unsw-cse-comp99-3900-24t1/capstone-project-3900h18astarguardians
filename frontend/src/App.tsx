@@ -46,8 +46,13 @@ const App = () => {
     localStorage.getItem("admin") && JSON.parse(localStorage.getItem("admin")!)
   );
 
-  const displayError = (msg: string) =>
-    enqueueSnackbar(msg, { variant: "error" });
+  const displayError = (msg: string) => {
+    console.log(msg);
+    if (msg) {
+      enqueueSnackbar(msg, { variant: "error" });
+    }
+  }
+
 
   const displaySuccess = (msg: string) =>
     enqueueSnackbar(msg, { variant: "success" });
@@ -109,7 +114,7 @@ const App = () => {
   const globalVars = {
     displayError,
     displaySuccess,
-    displayWarning, 
+    displayWarning,
     displayInfo,
     handleToken,
     removeToken,
@@ -130,21 +135,21 @@ const App = () => {
     <>
       <BrowserRouter>
         <MyGlobalContext.Provider value={globalVars}>
-          <ResponsiveAppBar numCheckIns={numCheckIns} numRequests={numRequests}/>
+          <ResponsiveAppBar numCheckIns={numCheckIns} numRequests={numRequests} />
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
-            <Route path="myBookings" element={<MyBookings setNumCheckIns={setNumCheckIns}/>} />
+            <Route path="myBookings" element={<MyBookings setNumCheckIns={setNumCheckIns} />} />
             <Route path="recovery" element={<Recovery />} />
             <Route path="OTP" element={<OTPInput />} />
             <Route path="reset-password" element={<Reset />} />
             <Route path="reports" element={<Reports />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
-            <Route path="contact" element={<Contact />}/>
-            <Route path="requests" element={<Requests setNumRequests={setNumRequests}/>} />
-            <Route path="user/:verify" element={<Verification />}/>
+            <Route path="contact" element={<Contact />} />
+            <Route path="requests" element={<Requests setNumRequests={setNumRequests} />} />
+            <Route path="user/:verify" element={<Verification />} />
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>

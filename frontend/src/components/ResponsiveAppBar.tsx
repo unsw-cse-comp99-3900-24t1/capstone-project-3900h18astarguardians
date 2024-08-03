@@ -41,9 +41,9 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
   const { token, removeToken, displaySuccess, displayError, removeAdmin } = useGlobalContext();
   const handleCloseNotificationSettingsModal = () => setNotificationSettingsOpen(false);
   const handleOpenNotificationSettingsModal = () => {
-        handleCloseUserMenu()
-        setNotificationSettingsOpen(true)
-      }
+    handleCloseUserMenu()
+    setNotificationSettingsOpen(true)
+  }
 
   const handleLogout = async () => {
     try {
@@ -75,7 +75,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
   useEffect(() => {
     getUserInfo();
   }, [])
-  
+
 
   // const pages = ['login', 'MyBookings', 'contact', 'requests','reports'];
   const settings = ['Dashboard'];
@@ -110,7 +110,8 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
       })
     } catch (err) {
       if (err instanceof AxiosError) {
-        const msg = err.response!.data.error;
+        const msg = err.response!.data.msg;
+        console.log(err.response);
         displayError(msg);
       }
     }
@@ -150,7 +151,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
            */}
-           <AppRegistrationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}/>
+          <AppRegistrationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -232,18 +233,18 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
                   transform: 'translateY(5px)',
                 },
               }}>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink}
-                to={`/myBookings`}
-              >
-                myBookings
-              </Button>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/myBookings`}
+                >
+                  myBookings
+                </Button>
               </Badge>
             }
             {
-              token && 
+              token &&
               <Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
@@ -254,24 +255,25 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
               </Button>
             }
             {
-              token?.type === "admin" && 
+              token?.type === "admin" &&
               <Badge badgeContent={numRequests} color="error" sx={{
                 '& .MuiBadge-badge': {
                   transform: 'translateY(5px)',
                 },
               }}>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink}
-                to={`/requests`}
-              >
-                requests
-              </Button>
+                <Button
+                  data-testid="requestBtn"
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/requests`}
+                >
+                  requests
+                </Button>
               </Badge>
             }
             {
-              token?.type === "admin" && 
+              token?.type === "admin" &&
               <Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
@@ -309,7 +311,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
               // </Badge>
             ))} */}
           </Box>
-          
+
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             {token && <b>{token?.name} ({token?.zid}) | {typeOfUser()}</b>}
           </Box>
@@ -342,12 +344,12 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
                 </MenuItem>
               ))}
               <MenuItem
-                  sx={{ textTransform: "capitalize" }}
-                  onClick={handleOpenNotificationSettingsModal}
-                >
-                  <Typography textAlign="center">Settings</Typography>
-                </MenuItem>
-              <MenuItem onClick={handleLogout}>
+                sx={{ textTransform: "capitalize" }}
+                onClick={handleOpenNotificationSettingsModal}
+              >
+                <Typography textAlign="center">Settings</Typography>
+              </MenuItem>
+              <MenuItem data-testid="logoutBtn" onClick={handleLogout}>
                 <Typography textAlign="center">Logout</Typography>
               </MenuItem>
             </Menu>
