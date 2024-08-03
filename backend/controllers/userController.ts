@@ -67,7 +67,7 @@ const updateUser = async (
 
   attachCookiesToResponse(res, tokenUser);
 
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  res.status(StatusCodes.OK).json({ updatedUser });
 };
 
 export {

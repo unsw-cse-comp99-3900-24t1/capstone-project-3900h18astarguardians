@@ -6,7 +6,8 @@ module.exports = {
   },
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
   transform: {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": "ts-jest",
+    '^.+\\.(js|jsx|browser)$': 'babel-jest',
   },
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   collectCoverage: true,
@@ -16,5 +17,12 @@ module.exports = {
     './src/pages/Register.tsx',
     './src/components/FilterModal.tsx',
     './src/pages/Login.tsx',
+    './src/components/NotificationSettingsModal.tsx',
+    './src/pages/Login.tsx',
+    './src/pages/Dashboard.tsx',
+    './src/pages/MyBookings.tsx',
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(react-native|nanoid)/)"
   ]
 };
