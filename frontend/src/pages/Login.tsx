@@ -99,6 +99,7 @@ const Login = () => {
               </Grid>
           </Grid>
           <Button
+            data-testid="loginBtn"
             type="submit"
             fullWidth
             variant="contained"
