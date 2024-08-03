@@ -21,7 +21,7 @@ const Contact = () => {
     try {
       await request.get("/users/showMe");
     } catch (e) {
-      // navigate("/login");
+      navigate("/login");
     }
   };
   useEffect(() => {
