@@ -17,7 +17,11 @@ module.exports = {
     './src/components/FilterModal.tsx',
     './src/components/NotificationSettingsModal.tsx',
     './src/pages/Login.tsx',
+<<<<<<< HEAD
     './src/pages/MyBookings.tsx',
     './src/pages/Contact.tsx',
+=======
+    './src/pages/Dashboard.tsx',
+>>>>>>> origin
   ]
 };
