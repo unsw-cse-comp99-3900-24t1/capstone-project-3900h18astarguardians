@@ -13,5 +13,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5000:5000
+
+  cypress:
+    build:
+      context: .
+      dockerfile: Dockerfile.cypress
+    environment:
+      - DISPLAY=:99
+    depends_on:
+      - frontend
+      - backend
+    command: >
+      /bin/sh -c "Xvfb :99 -screen 0 1024x768x16 & npm run cypress:open"
 volumes:
   mongodb_data:
