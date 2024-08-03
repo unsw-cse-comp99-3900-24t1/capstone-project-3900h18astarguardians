@@ -18,7 +18,6 @@ module.exports = {
     './src/components/NotificationSettingsModal.tsx',
     './src/components/ResponsiveAppBar.tsx',
     './src/pages/Login.tsx',
-    './src/pages/MyBookings.tsx',
     './src/pages/Contact.tsx',
     './src/pages/Dashboard.tsx',
   ]

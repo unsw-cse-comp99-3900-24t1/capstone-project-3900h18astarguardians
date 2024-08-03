@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.6% </span>
+                <span class="strong">81.72% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>76/92</span>
+                <span class='fraction'>76/93</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.51% </span>
+                <span class="strong">82.6% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>76/91</span>
+                <span class='fraction'>76/92</span>
             </div>
         
             
@@ -405,7 +405,9 @@
 <a name='L340'></a><a href='#L340'>340</a>
 <a name='L341'></a><a href='#L341'>341</a>
 <a name='L342'></a><a href='#L342'>342</a>
-<a name='L343'></a><a href='#L343'>343</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -517,6 +519,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -718,6 +721,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -790,9 +794,9 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
   const { token, removeToken, displaySuccess, displayError, removeAdmin } = useGlobalContext();
   const handleCloseNotificationSettingsModal = <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setNotificationSettingsOpen(false);</span>
   const handleOpenNotificationSettingsModal = () =&gt; {
-        handleCloseUserMenu()
-        setNotificationSettingsOpen(true)
-      }
+    handleCloseUserMenu()
+    setNotificationSettingsOpen(true)
+  }
 &nbsp;
   const handleLogout = async () =&gt; {
     try {
@@ -824,7 +828,7 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
   useEffect(() =&gt; {
     getUserInfo();
   }, [])
-  
+&nbsp;
 &nbsp;
   // const pages = ['login', 'MyBookings', 'contact', 'requests','reports'];
   const settings = ['Dashboard'];
@@ -859,7 +863,8 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
       })
     } catch (err) {
       <span class="missing-if-branch" title="if path not taken" >I</span>if (err instanceof AxiosError) {
-        const msg = <span class="cstat-no" title="statement not covered" >err.response!.data.error;</span>
+        const msg = <span class="cstat-no" title="statement not covered" >err.response!.data.msg;</span>
+<span class="cstat-no" title="statement not covered" >        console.log(err.response);</span>
 <span class="cstat-no" title="statement not covered" >        displayError(msg);</span>
       }
     }
@@ -899,7 +904,7 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
         &lt;Toolbar disableGutters&gt;
           {/* &lt;AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /&gt;
            */}
-           &lt;AppRegistrationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}/&gt;
+          &lt;AppRegistrationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /&gt;
           &lt;Typography
             variant="h6"
             noWrap
@@ -982,18 +987,18 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
                   transform: 'translateY(5px)',
                 },
               }}&gt;
-              &lt;Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink}
-                to={`/myBookings`}
-              &gt;
-                myBookings
-              &lt;/Button&gt;
+                &lt;Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/myBookings`}
+                &gt;
+                  myBookings
+                &lt;/Button&gt;
               &lt;/Badge&gt;
             }
             {
-              token &amp;&amp; 
+              token &amp;&amp;
               &lt;Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
@@ -1004,24 +1009,25 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
               &lt;/Button&gt;
             }
             {
-              token?.type === "admin" &amp;&amp; 
+              token?.type === "admin" &amp;&amp;
               &lt;Badge badgeContent={numRequests} color="error" sx={{
                 '&amp; .MuiBadge-badge': {
                   transform: 'translateY(5px)',
                 },
               }}&gt;
-              &lt;Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={RouterLink}
-                to={`/requests`}
-              &gt;
-                requests
-              &lt;/Button&gt;
+                &lt;Button
+                  data-testid="requestBtn"
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={RouterLink}
+                  to={`/requests`}
+                &gt;
+                  requests
+                &lt;/Button&gt;
               &lt;/Badge&gt;
             }
             {
-              token?.type === "admin" &amp;&amp; 
+              token?.type === "admin" &amp;&amp;
               &lt;Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
@@ -1032,7 +1038,7 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
               &lt;/Button&gt;
             }
           &lt;/Box&gt;
-          
+&nbsp;
           &lt;Box sx={{ display: { xs: 'none', md: 'flex' } }}&gt;
             {token &amp;&amp; &lt;b&gt;{token?.name} ({token?.zid}) | {typeOfUser()}&lt;/b&gt;}
           &lt;/Box&gt;
@@ -1070,7 +1076,7 @@ const ResponsiveAppBar: React.FC&lt;ResponsiveAppBarProps&gt; = ({ numCheckIns, 
                 &gt;
                   &lt;Typography textAlign="center"&gt;Settings&lt;/Typography&gt;
                 &lt;/MenuItem&gt;
-              &lt;MenuItem onClick={handleLogout}&gt;
+              &lt;MenuItem data-testid="logoutBtn"  onClick={handleLogout}&gt;
                 &lt;Typography textAlign="center"&gt;Logout&lt;/Typography&gt;
               &lt;/MenuItem&gt;
             &lt;/Menu&gt;
@@ -1096,7 +1102,7 @@ export default ResponsiveAppBar;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-08-03T10:11:19.760Z
+                at 2024-08-03T14:28:38.113Z
             </div>
         <script src="../prettify.js"></script>
         <script>
