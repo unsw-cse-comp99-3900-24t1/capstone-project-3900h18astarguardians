@@ -56,7 +56,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.error;
-        displayError(msg);
+        displayError(msg || "Failed to logout");
       }
     }
   };
@@ -171,6 +171,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
+              data-testid="openNav"
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -281,33 +282,6 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
                 reports
               </Button>
             }
-            {/* <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                  component={RouterLink}
-                  to={`/${page}`}
-                >
-                  {page}
-            </Button> */}
-            {/* {pages.map((page) => (
-              // <Badge badgeContent={17} color="error" sx={{
-              //   '& .MuiBadge-badge': {
-              //     transform: 'translateY(5px)',
-              //   },
-              // }}>
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                  component={RouterLink}
-                  to={`/${page}`}
-                >
-                  {page}
-                </Button>
-                
-              // </Badge>
-            ))} */}
           </Box>
           
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -315,7 +289,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} size="large" color="inherit" >
+              <IconButton data-testid="openSet"onClick={handleOpenUserMenu} size="large" color="inherit" >
                 <AccountCircle />
                 {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" /> */}
               </IconButton>
@@ -341,7 +315,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-              <MenuItem
+              <MenuItem data-testid="settings"
                   sx={{ textTransform: "capitalize" }}
                   onClick={handleOpenNotificationSettingsModal}
                 >
@@ -353,6 +327,7 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
             </Menu>
           </Box>
           <NotificationSettingsModal
+            data-testid="notificationSettingsModal"
             state={emailState}
             setState={setEmailState}
             open={notificationSettingsOpen}
