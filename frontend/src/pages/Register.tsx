@@ -13,8 +13,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { AxiosError } from "axios";
 import { FormEvent } from "react";
-// blah
-// fixing stuff rn
 const Register = () => {
   const { displayError, displaySuccess} = useGlobalContext();
   const navigate = useNavigate();
