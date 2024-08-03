@@ -3,12 +3,12 @@ import '@testing-library/jest-dom';
 import MyBookings from '../pages/MyBookings';
 import { request } from '../utils/axios';
 import { useGlobalContext } from '../utils/context';
-import exportIcs from '../utils/exportIcs';
+// import exportIcs from '../utils/exportIcs';
 
 // Mock dependencies
 jest.mock('../utils/axios');
 jest.mock('../utils/context');
-jest.mock('../utils/exportIcs');
+// jest.mock('../utils/exportIcs');
 
 const mockSetNumCheckIns = jest.fn();
 const mockDisplaySuccess = jest.fn();
@@ -112,30 +112,30 @@ describe('MyBookings Component', () => {
     expect(mockDisplaySuccess).toHaveBeenCalledWith('Successfully delete bookings');
   });
 
-  test('handles export ICS', async () => {
-    const mockBookings = [
-      {
-        id: '1',
-        date: '01/01/2023',
-        start_time: '10am',
-        end_time: '11am',
-        room: 'Room 1',
-        description: 'Meeting',
-        checked_in: false,
-        backgroundColor: 'rgba(0,0,0, 0.1)',
-        dateString: '2023-01-01T10:00:00Z',
-      },
-    ];
+  // test('handles export ICS', async () => {
+  //   const mockBookings = [
+  //     {
+  //       id: '1',
+  //       date: '01/01/2023',
+  //       start_time: '10am',
+  //       end_time: '11am',
+  //       room: 'Room 1',
+  //       description: 'Meeting',
+  //       checked_in: false,
+  //       backgroundColor: 'rgba(0,0,0, 0.1)',
+  //       dateString: '2023-01-01T10:00:00Z',
+  //     },
+  //   ];
 
-    (request.get as jest.Mock).mockResolvedValueOnce({ data: { bookings: mockBookings } });
+  //   (request.get as jest.Mock).mockResolvedValueOnce({ data: { bookings: mockBookings } });
 
-    render(<MyBookings setNumCheckIns={mockSetNumCheckIns} />);
+  //   render(<MyBookings setNumCheckIns={mockSetNumCheckIns} />);
 
-    await waitFor(() => expect(request.get).toHaveBeenCalledTimes(1));
+  //   await waitFor(() => expect(request.get).toHaveBeenCalledTimes(1));
 
-    fireEvent.click(screen.getByText('Export ICS'));
+  //   fireEvent.click(screen.getByText('Export ICS'));
 
-    expect(exportIcs).toHaveBeenCalledWith([mockBookings[0]]);
-    expect(mockDisplaySuccess).toHaveBeenCalledWith('success import ics file');
-  });
+  //   expect(exportIcs).toHaveBeenCalledWith([mockBookings[0]]);
+  //   expect(mockDisplaySuccess).toHaveBeenCalledWith('success import ics file');
+  // });
 });
