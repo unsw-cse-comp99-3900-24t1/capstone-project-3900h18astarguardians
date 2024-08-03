@@ -6,7 +6,8 @@ module.exports = {
   },
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
   transform: {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": "ts-jest",
+    '^.+\\.(js|jsx|browser)$': 'babel-jest',  
   },
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   collectCoverage: true,
@@ -19,5 +20,8 @@ module.exports = {
     './src/components/ResponsiveAppBar.tsx',
     './src/pages/Login.tsx',
     './src/pages/Dashboard.tsx',
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(react-native|nanoid)/)"
   ]
 };
