@@ -17,5 +17,7 @@ module.exports = {
     './src/components/FilterModal.tsx',
     './src/components/NotificationSettingsModal.tsx',
     './src/pages/Login.tsx',
+    './src/pages/MyBookings.tsx',
+    './src/pages/Contact.tsx',
   ]
 };
