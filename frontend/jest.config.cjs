@@ -17,5 +17,6 @@ module.exports = {
     './src/components/FilterModal.tsx',
     './src/components/NotificationSettingsModal.tsx',
     './src/pages/Login.tsx',
+    './src/pages/Dashboard.tsx',
   ]
 };

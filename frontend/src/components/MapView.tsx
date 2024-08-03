@@ -18,7 +18,7 @@ interface MapViewProps {
 const MapView: React.FC<MapViewProps> = ({ currLevel, setHighlightedRoom, switchView }) => {
   const imageUrl = `http://localhost:5000/l${currLevel}.png`;
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
-  const [clicks, setClicks] = useState<{ x: number; y: number }[]>([]);
+  const [_clicks, setClicks] = useState<{ x: number; y: number }[]>([]);
   const { token } = useGlobalContext()
 
   const allowedHDR = token?.type === "hdr_student" || token?.type === "admin"

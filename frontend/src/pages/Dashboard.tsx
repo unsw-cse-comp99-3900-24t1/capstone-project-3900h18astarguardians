@@ -84,6 +84,7 @@ const Dashboard = () => {
           }}
         >
           <Select
+            data-testid="levelSelect"
             id="demo-simple-select"
             value={currLevel.toString()}
             onChange={handleChange}
@@ -94,13 +95,13 @@ const Dashboard = () => {
             <MenuItem value={4}>Level Four</MenuItem>
             <MenuItem value={5}>Level Five</MenuItem>
           </Select>
-          <Button variant="outlined" onClick={handleDateChangeBackwards} disabled={isToday(selectedDate)}>
+          <Button data-testid="dateBack" variant="outlined" onClick={handleDateChangeBackwards} disabled={isToday(selectedDate)}>
             &lt;
           </Button>
           <Typography variant="h6" sx={{ minWidth: '150px', textAlign: 'center', fontSize: '1.8em' }}>
             {`${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`}
           </Typography>
-          <Button variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
+          <Button data-testid="dateForward" variant="outlined" onClick={handleDateChangeForward} disabled={isNextWeekSunday(selectedDate)}>
             &gt;
           </Button>
           <Button variant="outlined" onClick={() => setCurrView(currView === "timetable" ? "map" : "timetable")}>
