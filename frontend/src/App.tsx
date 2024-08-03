@@ -6,12 +6,9 @@ import './global.css';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Recovery from "./pages/Recovery";
-import OTPInput from "./pages/OTPInput";
-import Reset from "./pages/Reset";
 import Contact from "./pages/Contact";
 import Requests from "./pages/Requests";
-import Verification from "./pages/Verification";
+
 
 import { useSnackbar } from "notistack";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
@@ -141,15 +138,11 @@ const App = () => {
             <Route path="register" element={<Register />} />
             <Route path="/" element={<Navigate to="/login" replace={true} />} />
             <Route path="login" element={<Login />} />
-            <Route path="myBookings" element={<MyBookings setNumCheckIns={setNumCheckIns} />} />
-            <Route path="recovery" element={<Recovery />} />
-            <Route path="OTP" element={<OTPInput />} />
-            <Route path="reset-password" element={<Reset />} />
+            <Route path="myBookings" element={<MyBookings setNumCheckIns={setNumCheckIns}/>} />
             <Route path="reports" element={<Reports />} />
             <Route path="*" element={<h1> Page Not Found</h1>} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="requests" element={<Requests setNumRequests={setNumRequests} />} />
-            <Route path="user/:verify" element={<Verification />} />
+            <Route path="contact" element={<Contact />}/>
+            <Route path="requests" element={<Requests setNumRequests={setNumRequests}/>} />
           </Routes>
         </MyGlobalContext.Provider>
       </BrowserRouter>
