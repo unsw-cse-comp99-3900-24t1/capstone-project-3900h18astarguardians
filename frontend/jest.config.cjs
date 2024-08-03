@@ -16,5 +16,6 @@ module.exports = {
     './src/pages/Register.tsx',
     './src/components/FilterModal.tsx',
     './src/pages/Login.tsx',
+    './src/pages/Dashboard.tsx',
   ]
 };

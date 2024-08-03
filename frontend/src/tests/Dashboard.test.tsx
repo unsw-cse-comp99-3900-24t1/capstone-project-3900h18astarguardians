@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Dashboard from '../pages/Dashboard';
+import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from 'react-router-dom';
 
 describe('Dashboard Component', () => {
@@ -11,10 +12,10 @@ describe('Dashboard Component', () => {
         </BrowserRouter>
       );
   });
-  test.only('renders initial state correctly', () => {
+  test('renders initial state correctly', () => {
     
     // Check initial level
-    expect(screen.getByDisplayValue('Level Two')).toBeInTheDocument();
+    expect(screen.getByText('Level Two')).toBeInTheDocument();
     
     // Check initial date
     const today = new Date();
@@ -31,29 +32,36 @@ describe('Dashboard Component', () => {
     const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
     
     // Check if the backward button is disabled initially
-    expect(screen.getByText('<')).toBeDisabled();
+    expect(screen.getByTestId("dateBack")).toBeDisabled();
     
     // Move date forward
-    fireEvent.click(screen.getByText('>'));
+    fireEvent.click(screen.getByTestId("dateForward"));
     const nextDay = new Date(today);
     nextDay.setDate(today.getDate() + 1);
     const formattedNextDay = `${nextDay.getDate()}/${nextDay.getMonth() + 1}/${nextDay.getFullYear()}`;
     expect(screen.getByText(formattedNextDay)).toBeInTheDocument();
     
     // Move date backward
-    fireEvent.click(screen.getByText('<'));
+    fireEvent.click(screen.getByTestId("dateBack"));
     expect(screen.getByText(formattedDate)).toBeInTheDocument();
   });
 
-  test('level selection works correctly', () => {
-    
-    // Change level to Level Three
-    fireEvent.change(screen.getByDisplayValue('Level Two'), { target: { value: '3' } });
-    expect(screen.getByDisplayValue('Level Three')).toBeInTheDocument();
-    
-    // Change level to Level Four
-    fireEvent.change(screen.getByDisplayValue('Level Three'), { target: { value: '4' } });
-    expect(screen.getByDisplayValue('Level Four')).toBeInTheDocument();
+  test('level selection works correctly', async () => {
+    console.error = jest.fn();
+    console.warn = jest.fn();
+    const select = screen.getByText('Level Two');
+    await act(async () => {
+      userEvent.click(select);
+    });
+  
+    const levelFour = await screen.findByText('Level Four');
+    await act(async () => {
+      userEvent.click(levelFour);
+    });
+    await waitFor(() => expect(screen.queryByText('Level Two')).toBeNull());
+    expect(screen.getByText('Level Four')).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText('Level Three')).toBeNull());
+    await waitFor(() => expect(screen.queryByText('Level Five')).toBeNull());
   });
 
   test('view switch button works correctly', () => {

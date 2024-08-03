@@ -232,7 +232,7 @@ const RoomTimetable: React.FC<RoomTimetableProps> = memo(({ selectedDate, currLe
         user.type === "cse_staff" || user._id === token?.userId
       ));
     } catch (error) {
-      console.error("Failed to fetch data", error);
+      displayError("Failed to fetch data. Please check your network connection and try again.");
     }
   }, [token]);
 
