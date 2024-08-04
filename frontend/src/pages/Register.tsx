@@ -1,3 +1,7 @@
+/**
+ * Register page - for users (with existing emails in the database) to register accounts
+ */
+
 import { useGlobalContext } from "../utils/context";
 import { useNavigate, Link } from "react-router-dom";
 import { request } from "../utils/axios";

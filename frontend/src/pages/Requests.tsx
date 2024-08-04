@@ -1,3 +1,7 @@
+/**
+ * Requests page - for admin eyes only - admins can approve/deny requests
+ */
+
 import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';

@@ -1,3 +1,6 @@
+/**
+ * Login page - Users can login with verified accounts
+ */
 import { FormEvent, useEffect } from "react";
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";

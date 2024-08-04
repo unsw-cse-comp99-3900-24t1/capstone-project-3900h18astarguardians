@@ -1,3 +1,7 @@
+/**
+ * myBookings page - for users to view their own bookings, checkin, delete, or see status
+ */
+
 import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';

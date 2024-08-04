@@ -1,3 +1,7 @@
+/**
+ * Mapview component - A booking system overlaid over the map - for users to be able to see which room they are booking
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import "../styles/MapView.css"

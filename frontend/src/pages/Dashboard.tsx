@@ -1,3 +1,7 @@
+/**
+ * Dashboard - Calendar component, hosts the room timetable and option for mapview
+ */
+
 import RoomTimetable from "../components/RoomTimetable";
 import { Box, Button, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useState } from "react";

@@ -1,3 +1,7 @@
+/**
+ * NavBar component - controls which tabs/pages are visible to users depending on user type
+ */
+
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';

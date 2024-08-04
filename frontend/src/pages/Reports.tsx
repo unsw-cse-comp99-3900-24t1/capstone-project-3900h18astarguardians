@@ -1,3 +1,7 @@
+/**
+ * Reports page - for admin eyes only - See reports of room and user statistics/usage
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";

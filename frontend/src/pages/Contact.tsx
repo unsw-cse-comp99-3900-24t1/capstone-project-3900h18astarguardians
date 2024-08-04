@@ -1,3 +1,7 @@
+/**
+ * Contact page - for users to contact admins via email about any issues
+ */
+
 import { FormEvent, useEffect } from "react";
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";

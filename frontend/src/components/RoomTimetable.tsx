@@ -1,3 +1,7 @@
+/**
+ * RoomTimetable component - The calendar component for the booking system - books, deletes etc. events and bookings
+*/
+
 import { Scheduler } from "@aldabil/react-scheduler";
 import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { request } from "../utils/axios";
