@@ -6,5 +6,6 @@ export default defineConfig({
 
     baseUrl: 'http://localhost:5000',
     supportFile: false,
+    video: true,
   },
 })
