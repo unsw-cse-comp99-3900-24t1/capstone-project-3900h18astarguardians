@@ -6,6 +6,14 @@ Assuming docker is installed and running:
 2. Run `docker-compose up` in the root directory.
 3. Open `localhost:5000` in your web browswer of choice.
 
+# Login examples:
+Use these emails to login with *no password*
+
+  - HDR Student: z34966@ad.student.unsw.edu.au 
+  - CSE Staff: aooif@unsw.edu.au 
+  - Non CSE Staff: ddbgfyb@unsw.edu.au 
+  - Admin: tjfxr@unsw.edu.au 
+
 
 # Tutorial:
 
