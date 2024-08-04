@@ -10,7 +10,7 @@ describe('e2e for cse_Staff', () => {
     // go to next day
     cy.get('[data-testid="dateForward"]').should('be.visible').click()
     // click on the first cell of first colomn on time table
-    cy.get('button[admin_id="66adeb124f556810ec748e34"]').first().click({ force: true });
+    cy.get('button[admin_id]').first().click({ force: true });
     // put in a title
     cy.get('input[name=title]').focus().type('meeting')
     // comfirm to make the booking
