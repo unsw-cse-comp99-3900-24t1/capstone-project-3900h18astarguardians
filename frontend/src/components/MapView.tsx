@@ -2,7 +2,7 @@
  * Mapview component - A booking system overlaid over the map - for users to be able to see which room they are booking
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Box } from '@mui/material';
 import "../styles/MapView.css"
 import "../styles/level3Buttons.css"
@@ -22,46 +22,11 @@ interface MapViewProps {
 const MapView: React.FC<MapViewProps> = ({ currLevel, setHighlightedRoom, switchView }) => {
   const imageUrl = `http://localhost:5000/l${currLevel}.png`;
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
-  const [_clicks, setClicks] = useState<{ x: number; y: number }[]>([]);
-  const { token } = useGlobalContext()
+  const { token } = useGlobalContext();
 
-  const allowedHDR = token?.type === "hdr_student" || token?.type === "admin"
-  const allowedMeeting = token?.type !== "hdr_student"
-  const allowedStaffRoom = token?.type === "cse_staff" || token?.type === "admin"
-
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (imageContainerRef.current) {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        setClicks((prevClicks) => {
-          const newClicks = [...prevClicks, { x, y }];
-          if (newClicks.length === 2) {
-            const [firstClick, secondClick] = newClicks;
-            const left = Math.min(firstClick.x, secondClick.x);
-            const top = Math.min(firstClick.y, secondClick.y);
-            const width = Math.abs(secondClick.x - firstClick.x);
-            const height = Math.abs(secondClick.y - firstClick.y);
-            return [];
-          }
-          return newClicks;
-        });
-      }
-    };
-
-    const imageContainer = imageContainerRef.current;
-    if (imageContainer) {
-      imageContainer.addEventListener('click', handleClick);
-    }
-
-    return () => {
-      if (imageContainer) {
-        imageContainer.removeEventListener('click', handleClick);
-      }
-    };
-  }, []);
+  const allowedHDR = token?.type === "hdr_student" || token?.type === "admin";
+  const allowedMeeting = token?.type !== "hdr_student";
+  const allowedStaffRoom = token?.type === "cse_staff" || token?.type === "admin";
 
   const addDynamicButtonBehaviour = (buttons: JSX.Element[]) => {
     let newButtons = buttons;
