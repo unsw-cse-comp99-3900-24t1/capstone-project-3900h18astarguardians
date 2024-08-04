@@ -10,7 +10,7 @@ describe('e2e for admin', () => {
         // Go forward one date
         cy.get('[data-testid="dateForward"]').should('be.visible').click()
         // Click on one date in the calendar
-        cy.get('button[admin_id="66adeb124f556810ec748e34"]').eq(1).click({ force: true });
+        cy.get('button[admin_id]').eq(1).click({ force: true });
         // Input the title
         cy.get('input[name=title]').focus().type('Dummy title');
         // Submit button should be visible, click on it
@@ -18,7 +18,7 @@ describe('e2e for admin', () => {
         // Success notification should be visible
         cy.get('div[id="notistack-snackbar"]').should('be.visible')
         // Click on one date in the calendar
-        cy.get('button[admin_id="66adeb124f556810ec748e34"]').eq(2).click({ force: true });
+        cy.get('button[admin_id]').eq(2).click({ force: true });
         // Input the title
         cy.get('input[name=title]').focus().type('Dummy title 2');
         // Submit button should be visible, click on it
