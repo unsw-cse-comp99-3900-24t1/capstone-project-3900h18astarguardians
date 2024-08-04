@@ -7,7 +7,7 @@ Assuming docker is installed and running:
 3. Open `localhost:5000` in your web browswer of choice.
 
 # Login examples:
-Use these emails to login with *no password*
+Note: Use these emails to login with **no password**
 
   - HDR Student: z34966@ad.student.unsw.edu.au 
   - CSE Staff: aooif@unsw.edu.au 
