@@ -71,11 +71,9 @@ const Reports  = () => {
     let endTime = endDate?.toDate() ?? new Date();
     endTime.setHours(23);
     endTime.setMinutes(59);
-    console.log(startTime.toISOString())
-    console.log(endTime.toISOString())
+
     const reportsData = await fetchReports(startTime, endTime);
 
-    console.log(reportsData);
     // set most common rooms
     setMostCommonRooms(reportsData.mostCommonlyBookedRooms.map((room: any) => {
       return {
@@ -96,12 +94,7 @@ const Reports  = () => {
     .sort((a: { count: number }, b: { count: number }) => b.count - a.count)
    );
 
-   console.log(reportsData.mostCommonlyBookedRooms.map((room: any) => {
-    return {
-      name: room.name,
-      usage: room.usage * 100,
-    }
-  }));
+
     // set most common rooms usage
     setRoomsPercentage(reportsData.roomUsage.map((room: any) => {
       return {
