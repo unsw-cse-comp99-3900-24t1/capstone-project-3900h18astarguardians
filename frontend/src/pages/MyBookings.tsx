@@ -1,3 +1,10 @@
+/**
+ * MyBookings Component
+ * 
+ * This component displays a user's bookings and booking requests, allowing them to view details,
+ * check in, cancel bookings or requests, and export booking information as ICS files.
+ */
+
 import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';

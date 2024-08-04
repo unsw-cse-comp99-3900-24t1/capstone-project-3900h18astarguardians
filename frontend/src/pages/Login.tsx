@@ -1,3 +1,10 @@
+/**
+ * Login Component
+ * 
+ * This component provides the login form for users to authenticate and access the application. It handles form submission,
+ * user authentication, and navigates to the dashboard upon successful login.
+ */
+
 import { FormEvent, useEffect } from "react";
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";

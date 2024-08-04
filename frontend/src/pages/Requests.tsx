@@ -1,3 +1,10 @@
+/**
+ * Requests Component
+ * 
+ * Displays a list of booking requests that require approval or denial. Allows
+ * for approving or denying requests.
+ */
+
 import { useEffect, useState } from 'react';
 import { request } from "../utils/axios";
 import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';

@@ -1,3 +1,10 @@
+/**
+ * Contact Component
+ * 
+ * This component provides a feedback form for users to send messages or feedback to the admins.
+ * It handles user authentication, displays a form for feedback, and manages form submission.
+ */
+
 import { FormEvent, useEffect } from "react";
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";

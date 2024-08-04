@@ -1,3 +1,11 @@
+/**
+ * Register Component
+ * 
+ * Provides a form for users to register a new account. Users must provide an email address and
+ * matching passwords to complete registration. Displays success or error messages based on 
+ * registration outcome.
+ */
+
 import { useGlobalContext } from "../utils/context";
 import { useNavigate, Link } from "react-router-dom";
 import { request } from "../utils/axios";

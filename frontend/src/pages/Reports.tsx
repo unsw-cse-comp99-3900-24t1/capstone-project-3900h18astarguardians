@@ -1,7 +1,14 @@
+/**
+ * Reports Component
+ * 
+ * Displays usage reports including the most commonly booked rooms, room usage percentages,
+ * and details about users with bookings who have not checked in. Provides date pickers
+ * and sliders for filtering and configuring the displayed data.
+ */
 import React, { useEffect, useRef, useState } from 'react';
 import { useGlobalContext } from "../utils/context";
 import { request } from "../utils/axios";
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, Checkbox, FormControlLabel, Slider, Typography } from '@mui/material';
+import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, Slider, Typography } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -32,14 +39,14 @@ const Reports  = () => {
   // const [mostCommonUsers, setMostCommonUsers] = useState([]);
   const [nonCheckedInUsers, setNonCheckedInUsers] = useState<NonCheckedInUser[]>([]);
 
-  const handleItemNbChange = (event: Event, newValue: number | number[]) => {
+  const handleItemNbChange = (_event: Event, newValue: number | number[]) => {
     if (typeof newValue !== 'number') {
       return;
     }
     setNumRooms(newValue);
   };
 
-  const handleNumUsersChange = (event: Event, newValue: number | number[]) => {
+  const handleNumUsersChange = (_event: Event, newValue: number | number[]) => {
     if (typeof newValue !== 'number') {
       return;
     }
@@ -137,7 +144,7 @@ const Reports  = () => {
   // inspired by https://stackoverflow.com/questions/60289640/react-useref-scrollintoview-how-to-only-autoscroll-a-specific-div-inside-of
   // except with an array of elements
   const refs = useRef<(HTMLDivElement | null)[]>([]);
-  const handleAccordionChange = (index: number) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+  const handleAccordionChange = (index: number) => (_event: React.ChangeEvent<{}>, isExpanded: boolean) => {
     if (isExpanded && refs.current[index]) {
       refs.current[index]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }

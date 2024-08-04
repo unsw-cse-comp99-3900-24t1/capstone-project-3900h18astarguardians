@@ -1,3 +1,10 @@
+/**
+ * Dashboard Component
+ * 
+ * This component serves as the main interface for viewing and interacting with room timetables and maps.
+ * It allows users to switch between timetable and map views, navigate through dates, and select levels.
+ */
+
 import RoomTimetable from "../components/RoomTimetable";
 import { Box, Button, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useState } from "react";
