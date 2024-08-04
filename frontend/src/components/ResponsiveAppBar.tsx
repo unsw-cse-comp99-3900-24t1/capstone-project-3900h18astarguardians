@@ -1,3 +1,7 @@
+/**
+ * NavBar component - controls which tabs/pages are visible to users depending on user type
+ */
+
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -111,7 +115,6 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;
-        console.log(err.response);
         displayError(msg);
       }
     }

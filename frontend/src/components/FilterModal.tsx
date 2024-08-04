@@ -1,3 +1,7 @@
+/**
+ * Filter modal component - a modal with all the filter options (equipment, room type, capacity etc.)
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   Box, Button, Modal, IconButton, Accordion, AccordionSummary, AccordionDetails,

@@ -1,3 +1,7 @@
+/**
+ * Mapview component - A booking system overlaid over the map - for users to be able to see which room they are booking
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import "../styles/MapView.css"
@@ -40,7 +44,6 @@ const MapView: React.FC<MapViewProps> = ({ currLevel, setHighlightedRoom, switch
             const top = Math.min(firstClick.y, secondClick.y);
             const width = Math.abs(secondClick.x - firstClick.x);
             const height = Math.abs(secondClick.y - firstClick.y);
-            console.log(`top: ${top}px;\n\tleft: ${left}px;\n\twidth: ${width}px;\n\theight: ${height}px;\n\t`);
             return [];
           }
           return newClicks;

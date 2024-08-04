@@ -1,3 +1,7 @@
+/**
+ * Notificationsettingsmodal - notifications setting modal - preferred/non-preferred methods of contactr
+ */
+
 import Box from "@mui/material/Box";
 import { 
   Button,

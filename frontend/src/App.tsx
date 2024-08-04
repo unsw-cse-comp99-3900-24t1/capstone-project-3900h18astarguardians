@@ -44,7 +44,6 @@ const App = () => {
   );
 
   const displayError = (msg: string) => {
-    console.log(msg);
     if (msg) {
       enqueueSnackbar(msg, { variant: "error" });
     }
