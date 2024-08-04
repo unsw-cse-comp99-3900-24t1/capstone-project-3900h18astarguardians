@@ -40,7 +40,6 @@ const MapView: React.FC<MapViewProps> = ({ currLevel, setHighlightedRoom, switch
             const top = Math.min(firstClick.y, secondClick.y);
             const width = Math.abs(secondClick.x - firstClick.x);
             const height = Math.abs(secondClick.y - firstClick.y);
-            console.log(`top: ${top}px;\n\tleft: ${left}px;\n\twidth: ${width}px;\n\theight: ${height}px;\n\t`);
             return [];
           }
           return newClicks;

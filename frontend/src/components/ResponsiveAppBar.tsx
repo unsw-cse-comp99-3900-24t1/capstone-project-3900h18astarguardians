@@ -111,7 +111,6 @@ const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({ numCheckIns, numReq
     } catch (err) {
       if (err instanceof AxiosError) {
         const msg = err.response!.data.msg;
-        console.log(err.response);
         displayError(msg);
       }
     }
